@@ -5,7 +5,7 @@ if (typeof navigator.serviceWorker !== 'undefined') {
 
 window.$docsify = {
     coverpage: true,
-    basePath: "/post/",
+    basePath: "/#/post/",
     subMaxLevel: 999,
     themeColor: "#42b983",
     alias: {

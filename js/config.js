@@ -40,4 +40,11 @@ window.$docsify = {
             sidebarSublink: "#505d6b",
         },
     },
+    tabs: {
+    persist    : true,
+    sync       : true,
+    theme      : 'classic',
+    tabComments: true,
+    tabHeadings: true
+  }
 };

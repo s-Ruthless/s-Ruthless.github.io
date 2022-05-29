@@ -4,7 +4,7 @@
 
 🍩 希望本文档能对您有所帮助！
 
-<img src="/img/codebug.png" data-origin="/img/codebug.png" alt="bugbug" width=500px>
+<img src="/img/codebug.png" data-origin="/img/codebug.png" alt="bugbug" width=500px >
 
 
 <style>

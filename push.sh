@@ -15,13 +15,13 @@ echo -e "  \033[31mModified   :  \033[0m已修改文件，未进行其他操作"
 echo -e "  \033[32mStaged     :  \033[0m已暂存文件，才加入本地仓库"
 echo -e "  \033[32mUnmodified :  \033[0m未修改文件，已加入本地仓库"
 echo -e "============================================"
-
+nowTime=$(date "+%Y-%m-%d %H:%M:%S")
 echo -e "\n\n\033[1;33m3 提交本地文件\033[0m"
 # echo "═══════════════════════════════════════════════════"
 echo -e " ● 输入提交信息。输入 1，为推送代码。"
-echo -e " ● 多条信息。请用「空格」隔开。"
+echo -e " ● 多条信息，请用「空格」隔开。"
+echo -e " ● 当前时间: $nowTime"
 echo -e "\n\033[33m提交信息: \033[0m\c"
-echo -e
 read -r inputMsg
 defaultMmsg="推送代码"
 if [ "$inputMsg" == "1" ]; then

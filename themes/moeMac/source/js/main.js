@@ -93,7 +93,7 @@
             mini: false, autoplay: false, theme: '#8b5cf6',
             loop: 'all', order: 'list', preload: 'metadata', volume: 0.7, mutex: true
           });
-          try { self.ap.list.hide(); } catch (e) {} /* 清除 APlayer 内联 max-height */ var listEl = mount.querySelector('.aplayer-list'); if (listEl) listEl.style.maxHeight = '';
+          try { self.ap.list.hide(); } catch (e) {} /* 娓呴櫎 APlayer 鍐呰仈 max-height */ var listEl = mount.querySelector('.aplayer-list'); if (listEl) listEl.style.maxHeight = '';
           mount.classList.remove('aplayer-init-hide');
           self.initialized = true;
           self.loading = false;
@@ -149,7 +149,7 @@
       item.className = 'dock-item dock-minimized-item dock-item-enter';
       item.setAttribute('data-win-id', id);
       item.innerHTML = '<div class="dock-text">' + name + '</div><div class="dock-item-inner"><i class="' + icon + ' dock-icon"></i></div>';
-      /* 插入分隔线（如果还没有） */
+      /* 鎻掑叆鍒嗛殧绾匡紙濡傛灉杩樻病鏈夛級 */
       if (!document.querySelector('.dock-mini-sep')) {
         var sep = document.createElement('div');
         sep.className = 'dock-mini-sep';
@@ -158,7 +158,7 @@
       container.appendChild(item);
 
 
-      /* 延迟一帧让 dock 图标先入场动画，再启动窗口缩小 */
+      /* 寤惰繜涓€甯ц dock 鍥炬爣鍏堝叆鍦哄姩鐢伙紝鍐嶅惎鍔ㄧ獥鍙ｇ缉灏?*/
       requestAnimationFrame(function() {
         var iconRect = item.getBoundingClientRect();
         var winRect = win.getBoundingClientRect();
@@ -166,7 +166,7 @@
         var dy = (iconRect.top + iconRect.height / 2) - (winRect.top + winRect.height / 2);
         var targetScale = Math.max(iconRect.width / winRect.width, 0.08);
 
-        /* 窗口缩小动画：用 ease-out 先快后慢，配合 dock 图标弹入 */
+        /* 绐楀彛缂╁皬鍔ㄧ敾锛氱敤 ease-out 鍏堝揩鍚庢參锛岄厤鍚?dock 鍥炬爣寮瑰叆 */
         win.style.transition = 'transform 0.48s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.48s cubic-bezier(0.22, 0.61, 0.36, 1)';
         win.style.transformOrigin = 'center center';
         win.style.zIndex = '10001';
@@ -197,14 +197,14 @@
       win.classList.remove('win-minimized');
       win.style.display = '';
 
-      /* dock 图标退场动画 */
+      /* dock 鍥炬爣閫€鍦哄姩鐢?*/
       if (miniItem) {
         miniItem.classList.add('dock-item-leave');
         var onAnimEnd = function() {
           miniItem.removeEventListener('animationend', onAnimEnd);
           miniItem.remove();
           var wrap = document.querySelector('.dock-bar-inner');
-          /* 如果没有最小化图标了，移除分隔线 */
+          /* 濡傛灉娌℃湁鏈€灏忓寲鍥炬爣浜嗭紝绉婚櫎鍒嗛殧绾?*/
           if (wrap && !wrap.querySelector('.dock-minimized-item')) {
             var s = wrap.querySelector('.dock-mini-sep');
             if (s) s.remove();
@@ -216,11 +216,11 @@
           }
         };
         miniItem.addEventListener('animationend', onAnimEnd);
-        /* 兜底：万一动画事件没触发 */
+        /* 鍏滃簳锛氫竾涓€鍔ㄧ敾浜嬩欢娌¤Е鍙?*/
         setTimeout(function() { if (miniItem.parentNode) onAnimEnd(); }, 350);
       }
 
-      /* 窗口弹出恢复 */
+      /* 绐楀彛寮瑰嚭鎭㈠ */
       win.style.transition = 'none';
       win.style.transform = 'scale(0.4) translateY(30px)';
       win.style.opacity = '0';
@@ -263,16 +263,9 @@
         }
       });
       document.querySelectorAll('.drag-win').forEach(function (el) {
-        var saved = null;
-        try { saved = JSON.parse(sessionStorage.getItem('moeWinPos_' + el.id)); } catch(e) {}
-        if (saved && saved.w === window.innerWidth && saved.h === window.innerHeight) {
-          el.style.left = saved.x + 'px';
-          el.style.top = saved.y + 'px';
-        } else {
-          var ew = el.offsetWidth, eh = el.offsetHeight;
-          var best = self.findPos(ew, eh);
-          el.style.left = best.x + 'px'; el.style.top = best.y + 'px';
-        }
+        var ew = el.offsetWidth, eh = el.offsetHeight;
+        var best = self.findPos(ew, eh);
+        el.style.left = best.x + 'px'; el.style.top = best.y + 'px';
         el.setAttribute('data-pos', '1');
         el.style.visibility = 'visible';
       });
@@ -298,7 +291,7 @@
             }
             function up() {
               moving = false; el.classList.remove('win-dragging');
-              try { sessionStorage.setItem('moeWinPos_' + el.id, JSON.stringify({x:el.offsetLeft,y:el.offsetTop,w:window.innerWidth,h:window.innerHeight})); } catch(e) {}
+              // position not persisted
               document.removeEventListener('mousemove', mv);
               document.removeEventListener('mouseup', up);
             }
@@ -430,7 +423,7 @@
               MusicPlayer.moveToWindow();
               window.scrollTo(0, 0);
               if (typeof hljs !== 'undefined') document.querySelectorAll('pre code').forEach(function (b) { hljs.highlightElement(b); });
-              // GSAP 动画重载（AJAX 导航后重新触发入场动画）
+              // GSAP 鍔ㄧ敾閲嶈浇锛圓JAX 瀵艰埅鍚庨噸鏂拌Е鍙戝叆鍦哄姩鐢伙級
               if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
             }
           }
@@ -455,7 +448,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
     loadHitokoto(); MusicPlayer.init();
-    // GSAP 动画在 Drag.init() 定位完成后再执行，避免窗口跑到左上角
+    // GSAP 鍔ㄧ敾鍦?Drag.init() 瀹氫綅瀹屾垚鍚庡啀鎵ц锛岄伩鍏嶇獥鍙ｈ窇鍒板乏涓婅
     if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
   });
 })();

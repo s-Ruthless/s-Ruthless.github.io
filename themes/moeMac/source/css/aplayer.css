@@ -1,0 +1,62 @@
+/* ====== APlayer overrides ====== */
+.aplayer.aplayer{background:transparent!important;}
+.aplayer .aplayer-body{background:transparent!important;}
+.aplayer .aplayer-info{background:transparent!important;border:none!important;padding:0 6px!important;margin-left:0!important;}
+.aplayer .aplayer-title{color:#222!important;font-weight:600!important;font-size:13px!important;}
+.aplayer .aplayer-author{color:#666!important;font-size:11px!important;}
+.aplayer .aplayer-pic{border-radius:10px!important;width:56px!important;height:56px!important;}
+.aplayer .aplayer-pic .aplayer-play{border-radius:8px!important;}
+.aplayer .aplayer-pic .aplayer-play svg,.aplayer .aplayer-pic .aplayer-pause svg{
+  position:absolute!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important;
+}
+.aplayer .aplayer-bar-wrap{padding:0 6px!important;margin:4px 0!important;}
+.aplayer .aplayer-bar{background:rgba(167,139,250,0.12)!important;height:3px!important;border-radius:2px!important;}
+.aplayer .aplayer-loaded{background:rgba(167,139,250,0.08)!important;}
+.aplayer .aplayer-played{background:linear-gradient(90deg,#a78bfa,#ec4899)!important;height:3px!important;border-radius:2px!important;}
+.aplayer .aplayer-thumb{background:#fff!important;width:10px!important;height:10px!important;border:2px solid #a78bfa!important;box-shadow:0 0 4px rgba(167,139,250,0.3);}
+.aplayer .aplayer-time{color:rgba(0,0,0,0.35)!important;font-size:10px!important;padding:0 6px!important;}
+.aplayer .aplayer-icon{color:rgba(0,0,0,0.4)!important;transition:all 0.15s ease;}
+.aplayer .aplayer-icon:hover{color:#a78bfa!important;transform:scale(1.15);}
+.aplayer .aplayer-icon-play,.aplayer .aplayer-icon-pause{color:#a78bfa!important;}
+
+/* APlayer list */
+.aplayer .aplayer-list{background:transparent!important;border:none!important;box-shadow:none!important;overflow:hidden!important;padding:0!important;margin:0!important;height:auto;max-height:300px;opacity:1;transition:max-height 0.4s ease,opacity 0.3s ease;}
+.aplayer .aplayer-list.aplayer-list-hide{max-height:0!important;opacity:0!important;overflow:hidden!important;}
+.aplayer .aplayer-list ol{background:transparent!important;border:none!important;padding:4px 0!important;margin:0!important;overflow-y:auto!important;list-style:none!important;}
+.aplayer .aplayer-list ol::-webkit-scrollbar{width:3px;}
+.aplayer .aplayer-list ol::-webkit-scrollbar-track{background:transparent;}
+.aplayer .aplayer-list ol::-webkit-scrollbar-thumb{background:rgba(167,139,250,0.2);border-radius:2px;}
+.aplayer .aplayer-list ol li{background:transparent!important;border:none!important;padding:8px 10px!important;border-radius:8px!important;margin:0 4px!important;transition:background 0.15s;color:#555;line-height:1.2;height:auto!important;}
+.aplayer .aplayer-list ol li:hover{background:rgba(167,139,250,0.06)!important;}
+.aplayer .aplayer-list ol li.aplayer-list-light{background:rgba(167,139,250,0.1)!important;color:#333;font-weight:600;}
+.aplayer .aplayer-list ol li .aplayer-list-cur{display:none!important;}
+.aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-cur{display:inline-block!important;width:3px!important;height:20px!important;background:#a78bfa!important;border-radius:2px;position:absolute;left:4px;top:6px;}
+.aplayer .aplayer-list ol li .aplayer-list-index{color:rgba(0,0,0,0.2)!important;font-size:11px!important;margin-right:6px!important;}
+.aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-index{color:#a78bfa!important;font-weight:600;}
+.aplayer .aplayer-list ol li .aplayer-list-title{color:#444!important;font-size:12px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-title{color:#222!important;font-weight:600;}
+.aplayer .aplayer-list ol li .aplayer-list-author{color:rgba(0,0,0,0.3)!important;font-size:10px!important;float:right!important;white-space:nowrap!important;}
+.aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-author{color:#888!important;}
+
+/* global music wrap */
+.global-music-wrap{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:998;width:320px;pointer-events:auto;}
+.window-music .global-music-wrap,#music-window-mount .global-music-wrap{position:static;bottom:auto;left:auto;transform:none;z-index:auto;width:100%;}
+.global-music-wrap .aplayer{border-radius:16px!important;}
+
+/* APlayer init hide */
+.aplayer-init-hide .aplayer-list{max-height:0!important;opacity:0!important;overflow:hidden!important;display:none!important;}
+
+/* music loading */
+.music-loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;color:#999;font-size:13px;}
+.music-loading-spinner{width:18px;height:18px;border:2px solid rgba(167,139,250,0.2);border-top-color:#a78bfa;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* article list */
+.empty-hint{text-align:center;color:#999;font-size:14px;padding:40px 0;}
+
+/* responsive */
+@media(max-width:768px){
+  .window-main{width:90vw;height:auto;}
+  .wall-grid{grid-template-columns:1fr;}
+  .links-grid{grid-template-columns:1fr;}
+}

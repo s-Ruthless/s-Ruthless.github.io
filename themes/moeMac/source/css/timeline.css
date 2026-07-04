@@ -1,0 +1,78 @@
+/* ====== Hover 全局链接样式 ====== */
+a:hover{color:#8b5cf6;}
+.ajax-link{cursor:pointer;}
+.ajax-link:hover{color:#8b5cf6;}
+
+/* ====== 归档时间轴 ====== */
+.archive-page{padding:0;}
+.timeline{position:relative;padding:20px 0 20px 30px;}
+.timeline::before{
+  content:'';position:absolute;left:14px;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,#a78bfa 0%,#ec4899 50%,#a78bfa 100%);
+  border-radius:1px;
+}
+.timeline-year{
+  font-size:22px;font-weight:600;color:#333;
+  margin:28px 0 8px;padding-left:20px;position:relative;
+}
+.timeline-year::before{
+  content:'';position:absolute;left:-22px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;border-radius:50%;
+  background:linear-gradient(135deg,#a78bfa,#ec4899);
+  border:3px solid #fff;box-shadow:0 0 0 3px rgba(167,139,250,0.3);
+}
+.timeline-month{
+  font-size:14px;font-weight:600;color:#8b5cf6;
+  margin:16px 0 8px;padding-left:20px;position:relative;
+}
+.timeline-month::before{
+  content:'';position:absolute;left:-18px;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;border-radius:50%;
+  background:#a78bfa;
+}
+.timeline-item{position:relative;margin:6px 0;padding-left:20px;}
+.timeline-dot{
+  position:absolute;left:-10px;top:12px;
+  width:6px;height:6px;border-radius:50%;
+  background:#c4b5fd;border:2px solid #fff;
+  box-shadow:0 0 0 2px rgba(167,139,250,0.15);
+}
+.timeline-card{
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.5);
+  border-radius:14px;padding:12px 16px;
+  transition:all 0.25s ease;
+}
+.timeline-card:hover{
+  background:rgba(255,255,255,0.5);
+  box-shadow:0 6px 24px rgba(0,0,0,0.08);
+  transform:translateX(4px);
+}
+.timeline-date{font-size:11px;color:#999;display:block;margin-bottom:4px;}
+.timeline-title{font-size:14px;font-weight:400;color:#333;display:block;}
+.timeline-title:hover{color:#8b5cf6;}
+.timeline-cats{display:flex;gap:6px;margin-top:6px;}
+.timeline-cat{font-size:12px;color:#8b5cf6;background:rgba(167,139,250,0.08);padding:2px 8px;border-radius:6px;}
+.timeline-cat i{margin-right:3px;font-size:10px;}
+
+/* timeline center layout */
+.timeline-center .timeline{padding-left:50%;}
+.timeline-center .timeline::before{left:50%;transform:translateX(-50%);}
+.timeline-center .timeline-year{padding-left:20px;text-align:left;}
+.timeline-center .timeline-year::before{left:-22px;}
+.timeline-center .timeline-month{padding-left:20px;}
+.timeline-center .timeline-month::before{left:-18px;}
+.timeline-center .timeline-item{padding-left:20px;}
+.timeline-center .timeline-left{margin-right:52%;text-align:right;}
+.timeline-center .timeline-left .timeline-card{margin-right:0;}
+.timeline-center .timeline-right{margin-left:52%;text-align:left;}
+
+/* timeline left layout */
+.timeline-left-wrap .timeline{padding-left:30px;}
+.timeline-left-wrap .timeline-item{padding-left:20px;}
+
+/* timeline right layout */
+.timeline-right-wrap .timeline{padding-left:60%;}
+.timeline-right-wrap .timeline::before{left:60%;}
+.timeline-right-wrap .timeline-item{padding-left:20px;}
+

@@ -1,54 +1,100 @@
 <%
   var posts = site.posts.sort('date', -1);
-  var layout = theme.archive_timeline_layout || 'left';
+  var totalPosts = site.posts.length;
+  var totalCategories = site.categories.length;
+  var totalTags = site.tags.length;
+
+  // 按年份统计
+  var yearMap = {};
+  posts.each(function(post) {
+    var y = date(post.date, 'YYYY');
+    yearMap[y] = (yearMap[y] || 0) + 1;
+  });
+  var years = Object.keys(yearMap).sort().reverse();
+  var maxCount = Math.max.apply(null, Object.values(yearMap));
+
+  // 热门分类
+  var cats = site.categories.sort('length', -1).limit(8);
 %>
+
 <div class="page-container">
   <div class="page-header">
     <h2><i class="fas fa-box-archive"></i> 归档</h2>
+    <p class="archive-subtitle">共 <%= totalPosts %> 篇文章 · <%= totalCategories %> 个分类 · <%= totalTags %> 个标签</p>
   </div>
-  <div class="page-body archive-page archive-<%= layout %>">
-    <div class="archive-timeline">
+
+  <div class="page-body archive-page">
+    <!-- 统计卡片区 -->
+    <div class="archive-stats">
+      <!-- 年份柱状图 -->
+      <div class="stat-card stat-chart">
+        <div class="stat-title"><i class="fas fa-chart-bar"></i> 年度文章</div>
+        <div class="chart-bars">
+          <% years.forEach(function(y) { %>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height: <%= (yearMap[y] / maxCount * 100) %>%">
+                  <span class="chart-count"><%= yearMap[y] %></span>
+                </div>
+              </div>
+              <span class="chart-label"><%= y %></span>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+
+      <!-- 总数卡片 -->
+      <div class="stat-card stat-numbers">
+        <div class="stat-item">
+          <span class="stat-num"><%= totalPosts %></span>
+          <span class="stat-label">文章</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num"><%= totalCategories %></span>
+          <span class="stat-label">分类</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num"><%= totalTags %></span>
+          <span class="stat-label">标签</span>
+        </div>
+      </div>
+
+      <!-- 热门分类 -->
+      <div class="stat-card stat-cats">
+        <div class="stat-title"><i class="fas fa-fire"></i> 热门分类</div>
+        <div class="cat-tags">
+          <% cats.forEach(function(cat) { %>
+            <a class="cat-tag ajax-link" data-href="<%- url_for(cat.path) %>">
+              <span class="cat-name"><%= cat.name %></span>
+              <span class="cat-count"><%= cat.length %></span>
+            </a>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文章列表区 -->
+    <div class="archive-list">
       <% var prevYear = ''; %>
-      <% var prevYM = ''; %>
       <% posts.each(function(post) { %>
         <%
           var y = date(post.date, 'YYYY');
           var m = date(post.date, 'MM');
           var d = date(post.date, 'DD');
-          var ym = y + '-' + m;
-          var monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-          var monthName = monthNames[parseInt(m) - 1];
         %>
         <% if (y !== prevYear) { %>
-          <% prevYear = y; prevYM = ''; %>
-          <div class="archive-year">
-            <span class="year-dot"></span>
-            <span class="year-text"><%= y %></span>
-          </div>
+          <% prevYear = y; %>
+          <div class="archive-year-label"><%= y %></div>
         <% } %>
-        <% if (ym !== prevYM) { %>
-          <% prevYM = ym; %>
-          <div class="archive-month">
-            <span class="month-dot"></span>
-            <span class="month-text"><%= monthName %></span>
-          </div>
-        <% } %>
-        <div class="archive-item ajax-link" data-href="<%- url_for(post.path) %>">
-          <span class="item-dot"></span>
-          <div class="item-card">
-            <span class="item-date"><%= m %>-<%= d %></span>
-            <a class="item-title ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></a>
-            <% if (post.categories && post.categories.length > 0) { %>
-              <div class="item-cats">
-                <% post.categories.forEach(function(cat) { %>
-                  <span class="item-cat"><i class="fas fa-folder"></i> <%= cat.name %></span>
-                <% }); %>
-              </div>
-            <% } %>
-          </div>
+        <div class="archive-row ajax-link" data-href="<%- url_for(post.path) %>">
+          <span class="row-date"><%= m %>-<%= d %></span>
+          <a class="row-title ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></a>
+          <% if (post.categories && post.categories.length > 0) { %>
+            <span class="row-cat"><%= post.categories.first().name %></span>
+          <% } %>
         </div>
       <% }); %>
-      <% if (site.posts.length === 0) { %>
+      <% if (totalPosts === 0) { %>
         <div class="archive-empty">还没有文章哦~</div>
       <% } %>
     </div>

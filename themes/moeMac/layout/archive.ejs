@@ -1,0 +1,56 @@
+<%
+  var posts = site.posts.sort('date', -1);
+  var layoutMode = theme.archive_timeline_layout || 'center';
+  var wrapClass = 'timeline-' + layoutMode + '-wrap';
+  if (layoutMode === 'center') wrapClass = 'timeline-center';
+%>
+
+<div class="page-container">
+  <div class="archive-page <%= wrapClass %>">
+    <div class="archive-header">
+      <h2><i class="fas fa-folder-open"></i> 归档 · 共 <%= site.posts.length %> 篇</h2>
+    </div>
+
+    <div class="timeline">
+      <% var idx = 0; %>
+      <% var prevYM = ''; %>
+      <% var prevYear = ''; %>
+      <% posts.each(function(post) { %>
+        <%
+          var y = date(post.date, 'YYYY');
+          var m = date(post.date, 'MM');
+          var ym = y + '-' + m;
+          var side = (layoutMode === 'center') ? (idx % 2 === 0 ? 'left' : 'right') : (layoutMode === 'left' ? 'left' : 'right');
+        %>
+        <% if (y !== prevYear) { %>
+          <% prevYear = y; prevYM = ''; %>
+          <div class="timeline-year"><%= y %></div>
+        <% } %>
+        <% if (ym !== prevYM) { %>
+          <% prevYM = ym; %>
+          <div class="timeline-month"><%= parseInt(m) %>月</div>
+        <% } %>
+
+        <div class="timeline-item timeline-<%= side %>">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date"><%= date(post.date, 'MM-DD HH:mm') %></span>
+            <a class="ajax-link timeline-title" data-href="<%- url_for(post.path) %>"><%= post.title %></a>
+            <% if (post.categories && post.categories.length > 0) { %>
+              <div class="timeline-cats">
+                <% post.categories.forEach(function(cat) { %>
+                  <span class="timeline-cat"><i class="fas fa-folder"></i> <%= cat.name %></span>
+                <% }); %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+        <% idx++; %>
+      <% }); %>
+
+      <% if (site.posts.length === 0) { %>
+        <div class="empty-hint" style="text-align:center;">还没有文章哦～</div>
+      <% } %>
+    </div>
+  </div>
+</div>

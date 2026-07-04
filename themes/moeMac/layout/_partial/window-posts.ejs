@@ -1,0 +1,13 @@
+<% var count = theme.recent_posts_count || 3; %>
+<% var posts = site.posts.sort('date', -1).limit(count); %>
+<% posts.each(function(post) { %>
+  <div class="art-item">
+    <h4 class="ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></h4>
+    <span><%= date(post.date, 'YYYY-MM-DD') %></span>
+  </div>
+<% }); %>
+<% if (site.posts.length === 0) { %>
+  <div class="art-item">
+    <p style="color:#999;font-size:14px;text-align:center;">还没有文章哦～</p>
+  </div>
+<% } %>

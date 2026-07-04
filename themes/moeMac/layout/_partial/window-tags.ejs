@@ -1,0 +1,22 @@
+<% var tags = site.tags; %>
+<% var maxCount = 0; tags.forEach(function(tag){ if(tag.posts.length > maxCount) maxCount = tag.posts.length; }); %>
+<div class="tag-box">
+  <% tags.sort('name').each(function(tag) { %>
+    <% 
+      var count = tag.posts.length;
+      var cls = 'tag';
+      if(maxCount > 0){
+        var ratio = count / maxCount;
+        if(ratio >= 0.8) cls += ' tag-xl';
+        else if(ratio >= 0.6) cls += ' tag-lg';
+        else if(ratio >= 0.3) cls += ' tag-md';
+        else if(ratio >= 0.15) cls += ' tag-sm';
+        else cls += ' tag-xs';
+      }
+    %>
+    <a class="<%= cls %> ajax-link" data-href="<%- url_for(tag.path) %>"><%= tag.name %></a>
+  <% }); %>
+  <% if (tags.length === 0) { %>
+    <span style="color:#999;font-size:13px;">暂无标签</span>
+  <% } %>
+</div>

@@ -1,0 +1,37 @@
+name: Deploy Hexo to Gitee Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install and Build
+        run: |
+          pnpm install
+          npx hexo generate
+
+      - name: Deploy to Gitee Pages
+        uses: yanglbme/gitee-pages-action@main
+        with:
+          gitee-username: ${{ secrets.GITEE_USERNAME }}
+          gitee-password: ${{ secrets.GITEE_PASSWORD }}
+          gitee-repo: ${{ secrets.GITEE_REPO }}
+          branch: master
+          directory: public

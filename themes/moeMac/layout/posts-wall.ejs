@@ -1,0 +1,51 @@
+<%
+  var posts = site.posts.sort('date', -1);
+  var cats = site.categories;
+%>
+
+<div class="posts-wall-page">
+  <div class="wall-header">
+    <h2><i class="fas fa-newspaper"></i> 全部文章 · <%= site.posts.length %> 篇</h2>
+    <div class="wall-filter">
+      <button class="filter-btn active" data-cat="all">全部</button>
+      <% cats.sort('name').each(function(cat) { %>
+        <button class="filter-btn" data-cat="<%= cat.name %>"><%= cat.name %> (<%= cat.posts.length %>)</button>
+      <% }); %>
+    </div>
+  </div>
+
+  <div class="wall-grid" id="posts-wall-grid">
+    <% var sizes = ['card-md','card-lg','card-sm','card-md','card-md','card-sm','card-lg','card-md']; %>
+    <% var idx = 0; %>
+    <% posts.each(function(post) { %>
+      <%
+        var size = sizes[idx % sizes.length];
+        var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : '';
+        var summary = strip_html(post.excerpt || post.content || '').substring(0, 80);
+        var bgColor = ['#fce4ec','#e3f2fd','#fff3e0','#e8f5e9','#f3e5f5','#e0f7fa','#fff8e1','#efebe9'][idx % 8];
+      %>
+      <div class="wall-card <%= size %> ajax-link" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" style="--card-bg:<%= bgColor %>;">
+        <div class="card-top">
+          <% if (catName) { %>
+            <span class="card-cat"><%= catName %></span>
+          <% } %>
+          <span class="card-date"><%= date(post.date, 'YYYY-MM-DD') %></span>
+        </div>
+        <h3 class="card-title"><%= post.title %></h3>
+        <p class="card-summary"><%= summary %><%= (strip_html(post.excerpt || post.content || '')).length > 80 ? '...' : '' %></p>
+        <% if (post.tags && post.tags.length > 0) { %>
+          <div class="card-tags">
+            <% post.tags.forEach(function(tag) { %>
+              <span class="card-tag">#<%= tag.name %></span>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+      <% idx++; %>
+    <% }); %>
+
+    <% if (site.posts.length === 0) { %>
+      <div class="empty-hint" style="grid-column:1/-1;">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+  </div>
+</div>

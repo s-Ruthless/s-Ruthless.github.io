@@ -1,0 +1,53 @@
+<div class="page-container">
+  <div class="article-window">
+    <div class="win-head">
+      <div class="win-name">
+        <a class="ajax-link back-link" data-href="<%- url_for('/posts/') %>">
+          <i class="fas fa-chevron-left"></i> 返回
+        </a>
+        <span class="article-title-text"><%= page.title %></span>
+      </div>
+    </div>
+    <div class="win-body article-body">
+      <div class="article-header">
+        <h1><%= page.title %></h1>
+        <div class="post-meta">
+          <i class="fas fa-calendar-days"></i> <%= date(page.date, 'YYYY-MM-DD HH:mm') %>
+          <% if (page.categories && page.categories.length > 0) { %>
+            <span class="meta-sep">·</span>
+            <i class="fas fa-folder"></i>
+            <% page.categories.forEach(function(cat, i) { %>
+              <a class="ajax-link" data-href="<%- url_for(cat.path) %>"><%= cat.name %></a><%= i < page.categories.length - 1 ? ', ' : '' %>
+            <% }); %>
+          <% } %>
+        </div>
+        <% if (page.tags && page.tags.length > 0) { %>
+          <div class="article-tags">
+            <% page.tags.forEach(function(tag) { %>
+              <a class="tag ajax-link" data-href="<%- url_for(tag.path) %>">#<%= tag.name %></a>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="article-content" id="post-content">
+        <%- page.content %>
+      </div>
+
+      <div class="article-nav">
+        <% if (page.prev) { %>
+          <a class="nav-prev ajax-link" data-href="<%- url_for(page.prev.path) %>">
+            <i class="fas fa-chevron-left"></i>
+            <span><%= page.prev.title %></span>
+          </a>
+        <% } else { %><div></div><% } %>
+        <% if (page.next) { %>
+          <a class="nav-next ajax-link" data-href="<%- url_for(page.next.path) %>">
+            <span><%= page.next.title %></span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

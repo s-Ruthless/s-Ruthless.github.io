@@ -1,0 +1,99 @@
+# moeMac 主题配置
+
+# ====== 基本信息 ======
+blog_name: "山野自愈 · 人间理想"
+blog_description: "随心记录生活碎片，收纳日常热爱<br>一隅小窗，藏尽平凡美好"
+author: "屿"
+
+# ====== 头像 ======
+# avatar_type: "image" 显示图片头像，"text" 显示文字头像
+# avatar_url: 图片地址，支持网络URL或本地路径（如 /images/avatar.png）
+# avatar_text: 文字头像显示的文字（仅 avatar_type 为 text 时生效）
+avatar_type: "image"
+avatar_url: "https://q1.qlogo.cn/g?b=qq&nk=2502393029&s=100"
+avatar_text: "屿"
+
+# ====== 主题色 ======
+accent_color: "#a78bfa"
+
+# ====== 外部资源 CDN（可替换为自建/镜像地址）======
+# 将第三方资源地址集中配置，防止 CDN 挂掉时无法使用
+# 可下载到本地 source/lib/ 目录后改为本地路径，如 /lib/fontawesome/css/all.min.css
+cdn:
+  # Font Awesome 图标库
+  fontawesome_css: "https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  # APlayer 音乐播放器 CSS
+  aplayer_css: "https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css"
+  # APlayer 音乐播放器 JS
+  aplayer_js: "https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"
+  # MetingJS（网易云歌单支持，解决 CORS 问题）
+  meting_js: "https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"
+
+# ====== 一言 / 每日一句 ======
+# hitokoto: true 启用一言 API，首页实时获取；false 使用下方 sentences 列表随机显示
+# hitokoto_api: 一言 API 地址（可自定义，默认使用官方接口）
+# sentences: 静态句子列表（hitokoto 为 false 或 API 失败时使用）
+hitokoto: true
+hitokoto_api: "https://v1.hitokoto.cn/"
+sentences:
+  - "生活明朗，万物可爱。"
+  - "愿你眼中有光，心中有爱。"
+  - "把日子过成诗，简单而精致。"
+  - "温柔半两，从容一生。"
+  - "今日份的好运正在派送中……"
+  - "慢慢来，谁还没有一个光明的未来。"
+  - "所有的不期而遇，都在路上。"
+  - "保持热爱，奔赴山海。"
+
+# ====== 音乐歌单 ======
+# meting_api: Meting API 地址（支持网易云/QQ/酷狗等）
+#   - 公共 API（可能限流）：https://api.injahow.cn/meting/
+#   - 自建 API（推荐）：https://your-domain.com/meting/
+#   - 本地 API：http://localhost:3000/meting/
+#
+# platform: 音乐平台（netease / tencent / kugou / xiami / baidu）
+# playlist_id: 歌单ID
+# show_desktop_lyrics: 是否在 dock 栏上方显示桌面歌词
+meting_api: "https://api.moeyao.cn/meting/"
+platform: "netease"
+playlist_id: "18117638485"
+show_desktop_lyrics: true
+
+# ====== Dock 导航栏 ======
+# icon: Font Awesome 图标类名
+# label: 显示名称
+# page: 页面路径
+# type: "page" 站内页面，"link" 外部链接
+dock:
+  - { icon: "fas fa-house", label: "首页", page: "/", type: "page" }
+  - { icon: "fas fa-newspaper", label: "文章", page: "/posts/", type: "page" }
+  - { icon: "fas fa-folder-open", label: "归档", page: "/archives/", type: "page" }
+  - { icon: "fas fa-circle-info", label: "关于", page: "/about/", type: "page" }
+  - { icon: "fas fa-link", label: "友链", page: "/links/", type: "page" }
+
+# ====== 首页 ======
+# home_windows: 首页显示的浮动窗口（可选: posts, categories, tags, music, data）
+# recent_posts_count: 最新文章窗口显示的文章数量
+home_windows:
+  - "posts"
+  - "categories"
+  - "tags"
+  - "music"
+  - "data"
+recent_posts_count: 5
+
+# ====== 归档页 ======
+# archive_timeline_layout: 时间轴布局方向，可选 center / left / right
+archive_timeline_layout: "left"
+
+# ====== 友链 ======
+friends:
+  - { name: "Hexo", url: "https://hexo.io", avatar: "https://hexo.io/favicon.ico", description: "快速、简洁且高效的博客框架" }
+  - { name: "Theme Landscape", url: "https://github.com/hexojs/hexo-theme-landscape", avatar: "https://github.githubassets.com/favicons/favicon.svg", description: "Hexo 默认主题" }
+
+# ====== 文章页 ======
+# show_toc: 显示文章目录
+# show_date: 显示发布日期
+post:
+  show_toc: true
+  show_date: true

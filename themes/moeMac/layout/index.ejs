@@ -1,0 +1,65 @@
+<% var windows = theme.home_windows || ['posts','categories','tags','music','data']; %>
+<% var winClassMap = { posts:'window-article', categories:'window-categories', sentence:'window-sentence', tags:'window-tag', music:'window-music', data:'window-data' }; %>
+<% var winTitleMap = { posts:'最新文章', categories:'分类', sentence:'心语', tags:'标签云', music:'歌单', data:'站点数据' }; %>
+<% var winIconMap = { posts:'fas fa-newspaper', categories:'fas fa-folder', sentence:'fas fa-heart', tags:'fas fa-tags', music:'fas fa-music', data:'fas fa-chart-bar' }; %>
+<% var useImageAvatar = theme.avatar_type === 'image' && theme.avatar_url; %>
+
+<div class="app-window window-main" id="win-hero" style="left:50%;top:50%;">
+  <div class="win-traffic">
+    <button class="win-traffic-btn win-btn-close" title="关闭"><i class="fas fa-xmark"></i></button>
+    <button class="win-traffic-btn win-btn-minimize" title="最小化"><i class="fas fa-minus"></i></button>
+    <button class="win-traffic-btn win-btn-pin" title="置顶"><i class="fas fa-thumbtack"></i></button>
+  </div>
+  <div class="win-head drag-bar">
+    <div class="win-name">我的主页</div>
+  </div>
+  <div class="win-body">
+    <div class="hero-ava" id="hero-avatar">
+      <% if (useImageAvatar) { %>
+        <img src="<%= theme.avatar_url %>" alt="avatar" class="hero-ava-img" onerror="this.parentElement.innerHTML='<%= theme.avatar_text || '我' %>'">
+      <% } else { %>
+        <%= theme.avatar_text || '我' %>
+      <% } %>
+    </div>
+    <div class="hero-text">
+      <h2><%= theme.blog_name || config.title %></h2>
+      <p><%- theme.blog_description || config.description %></p>
+      <div class="hero-hitokoto">
+        <% if (theme.hitokoto !== false) { %>
+        <span class="hero-hitokoto-text" id="hitokoto-text" data-api="<%= theme.hitokoto_api || 'https://v1.hitokoto.cn/' %>">「加载中...」</span>
+        <% } else { var sList = theme.sentences || ['生活明朗，万物可爱。']; var sRand = sList[Math.floor(Math.random() * sList.length)]; %>
+        <span class="hero-hitokoto-text" id="hitokoto-text">「<%= sRand %>」</span>
+        <% } %>
+        <span class="hero-hitokoto-from" id="hitokoto-from"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% windows.forEach(function(w) { %>
+<div class="app-window <%= winClassMap[w] || 'window-article' %> drag-win" id="win-<%= w %>">
+  <div class="win-traffic">
+    <button class="win-traffic-btn win-btn-close" title="关闭"><i class="fas fa-xmark"></i></button>
+    <button class="win-traffic-btn win-btn-minimize" title="最小化"><i class="fas fa-minus"></i></button>
+    <button class="win-traffic-btn win-btn-pin" title="置顶"><i class="fas fa-thumbtack"></i></button>
+  </div>
+  <div class="win-head drag-bar">
+    <div class="win-name"><%= winTitleMap[w] || w %></div>
+  </div>
+  <div class="win-body">
+    <% if (w === 'posts') { %>
+      <%- partial('_partial/window-posts') %>
+    <% } else if (w === 'categories') { %>
+      <%- partial('_partial/window-categories') %>
+    <% } else if (w === 'sentence') { %>
+      <%- partial('_partial/window-sentence') %>
+    <% } else if (w === 'tags') { %>
+      <%- partial('_partial/window-tags') %>
+    <% } else if (w === 'music') { %>
+      <div id="music-window-mount"></div>
+    <% } else if (w === 'data') { %>
+      <%- partial('_partial/window-data') %>
+    <% } %>
+  </div>
+</div>
+<% }); %>

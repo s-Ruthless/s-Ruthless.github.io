@@ -1,0 +1,16 @@
+<% if (theme.playlist_id) { %>
+<% var metingApi = theme.meting_api || "https://api.moeyao.cn/meting/"; %>
+<% var platform = theme.platform || "netease"; %>
+<% var playlistId = theme.playlist_id; %>
+<div id="global-music-player" class="global-music-wrap" style="display:none;">
+  <div class="music-loading" id="music-loading">
+    <div class="music-loading-spinner"></div>
+    <span>正在加载歌单…</span>
+  </div>
+  <div id="aplayer-mount"
+       data-api="<%= metingApi %>"
+       data-platform="<%= platform %>"
+       data-playlist-id="<%= playlistId %>">
+  </div>
+</div>
+<% } %>

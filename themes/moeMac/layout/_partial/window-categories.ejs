@@ -1,0 +1,14 @@
+<% var cats = site.categories; %>
+<% if (cats.length > 0) { %>
+  <div class="cat-box">
+    <% cats.sort('name').each(function(cat) { %>
+      <a class="cat-item ajax-link" data-href="<%- url_for(cat.path) %>">
+        <i class="fas fa-folder"></i>
+        <span><%= cat.name %></span>
+        <em><%= cat.posts.length %></em>
+      </a>
+    <% }); %>
+  </div>
+<% } else { %>
+  <p style="color:#999;font-size:13px;text-align:center;padding:20px 0;">暂无分类</p>
+<% } %>

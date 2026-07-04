@@ -1,0 +1,52 @@
+<% var metingApi = theme.meting_api || 'https://api.moeyao.cn/meting/'; %>
+<% var platform = theme.platform || 'netease'; %>
+<% var playlistId = theme.playlist_id || ''; %>
+<% if (playlistId) { %>
+<div class="music-loading" id="music-loading">
+  <div class="music-loading-spinner"></div>
+  <span>正在加载歌单…</span>
+</div>
+<div id="aplayer-mount"></div>
+<script>
+(function() {
+  var apiBase = '<%= metingApi %>';
+  var platform = '<%= platform %>';
+  var playlistId = '<%= playlistId %>';
+  var loading = document.getElementById('music-loading');
+  var mount = document.getElementById('aplayer-mount');
+
+  function hideLoading() { if (loading) loading.style.display = 'none'; }
+  function showError(msg) { if (loading) loading.innerHTML = '<span style="color:#e57373;font-size:13px;">' + msg + '</span>'; }
+
+  var url = apiBase + '?server=' + platform + '&type=playlist&id=' + playlistId;
+  console.log('[Music] Fetching playlist:', url);
+
+  fetch(url)
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(songs) {
+      console.log('[Music] Loaded', songs.length, 'songs');
+      if (!songs || !songs.length) { showError('歌单为空'); return; }
+      hideLoading();
+
+      var ap = new APlayer({
+        container: mount,
+        lrcType: 0,
+        audio: songs.map(function(s) {
+          return { name: s.name || '', artist: s.artist || '', url: s.url || '', cover: s.cover || '' };
+        }),
+        mini: false, autoplay: false, theme: '#8b5cf6',
+        loop: 'all', order: 'list', preload: 'metadata', volume: 0.7, mutex: true
+      });
+
+      window.__aplayer = ap;
+      window.dispatchEvent(new CustomEvent('aplayer-ready', { detail: ap }));
+    })
+    .catch(function(err) {
+      console.error('[Music] Error:', err);
+      showError('歌单加载失败: ' + err.message);
+    });
+})();
+</script>
+<% } else { %>
+<p style="color:#999;font-size:13px;text-align:center;">请在主题配置中填写 playlist_id</p>
+<% } %>

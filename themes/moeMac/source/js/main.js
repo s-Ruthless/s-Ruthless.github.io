@@ -262,11 +262,19 @@
           el.style.top = rect.top + 'px';
         }
       });
-      document.querySelectorAll('.drag-win:not([data-pos])').forEach(function (el) {
-        var ew = el.offsetWidth, eh = el.offsetHeight;
-        var best = self.findPos(ew, eh);
-        el.style.left = best.x + 'px'; el.style.top = best.y + 'px';
+      document.querySelectorAll('.drag-win').forEach(function (el) {
+        var saved = null;
+        try { saved = JSON.parse(sessionStorage.getItem('moeWinPos_' + el.id)); } catch(e) {}
+        if (saved && saved.w === window.innerWidth && saved.h === window.innerHeight) {
+          el.style.left = saved.x + 'px';
+          el.style.top = saved.y + 'px';
+        } else {
+          var ew = el.offsetWidth, eh = el.offsetHeight;
+          var best = self.findPos(ew, eh);
+          el.style.left = best.x + 'px'; el.style.top = best.y + 'px';
+        }
         el.setAttribute('data-pos', '1');
+        el.style.visibility = 'visible';
       });
       document.querySelectorAll('.app-window').forEach(function (el) {
         el.addEventListener('mousedown', function () { self.focus(el); });
@@ -290,6 +298,7 @@
             }
             function up() {
               moving = false; el.classList.remove('win-dragging');
+              try { sessionStorage.setItem('moeWinPos_' + el.id, JSON.stringify({x:el.offsetLeft,y:el.offsetTop,w:window.innerWidth,h:window.innerHeight})); } catch(e) {}
               document.removeEventListener('mousemove', mv);
               document.removeEventListener('mouseup', up);
             }
@@ -421,6 +430,8 @@
               MusicPlayer.moveToWindow();
               window.scrollTo(0, 0);
               if (typeof hljs !== 'undefined') document.querySelectorAll('pre code').forEach(function (b) { hljs.highlightElement(b); });
+              // GSAP 动画重载（AJAX 导航后重新触发入场动画）
+              if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
             }
           }
           box.classList.remove('fade-out'); box.classList.add('fade-in');

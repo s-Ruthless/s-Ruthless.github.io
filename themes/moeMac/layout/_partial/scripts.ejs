@@ -1,2 +1,7 @@
-<script src="<%= theme.cdn.aplayer_js %>"></script>
+<script src="<%= theme.cdn.aplayer_js %>" defer></script>
+<script src="<%= theme.cdn.meting_js %>" defer></script>
+<!-- GSAP 动画库 -->
+<script src="<%= theme.cdn.gsap_js %>"></script>
+<script src="<%= theme.cdn.gsap_scrolltrigger_js %>"></script>
 <%- js('js/main.js') %>
+<%- js('js/gsap-animations.js') %>

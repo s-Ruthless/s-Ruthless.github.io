@@ -15,16 +15,18 @@
       <% }); %>
     </div>
     <div class="wall-grid" id="posts-wall-grid">
-    <% var sizes = ['card-md','card-lg','card-sm','card-md','card-md','card-sm','card-lg','card-md']; %>
+    <% var sizes = ['card-sm','card-md','card-lg','card-md','card-sm','card-md','card-lg','card-sm','card-md','card-sm']; %>
     <% var idx = 0; %>
     <% posts.each(function(post) { %>
       <%
         var size = sizes[idx % sizes.length];
         var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : '';
-        var summary = strip_html(post.excerpt || post.content || '').substring(0, 50);
-        var bgColor = ['#fce4ec','#e3f2fd','#fff3e0','#e8f5e9','#f3e5f5','#e0f7fa','#fff8e1','#efebe9'][idx % 8];
+        var fullText = strip_html(post.excerpt || post.content || '');
+        var maxLen = size === 'card-sm' ? 30 : size === 'card-lg' ? 100 : 55;
+        var summary = fullText.substring(0, maxLen);
+        var showTags = size !== 'card-sm';
       %>
-      <div class="wall-card <%= size %> ajax-link" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" style="--card-bg:<%= bgColor %>;">
+      <div class="wall-card ajax-link" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" style="--card-bg:<%= ['#fce4ec','#e3f2fd','#fff3e0','#e8f5e9','#f3e5f5','#e0f7fa','#fff8e1','#efebe9'][idx % 8] %>;">
         <div class="card-top">
           <% if (catName) { %>
             <span class="card-cat"><%= catName %></span>
@@ -32,8 +34,8 @@
           <span class="card-date"><%= date(post.date, 'YYYY-MM-DD') %></span>
         </div>
         <h3 class="card-title"><%= post.title %></h3>
-        <p class="card-summary"><%= summary %><%= (strip_html(post.excerpt || post.content || '')).length > 80 ? '...' : '' %></p>
-        <% if (post.tags && post.tags.length > 0) { %>
+        <p class="card-summary"><%= summary %><%= fullText.length > maxLen ? '...' : '' %></p>
+        <% if (showTags && post.tags && post.tags.length > 0) { %>
           <div class="card-tags">
             <% post.tags.forEach(function(tag) { %>
               <span class="card-tag">#<%= tag.name %></span>

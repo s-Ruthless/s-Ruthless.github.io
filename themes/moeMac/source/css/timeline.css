@@ -1,15 +1,15 @@
-/* ====== 归档时间轴 ====== */
+/* ====== 褰掓。鏃堕棿杞?====== */
 .archive-page{padding:24px 0;}
 .archive-timeline{position:relative;padding-left:32px;}
 
-/* 竖线 */
+/* 绔栫嚎 */
 .archive-timeline::before{
   content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;
   background:linear-gradient(180deg,#c084fc 0%,#a855f7 30%,#ec4899 60%,#f472b6 100%);
   border-radius:2px;
 }
 
-/* 年份标题 */
+/* 骞翠唤鏍囬 */
 .archive-year{
   display:flex;align-items:center;gap:12px;
   margin:32px 0 16px;position:relative;
@@ -28,7 +28,7 @@
   background-clip:text;
 }
 
-/* 月份标题 */
+/* 鏈堜唤鏍囬 */
 .archive-month{
   display:flex;align-items:center;gap:10px;
   margin:20px 0 12px;position:relative;
@@ -44,7 +44,7 @@
   background:rgba(139,92,246,0.08);
 }
 
-/* 文章项 */
+/* 鏂囩珷椤?*/
 .archive-item{
   display:flex;align-items:flex-start;gap:14px;
   margin:8px 0;position:relative;
@@ -63,7 +63,7 @@
   transform:scale(1.3);
 }
 
-/* 文章卡片 */
+/* 鏂囩珷鍗＄墖 */
 .item-card{
   flex:1;
   padding:14px 18px;border-radius:14px;
@@ -81,14 +81,14 @@
   transform:translateX(6px);
 }
 
-/* 日期 */
+/* 鏃ユ湡 */
 .item-date{
   display:inline-block;font-size:12px;font-weight:500;color:#a78bfa;
   padding:2px 8px;border-radius:6px;
   background:rgba(167,139,250,0.1);margin-bottom:6px;
 }
 
-/* 标题 */
+/* 鏍囬 */
 .item-title{
   display:block;font-size:15px;font-weight:500;color:#333;
   line-height:1.5;margin-bottom:4px;
@@ -96,7 +96,7 @@
 }
 .archive-item:hover .item-title{color:#7c3aed;}
 
-/* 分类标签 */
+/* 鍒嗙被鏍囩 */
 .item-cats{
   display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;
 }
@@ -114,12 +114,12 @@
   border-color:rgba(139,92,246,0.2);
 }
 
-/* 空状态 */
+/* 绌虹姸鎬?*/
 .archive-empty{
   text-align:center;padding:40px;color:#999;font-size:14px;
 }
 
-/* ====== Center 布局 ====== */
+/* ====== Center 甯冨眬 ====== */
 .archive-center .archive-timeline{
   max-width:800px;margin:0 auto;
   padding-left:0;
@@ -128,7 +128,7 @@
   left:50%;transform:translateX(-50%);
 }
 
-/* 年份居中 */
+/* 骞翠唤灞呬腑 */
 .archive-center .archive-year{
   justify-content:center;
   margin:40px 0 20px;
@@ -138,7 +138,7 @@
   margin-right:12px;
 }
 
-/* 月份居中 */
+/* 鏈堜唤灞呬腑 */
 .archive-center .archive-month{
   justify-content:center;
   margin:24px 0 16px;
@@ -148,14 +148,16 @@
   margin-right:8px;
 }
 
-/* 文章项 - 左右交替 */
+/* 鏂囩珷椤?- 宸﹀彸浜ゆ浛 */
 .archive-center .archive-item{
-  width:calc(50% - 30px);
+  width:calc(50% - 40px);
+  max-width:320px;
+  width:calc(50% - 40px);
   margin:12px 0;
   padding:0;
 }
 
-/* 奇数项靠左 */
+/* 濂囨暟椤归潬宸?*/
 .archive-center .archive-item:nth-child(odd){
   margin-left:0;
   margin-right:auto;
@@ -169,7 +171,7 @@
   transform:translateX(-6px);
 }
 
-/* 偶数项靠右 */
+/* 鍋舵暟椤归潬鍙?*/
 .archive-center .archive-item:nth-child(even){
   margin-left:auto;
   margin-right:0;
@@ -183,7 +185,7 @@
   transform:translateX(6px);
 }
 
-/* 圆点位置 - 中间 */
+/* 鍦嗙偣浣嶇疆 - 涓棿 */
 .archive-center .item-dot{
   position:absolute;
   left:50%;
@@ -200,7 +202,7 @@
   transform:translate(0,-50%);
 }
 
-/* ====== Right 布局 ====== */
+/* ====== Right 甯冨眬 ====== */
 .archive-right .archive-timeline{
   padding-left:0;padding-right:32px;
 }

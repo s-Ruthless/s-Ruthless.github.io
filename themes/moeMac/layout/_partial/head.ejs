@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <title><%= page.title ? page.title + ' | ' + config.title : config.title %></title>
   <meta name="description" content="<%= strip_html(page.description || config.description || '') %>">
-  <link rel="stylesheet" href="<%= theme.cdn.fontawesome_css %>" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="<%= theme.cdn.aplayer_css %>" media="print" onload="this.media='all'">
-  <!-- Tailwind CSS (DaisyUI 依赖) -->
-  <script src="<%= theme.cdn.tailwind_css %>"></script>
-  <!-- DaisyUI 组件库 -->
-  <link rel="stylesheet" href="<%= theme.cdn.daisyui_css %>">
+  <% var cdnBase = theme.cdn.base_url || ''; %>
+  <link rel="stylesheet" href="<%= cdnBase + theme.cdn.fontawesome_css %>" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= cdnBase + theme.cdn.aplayer_css %>" media="print" onload="this.media='all'">
+  <script src="<%= cdnBase + theme.cdn.tailwind_css %>"></script>
+  <link rel="stylesheet" href="<%= cdnBase + theme.cdn.daisyui_css %>">
   <%- css('css/style.css') %>
 </head>

@@ -16,26 +16,23 @@ avatar_text: "屿"
 # ====== 主题色 ======
 accent_color: "#a78bfa"
 
-# ====== 外部资源 CDN（可替换为自建/镜像地址）======
-# 将第三方资源地址集中配置，防止 CDN 挂掉时无法使用
-# 可下载到本地 source/lib/ 目录后改为本地路径，如 /lib/fontawesome/css/all.min.css
+# ====== 静态资源 CDN ======
+# 所有第三方库统一放在 source/lib/ 目录下，部署时整个 lib/ 上传到 CDN
+# 只需修改 base_url 即可一键切换 CDN 源，留空则使用本地 /lib/ 路径
 cdn:
-  # Font Awesome 图标库
-  fontawesome_css: "https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  # Tailwind CSS（DaisyUI 依赖）
-  tailwind_css: "https://cdn.tailwindcss.com"
-  # DaisyUI 组件库 CSS（基于 Tailwind CSS）
-  daisyui_css: "https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css"
-  # GSAP 动画库
-  gsap_js: "https://cdn.bootcdn.net/ajax/libs/gsap/3.12.5/gsap.min.js"
-  # GSAP ScrollTrigger 滚动触发动画插件
-  gsap_scrolltrigger_js: "https://cdn.bootcdn.net/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
-  # APlayer 音乐播放器 CSS
-  aplayer_css: "https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css"
-  # APlayer 音乐播放器 JS
-  aplayer_js: "https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"
-  # MetingJS（网易云歌单支持，解决 CORS 问题）
-  meting_js: "https://cdn.bootcdn.net/ajax/libs/meting/2.0.1/Meting.min.js"
+  # CDN 基础地址（末尾不加 /），例如 https://your-cdn.com/lib
+  # 留空表示使用站点本地 /lib/ 目录
+  base_url: ""
+  # 以下是 lib/ 内的相对路径（一般不需要修改）
+  fontawesome_css: "/lib/fontawesome/css/all.min.css"
+  fontawesome_webfonts: "/lib/fontawesome/webfonts"
+  tailwind_css: "/lib/tailwindcss/tailwindcss.js"
+  daisyui_css: "/lib/daisyui/full.min.css"
+  gsap_js: "/lib/gsap/gsap.min.js"
+  gsap_scrolltrigger_js: "/lib/gsap/ScrollTrigger.min.js"
+  aplayer_css: "/lib/aplayer/APlayer.min.css"
+  aplayer_js: "/lib/aplayer/APlayer.min.js"
+  meting_js: "/lib/meting/Meting.min.js"
 
 # ====== 一言 / 每日一句 ======
 # hitokoto: true 启用一言 API，首页实时获取；false 使用下方 sentences 列表随机显示

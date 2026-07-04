@@ -78,7 +78,7 @@ recent_posts_count: 5
 
 # ====== 归档页 ======
 # archive_timeline_layout: 时间轴布局方向，可选 center / left / right
-archive_timeline_layout: "left"
+archive_timeline_layout: "center"
 
 # ====== 友链 ======
 friends:

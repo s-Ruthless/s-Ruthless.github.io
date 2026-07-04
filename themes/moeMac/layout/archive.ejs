@@ -1,12 +1,13 @@
 <%
   var posts = site.posts.sort('date', -1);
+  var layout = theme.archive_timeline_layout || 'left';
 %>
 <div class="page-container">
   <div class="page-header">
     <h2><i class="fas fa-box-archive"></i> 归档 <span class="archive-count"><%= site.posts.length %></span></h2>
     <p class="archive-subtitle">共 <%= site.posts.length %> 篇文章</p>
   </div>
-  <div class="page-body archive-page">
+  <div class="page-body archive-page archive-<%= layout %>">
     <div class="archive-timeline">
       <% var prevYear = ''; %>
       <% var prevYM = ''; %>

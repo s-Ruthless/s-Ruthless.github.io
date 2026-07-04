@@ -118,3 +118,81 @@
 .archive-empty{
   text-align:center;padding:40px;color:#999;font-size:14px;
 }
+
+/* ====== Center 布局 ====== */
+.archive-center .archive-timeline{
+  max-width:700px;margin:0 auto;
+  padding-left:0;
+}
+.archive-center .archive-timeline::before{
+  left:50%;transform:translateX(-50%);
+}
+.archive-center .archive-year{
+  justify-content:center;
+}
+.archive-center .year-dot{
+  left:50%;transform:translateX(-50%);
+}
+.archive-center .archive-month{
+  justify-content:center;
+}
+.archive-center .month-dot{
+  left:50%;transform:translateX(-50%);
+}
+.archive-center .archive-item{
+  width:50%;
+  margin-left:auto;
+  padding-left:24px;
+}
+.archive-center .archive-item:nth-child(odd){
+  margin-left:0;
+  margin-right:auto;
+  padding-left:0;
+  padding-right:24px;
+  flex-direction:row-reverse;
+  text-align:right;
+}
+.archive-center .archive-item:nth-child(odd) .item-card{
+  margin-left:auto;
+}
+.archive-center .archive-item:nth-child(odd):hover .item-card{
+  transform:translateX(-6px);
+}
+.archive-center .item-dot{
+  left:auto;right:-26px;
+}
+.archive-center .archive-item:nth-child(odd) .item-dot{
+  right:auto;left:-26px;
+}
+
+/* ====== Right 布局 ====== */
+.archive-right .archive-timeline{
+  padding-left:0;padding-right:32px;
+}
+.archive-right .archive-timeline::before{
+  left:auto;right:11px;
+}
+.archive-right .archive-year{
+  flex-direction:row-reverse;
+}
+.archive-right .year-dot{
+  left:auto;right:-32px;
+}
+.archive-right .archive-month{
+  flex-direction:row-reverse;
+}
+.archive-right .month-dot{
+  left:auto;right:-28px;
+}
+.archive-right .archive-item{
+  flex-direction:row-reverse;
+}
+.archive-right .item-dot{
+  left:auto;right:-26px;
+}
+.archive-right .item-card{
+  text-align:right;
+}
+.archive-right .archive-item:hover .item-card{
+  transform:translateX(-6px);
+}

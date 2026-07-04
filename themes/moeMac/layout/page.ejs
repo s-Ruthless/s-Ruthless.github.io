@@ -1,6 +1,14 @@
+<%
+  var iconMap = {
+    '关于': 'fas fa-circle-info',
+    '友链': 'fas fa-link',
+    '豆瓣': 'fas fa-book'
+  };
+  var pageIcon = iconMap[page.title] || 'fas fa-file-lines';
+%>
 <div class="page-container">
   <div class="page-header">
-    <h2><%= page.title || '页面' %></h2>
+    <h2><i class="<%= pageIcon %>"></i> <%= page.title || '页面' %></h2>
   </div>
   <div class="page-body">
     <div class="article-content"><%- page.content %></div>

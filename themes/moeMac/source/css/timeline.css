@@ -121,48 +121,83 @@
 
 /* ====== Center 布局 ====== */
 .archive-center .archive-timeline{
-  max-width:700px;margin:0 auto;
+  max-width:800px;margin:0 auto;
   padding-left:0;
 }
 .archive-center .archive-timeline::before{
   left:50%;transform:translateX(-50%);
 }
+
+/* 年份居中 */
 .archive-center .archive-year{
   justify-content:center;
+  margin:40px 0 20px;
 }
 .archive-center .year-dot{
-  left:50%;transform:translateX(-50%);
+  position:relative;left:auto;
+  margin-right:12px;
 }
+
+/* 月份居中 */
 .archive-center .archive-month{
   justify-content:center;
+  margin:24px 0 16px;
 }
 .archive-center .month-dot{
-  left:50%;transform:translateX(-50%);
+  position:relative;left:auto;
+  margin-right:8px;
 }
+
+/* 文章项 - 左右交替 */
 .archive-center .archive-item{
-  width:50%;
-  margin-left:auto;
-  padding-left:24px;
+  width:calc(50% - 30px);
+  margin:12px 0;
+  padding:0;
 }
+
+/* 奇数项靠左 */
 .archive-center .archive-item:nth-child(odd){
   margin-left:0;
   margin-right:auto;
-  padding-left:0;
-  padding-right:24px;
-  flex-direction:row-reverse;
-  text-align:right;
+  text-align:left;
 }
 .archive-center .archive-item:nth-child(odd) .item-card{
   margin-left:auto;
+  margin-right:0;
 }
 .archive-center .archive-item:nth-child(odd):hover .item-card{
   transform:translateX(-6px);
 }
+
+/* 偶数项靠右 */
+.archive-center .archive-item:nth-child(even){
+  margin-left:auto;
+  margin-right:0;
+  text-align:right;
+}
+.archive-center .archive-item:nth-child(even) .item-card{
+  margin-left:0;
+  margin-right:auto;
+}
+.archive-center .archive-item:nth-child(even):hover .item-card{
+  transform:translateX(6px);
+}
+
+/* 圆点位置 - 中间 */
 .archive-center .item-dot{
-  left:auto;right:-26px;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:10px;height:10px;
 }
 .archive-center .archive-item:nth-child(odd) .item-dot{
-  right:auto;left:-26px;
+  right:-30px;left:auto;
+  transform:translate(0,-50%);
+}
+.archive-center .archive-item:nth-child(even) .item-dot{
+  left:-30px;
+  transform:translate(0,-50%);
 }
 
 /* ====== Right 布局 ====== */
@@ -176,19 +211,22 @@
   flex-direction:row-reverse;
 }
 .archive-right .year-dot{
-  left:auto;right:-32px;
+  position:relative;left:auto;
+  margin-left:12px;
 }
 .archive-right .archive-month{
   flex-direction:row-reverse;
 }
 .archive-right .month-dot{
-  left:auto;right:-28px;
+  position:relative;left:auto;
+  margin-left:8px;
 }
 .archive-right .archive-item{
   flex-direction:row-reverse;
 }
 .archive-right .item-dot{
-  left:auto;right:-26px;
+  position:relative;left:auto;
+  margin-left:12px;
 }
 .archive-right .item-card{
   text-align:right;

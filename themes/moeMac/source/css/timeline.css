@@ -134,16 +134,18 @@
   justify-content:center;
   margin:40px 0 20px;
   position:relative;
+  padding-left:30px;  /* 给圆点留空间 */
 }
 .archive-center .year-dot{
   position:absolute;
   left:50%;        /* 定位到容器中间 */
   top:50%;         /* 垂直居中 */
-  transform:translate(-50%,-50%);  /* 精确居中 */
+  transform:translate(-100%,-50%);  /* 圆点右侧对齐到50%位置 */
+  margin-right:8px;
   width:24px;height:24px;
 }
 .archive-center .year-text{
-  margin-left:20px;  /* 给圆点留空间 */
+  /* 不需要额外 margin，因为 padding-left 已经留空间 */
 }
 
 /* 月份居中 */
@@ -151,16 +153,18 @@
   justify-content:center;
   margin:24px 0 16px;
   position:relative;
+  padding-left:24px;  /* 给圆点留空间 */
 }
 .archive-center .month-dot{
   position:absolute;
   left:50%;        /* 定位到容器中间 */
   top:50%;         /* 垂直居中 */
-  transform:translate(-50%,-50%);  /* 精确居中 */
+  transform:translate(-100%,-50%);  /* 圆点右侧对齐到50%位置 */
+  margin-right:6px;
   width:14px;height:14px;
 }
 .archive-center .month-text{
-  margin-left:16px;  /* 给圆点留空间 */
+  /* 不需要额外 margin */
 }
 
 /* 文章项 - 左右交替 */

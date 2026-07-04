@@ -1,28 +1,8 @@
-<% var useImageAvatar = theme.avatar_type === 'image' && theme.avatar_url; %>
 <div class="page-container">
-  <div class="about-window">
-    <div class="win-head">
-      <div class="win-name">关于我</div>
-    </div>
-    <div class="win-body">
-      <div class="about-header">
-        <div class="hero-ava">
-          <% if (useImageAvatar) { %>
-            <img src="<%= theme.avatar_url %>" alt="avatar" class="hero-ava-img" onerror="this.parentElement.innerHTML='<%= theme.avatar_text || '我' %>'">
-          <% } else { %>
-            <%= theme.avatar_text || '我' %>
-          <% } %>
-        </div>
-        <h2><%= theme.blog_name || config.title %></h2>
-        <p class="about-desc"><%- theme.blog_description || '' %></p>
-      </div>
-      <div class="about-content article-content">
-        <% if (page.content) { %>
-          <%- page.content %>
-        <% } else { %>
-          <p>这个人很懒，什么都没有写～</p>
-        <% } %>
-      </div>
-    </div>
+  <div class="page-header">
+    <h2><%= page.title || '关于' %></h2>
+  </div>
+  <div class="page-body">
+    <div class="article-content"><%- page.content %></div>
   </div>
 </div>

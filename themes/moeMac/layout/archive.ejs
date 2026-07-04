@@ -4,13 +4,11 @@
   var wrapClass = 'timeline-' + layoutMode + '-wrap';
   if (layoutMode === 'center') wrapClass = 'timeline-center';
 %>
-
 <div class="page-container">
-  <div class="archive-page <%= wrapClass %>">
-    <div class="archive-header">
-      <h2><i class="fas fa-folder-open"></i> 归档 · 共 <%= site.posts.length %> 篇</h2>
-    </div>
-
+  <div class="page-header">
+    <h2><i class="fas fa-folder-open"></i> 归档 · 共 <%= site.posts.length %> 篇</h2>
+  </div>
+  <div class="page-body archive-page <%= wrapClass %>">
     <div class="timeline">
       <% var idx = 0; %>
       <% var prevYM = ''; %>
@@ -30,7 +28,6 @@
           <% prevYM = ym; %>
           <div class="timeline-month"><%= parseInt(m) %>月</div>
         <% } %>
-
         <div class="timeline-item timeline-<%= side %>">
           <div class="timeline-dot"></div>
           <div class="timeline-card">
@@ -47,7 +44,6 @@
         </div>
         <% idx++; %>
       <% }); %>
-
       <% if (site.posts.length === 0) { %>
         <div class="empty-hint" style="text-align:center;">还没有文章哦～</div>
       <% } %>

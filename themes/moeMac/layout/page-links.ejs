@@ -1,11 +1,11 @@
 <div class="page-container">
-  <div class="links-window">
-    <div class="win-head">
-      <div class="win-name">友情链接</div>
-    </div>
-    <div class="win-body">
+  <div class="page-header">
+    <h2><%= page.title || '友链' %></h2>
+  </div>
+  <div class="page-body">
+    <% var friends = theme.friends || []; %>
+    <% if (friends.length > 0) { %>
       <div class="links-grid">
-        <% var friends = theme.friends || []; %>
         <% friends.forEach(function(f) { %>
           <a href="<%= f.url %>" target="_blank" rel="noopener" class="link-card">
             <img src="<%= f.avatar %>" alt="<%= f.name %>" class="link-avatar" onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(f.name) %>&background=random'">
@@ -15,13 +15,8 @@
             </div>
           </a>
         <% }); %>
-        <% if (friends.length === 0) { %>
-          <div class="empty-hint">暂无友链，欢迎交换链接～</div>
-        <% } %>
       </div>
-      <% if (page.content) { %>
-        <div class="about-content article-content" style="margin-top:24px;"><%- page.content %></div>
-      <% } %>
-    </div>
+    <% } %>
+    <div class="article-content"><%- page.content %></div>
   </div>
 </div>

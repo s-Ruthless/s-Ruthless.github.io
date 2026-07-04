@@ -2,21 +2,19 @@
   var cat = page.category;
   var posts = page.posts.sort('date', -1);
 %>
-
 <div class="page-container">
-  <div class="app-window page-window" style="position:relative;left:auto;top:auto;transform:none;width:92%;max-width:700px;margin:40px auto;">
-    <div class="win-head">
-      <div class="win-name">分类 · <%= cat %></div>
-    </div>
-    <div class="win-body">
-      <% posts.each(function(post) { %>
-        <div class="post-list-item">
-          <h3 class="ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></h3>
-          <div class="post-meta">
-            <i class="fas fa-calendar-days"></i> <%= date(post.date, 'YYYY-MM-DD') %>
-          </div>
-        </div>
-      <% }); %>
-    </div>
+  <div class="page-header">
+    <h2><i class="fas fa-folder"></i> 分类 · <%= cat %></h2>
+  </div>
+  <div class="page-body">
+    <% posts.each(function(post) { %>
+      <div class="post-list-item">
+        <h3 class="ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></h3>
+        <div class="post-meta"><i class="fas fa-calendar-days"></i> <%= date(post.date, 'YYYY-MM-DD') %></div>
+      </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="empty-hint">该分类下还没有文章～</div>
+    <% } %>
   </div>
 </div>

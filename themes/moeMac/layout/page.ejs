@@ -1,10 +1,8 @@
 <div class="page-container">
-  <div class="about-window">
-    <div class="win-head">
-      <div class="win-name"><%= page.title || '页面' %></div>
-    </div>
-    <div class="win-body">
-      <div class="article-content"><%- page.content %></div>
-    </div>
+  <div class="page-header">
+    <h2><%= page.title || '页面' %></h2>
+  </div>
+  <div class="page-body">
+    <div class="article-content"><%- page.content %></div>
   </div>
 </div>

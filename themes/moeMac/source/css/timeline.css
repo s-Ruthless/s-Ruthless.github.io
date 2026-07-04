@@ -40,67 +40,24 @@
 .item-cat i{font-size:10px;}
 .archive-item:hover .item-cat{background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.2);}
 
-/* 空状态 */
 .archive-empty{text-align:center;padding:40px;color:#999;font-size:14px;}
 
 /* ====== Center 布局 ====== */
 .archive-center .archive-timeline{max-width:600px;margin:0 auto;padding-left:0;position:relative;}
 .archive-center .archive-timeline::before{left:50%;transform:translateX(-50%);}
 
-/* 年份居中 */
-.archive-center .archive-year{
-  display:flex;align-items:center;
-  justify-content:center;
-  margin:40px 0 20px;
-  position:relative;
-}
-.archive-center .year-dot{
-  position:absolute;
-  left:calc(50% - 12px);  /* 50%减去圆点半径 */
-  top:50%;
-  transform:translateY(-50%);
-  width:24px;height:24px;
-  background:linear-gradient(135deg,#8b5cf6,#a855f7);
-  border:3px solid #fff;border-radius:50%;
-  box-shadow:0 0 0 3px rgba(139,92,246,0.2),0 4px 12px rgba(139,92,246,0.3);
-  z-index:2;
-}
-.archive-center .year-text{
-  font-size:28px;font-weight:700;
-  background:linear-gradient(135deg,#8b5cf6,#ec4899);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-  padding-left:20px;  /* 给圆点留空间 */
-}
+/* 年份居中 - 隐藏圆点，只显示文字 */
+.archive-center .archive-year{justify-content:center;margin:40px 0 20px;}
+.archive-center .year-dot{display:none;}
+.archive-center .year-text{text-align:center;}
 
-/* 月份居中 */
-.archive-center .archive-month{
-  display:flex;align-items:center;
-  justify-content:center;
-  margin:24px 0 16px;
-  position:relative;
-}
-.archive-center .month-dot{
-  position:absolute;
-  left:calc(50% - 7px);  /* 50%减去圆点半径 */
-  top:50%;
-  transform:translateY(-50%);
-  width:14px;height:14px;
-  background:#a855f7;border:2px solid #fff;border-radius:50%;
-  box-shadow:0 0 0 2px rgba(168,85,247,0.15);
-  z-index:2;
-}
-.archive-center .month-text{
-  font-size:15px;font-weight:600;color:#7c3aed;
-  padding:4px 12px 4px 24px;border-radius:8px;
-  background:rgba(139,92,246,0.08);
-}
+/* 月份居中 - 隐藏圆点，只显示文字 */
+.archive-center .archive-month{justify-content:center;margin:24px 0 16px;}
+.archive-center .month-dot{display:none;}
+.archive-center .month-text{text-align:center;}
 
-/* 文章项 - 左右交替 */
-.archive-center .archive-item{
-  width:calc(50% - 30px);
-  margin:12px 0;padding:0;position:relative;
-}
+/* 文章项 */
+.archive-center .archive-item{width:calc(50% - 30px);margin:12px 0;padding:0;position:relative;}
 .archive-center .archive-item:nth-child(odd){margin-left:0;margin-right:auto;text-align:left;}
 .archive-center .archive-item:nth-child(odd) .item-card{margin-left:auto;margin-right:0;}
 .archive-center .archive-item:nth-child(odd):hover .item-card{transform:translateX(-6px);}

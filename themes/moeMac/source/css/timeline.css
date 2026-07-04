@@ -1,4 +1,4 @@
-/* ====== 归档时间轴 ====== */
+/* ====== 褰掓。鏃堕棿杞?====== */
 .archive-page{padding:24px 0;overflow:hidden;}
 .archive-timeline{position:relative;padding-left:32px;}
 .archive-timeline::before{
@@ -7,24 +7,24 @@
   border-radius:2px;
 }
 
-/* 年份 */
+/* 骞翠唤 */
 .archive-year{display:flex;align-items:center;gap:12px;margin:32px 0 16px;position:relative;}
 .archive-year:first-child{margin-top:0;}
 .year-dot{position:absolute;left:-32px;width:24px;height:24px;background:linear-gradient(135deg,#8b5cf6,#a855f7);border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px rgba(139,92,246,0.2),0 4px 12px rgba(139,92,246,0.3);}
 .year-text{font-size:28px;font-weight:700;background:linear-gradient(135deg,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 
-/* 月份 */
+/* 鏈堜唤 */
 .archive-month{display:flex;align-items:center;gap:10px;margin:20px 0 12px;position:relative;}
 .month-dot{position:absolute;left:-28px;width:14px;height:14px;background:#a855f7;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(168,85,247,0.15);}
 .month-text{font-size:15px;font-weight:600;color:#7c3aed;padding:4px 12px;border-radius:8px;background:rgba(139,92,246,0.08);}
 
-/* 文章项 */
+/* 鏂囩珷椤?*/
 .archive-item{display:flex;align-items:flex-start;gap:14px;margin:8px 0;position:relative;cursor:pointer;}
 .item-dot{position:absolute;left:-26px;top:16px;width:8px;height:8px;background:#c084fc;border-radius:50%;transition:all 0.25s ease;flex-shrink:0;}
 .archive-item:hover .item-dot{background:#8b5cf6;box-shadow:0 0 8px rgba(139,92,246,0.5);transform:scale(1.3);}
 
-/* 文章卡片 */
-.item-card{flex:1;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.5);box-shadow:0 2px 12px rgba(0,0,0,0.04);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);max-width:100%;}
+/* 鏂囩珷鍗＄墖 */
+.item-card{flex:1;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.5);box-shadow:0 2px 12px rgba(0,0,0,0.04);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);max-width:500px;}
 .archive-item:hover .item-card{background:rgba(255,255,255,0.6);border-color:rgba(139,92,246,0.2);box-shadow:0 8px 30px rgba(0,0,0,0.08),0 0 0 1px rgba(139,92,246,0.1);transform:translateX(6px);}
 
 .item-date{display:inline-block;font-size:12px;font-weight:500;color:#a78bfa;padding:2px 8px;border-radius:6px;background:rgba(167,139,250,0.1);margin-bottom:6px;}
@@ -38,11 +38,11 @@
 
 .archive-empty{text-align:center;padding:40px;color:#999;font-size:14px;}
 
-/* ====== Center 布局 ====== */
+/* ====== Center 甯冨眬 ====== */
 .archive-center .archive-timeline{max-width:600px;margin:0 auto;padding-left:0;position:relative;}
 .archive-center .archive-timeline::before{left:50%;transform:translateX(-50%);}
 
-/* 年份 - 圆点在上，文字在下，整体居中 */
+/* 骞翠唤 - 鍦嗙偣鍦ㄤ笂锛屾枃瀛楀湪涓嬶紝鏁翠綋灞呬腑 */
 .archive-center .archive-year{
   flex-direction:column;
   align-items:center;
@@ -51,14 +51,15 @@
   gap:8px;
 }
 .archive-center .year-dot{
-  position:relative;left:auto;
-  margin:0;
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
 }
 .archive-center .year-text{
   text-align:center;
 }
 
-/* 月份 - 圆点在上，文字在下，整体居中 */
+/* 鏈堜唤 - 鍦嗙偣鍦ㄤ笂锛屾枃瀛楀湪涓嬶紝鏁翠綋灞呬腑 */
 .archive-center .archive-month{
   flex-direction:column;
   align-items:center;
@@ -67,14 +68,15 @@
   gap:6px;
 }
 .archive-center .month-dot{
-  position:relative;left:auto;
-  margin:0;
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
 }
 .archive-center .month-text{
   text-align:center;
 }
 
-/* 文章项 */
+/* 鏂囩珷椤?*/
 .archive-center .archive-item{width:calc(50% - 30px);margin:12px 0;padding:0;position:relative;}
 .archive-center .archive-item:nth-child(odd){margin-left:0;margin-right:auto;text-align:left;}
 .archive-center .archive-item:nth-child(odd) .item-card{margin-left:auto;margin-right:0;}
@@ -87,7 +89,7 @@
 .archive-center .archive-item:nth-child(odd) .item-dot{left:auto;right:-20px;}
 .archive-center .archive-item:nth-child(even) .item-dot{left:-20px;right:auto;}
 
-/* ====== Right 布局 ====== */
+/* ====== Right 甯冨眬 ====== */
 .archive-right .archive-timeline{padding-left:0;padding-right:32px;}
 .archive-right .archive-timeline::before{left:auto;right:11px;}
 .archive-right .archive-year{flex-direction:row-reverse;}

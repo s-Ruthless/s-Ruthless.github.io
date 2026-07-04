@@ -27,14 +27,10 @@
 .item-card{flex:1;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.5);box-shadow:0 2px 12px rgba(0,0,0,0.04);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);max-width:100%;}
 .archive-item:hover .item-card{background:rgba(255,255,255,0.6);border-color:rgba(139,92,246,0.2);box-shadow:0 8px 30px rgba(0,0,0,0.08),0 0 0 1px rgba(139,92,246,0.1);transform:translateX(6px);}
 
-/* 日期 */
 .item-date{display:inline-block;font-size:12px;font-weight:500;color:#a78bfa;padding:2px 8px;border-radius:6px;background:rgba(167,139,250,0.1);margin-bottom:6px;}
-
-/* 标题 */
 .item-title{display:block;font-size:15px;font-weight:500;color:#333;line-height:1.5;margin-bottom:4px;transition:color 0.2s ease;}
 .archive-item:hover .item-title{color:#7c3aed;}
 
-/* 分类标签 */
 .item-cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
 .item-cat{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#8b5cf6;padding:3px 10px;border-radius:8px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.1);transition:all 0.2s ease;}
 .item-cat i{font-size:10px;}
@@ -46,15 +42,37 @@
 .archive-center .archive-timeline{max-width:600px;margin:0 auto;padding-left:0;position:relative;}
 .archive-center .archive-timeline::before{left:50%;transform:translateX(-50%);}
 
-/* 年份居中 - 隐藏圆点，只显示文字 */
-.archive-center .archive-year{justify-content:center;margin:40px 0 20px;}
-.archive-center .year-dot{display:none;}
-.archive-center .year-text{text-align:center;}
+/* 年份 - 圆点在上，文字在下，整体居中 */
+.archive-center .archive-year{
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  margin:40px 0 20px;
+  gap:8px;
+}
+.archive-center .year-dot{
+  position:relative;left:auto;
+  margin:0;
+}
+.archive-center .year-text{
+  text-align:center;
+}
 
-/* 月份居中 - 隐藏圆点，只显示文字 */
-.archive-center .archive-month{justify-content:center;margin:24px 0 16px;}
-.archive-center .month-dot{display:none;}
-.archive-center .month-text{text-align:center;}
+/* 月份 - 圆点在上，文字在下，整体居中 */
+.archive-center .archive-month{
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  margin:24px 0 16px;
+  gap:6px;
+}
+.archive-center .month-dot{
+  position:relative;left:auto;
+  margin:0;
+}
+.archive-center .month-text{
+  text-align:center;
+}
 
 /* 文章项 */
 .archive-center .archive-item{width:calc(50% - 30px);margin:12px 0;padding:0;position:relative;}
@@ -65,7 +83,6 @@
 .archive-center .archive-item:nth-child(even) .item-card{margin-left:0;margin-right:auto;}
 .archive-center .archive-item:nth-child(even):hover .item-card{transform:translateX(6px);}
 
-/* 文章圆点 */
 .archive-center .item-dot{position:absolute;top:50%;transform:translateY(-50%);width:10px;height:10px;}
 .archive-center .archive-item:nth-child(odd) .item-dot{left:auto;right:-20px;}
 .archive-center .archive-item:nth-child(even) .item-dot{left:-20px;right:auto;}

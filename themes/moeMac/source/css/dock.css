@@ -1,0 +1,75 @@
+/* ====== Dock 导航栏 ====== */
+/* ====== Dock ====== */
+.dock-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  display:flex;justify-content:center;align-items:flex-end;
+  padding-bottom:10px;pointer-events:none;z-index:9999;
+}
+.dock-bar-inner{
+  display:flex;align-items:flex-end;gap:0;
+  padding:5px 12px 6px;pointer-events:auto;
+  backdrop-filter:blur(50px) saturate(1.8);-webkit-backdrop-filter:blur(50px) saturate(1.8);
+  background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.45);
+  border-radius:18px;
+  box-shadow:0 -2px 30px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.5);
+  position:relative;
+}
+.dock-item{
+  position:relative;width:48px;display:flex;flex-direction:column;align-items:center;
+  padding:4px 0 0;cursor:pointer;pointer-events:auto;
+}
+.dock-item-inner{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:42px;height:42px;border-radius:12px;
+  transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1),margin 0.22s cubic-bezier(0.34,1.56,0.64,1),background 0.2s ease;
+  transform-origin:bottom center;
+}
+.dock-item:hover .dock-item-inner{
+  transform:translateY(-14px) scale(1.45);background:rgba(167,139,250,0.1);margin:0 6px;
+}
+.dock-item:active .dock-item-inner{transform:translateY(-6px) scale(1.15);}
+.dock-icon{font-size:20px;color:#555;transition:color 0.2s ease,filter 0.2s ease;}
+.dock-item.active .dock-icon{color:#7c3aed;filter:drop-shadow(0 2px 8px rgba(124,58,237,0.3));}
+.dock-item:hover .dock-icon{color:#8b5cf6;}
+.dock-dot{display:none;}
+.dock-text{
+  position:absolute;top:-32px;left:50%;transform:translateX(-50%);
+  padding:4px 10px;border-radius:8px;font-size:12px;color:#fff;white-space:nowrap;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;transition:opacity 0.2s ease;
+}
+.dock-item:hover .dock-text{opacity:1;}
+
+/* dock mini zone */
+.dock-mini-zone{
+  position:absolute;left:100%;bottom:0;
+  display:flex;align-items:flex-end;gap:0;
+  padding:5px 10px 6px;margin-left:8px;
+  backdrop-filter:blur(50px) saturate(1.8);-webkit-backdrop-filter:blur(50px) saturate(1.8);
+  background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.45);
+  border-radius:18px;
+  box-shadow:0 -2px 30px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.5);
+  opacity:0;transform:scale(0.8);pointer-events:none;visibility:hidden;
+  transition:opacity 0.3s ease,transform 0.35s cubic-bezier(0.34,1.56,0.64,1),visibility 0s linear 0.35s;
+  transform-origin:left bottom;
+}
+.dock-mini-zone.visible{opacity:1;transform:scale(1);pointer-events:auto;visibility:visible;transition:opacity 0.3s ease,transform 0.35s cubic-bezier(0.34,1.56,0.64,1),visibility 0s;}
+
+/* dock animations */
+@keyframes dock-item-pop{
+  0%{transform:scale(0) translateY(16px);opacity:0;}
+  50%{transform:scale(1.25) translateY(-6px);opacity:1;}
+  75%{transform:scale(0.92) translateY(2px);opacity:1;}
+  100%{transform:scale(1) translateY(0);opacity:1;}
+}
+@keyframes dock-item-leave{
+  0%{transform:scale(1) translateY(0);opacity:1;}
+  100%{transform:scale(0) translateY(16px);opacity:0;}
+}
+.dock-minimized-item{animation:dock-item-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;}
+.dock-minimized-item.dock-item-leave{animation:dock-item-leave 0.3s cubic-bezier(0.4,0,0.2,1) forwards;pointer-events:none;}
+
+/* fade transitions */
+#ajax-container{flex:1;width:100%;}
+.fade-out{opacity:0;transition:opacity 0.25s ease;}
+.fade-in{opacity:1;transition:opacity 0.3s ease;}

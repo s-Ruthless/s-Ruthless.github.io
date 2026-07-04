@@ -1,1 +1,61 @@
-C:\Users\SJL
+/* ====== 首页窗口组件 ====== */
+/* hero */
+.hero-ava{
+  width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:28px;font-weight:600;color:#8b5cf6;
+  background:linear-gradient(135deg,#f0e6ff,#e0f0ff);margin:0 auto 12px;
+  overflow:hidden;flex-shrink:0;
+}
+.hero-ava-img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.hero-text{text-align:center;}
+.hero-text h2{font-size:22px;font-weight:600;color:#222;margin-bottom:8px;letter-spacing:0.5px;}
+.hero-text p{font-size:14px;color:#555;line-height:1.7;margin-bottom:12px;}
+.hero-hitokoto{font-size:13px;color:#777;line-height:1.6;padding:8px 12px;background:rgba(167,139,250,0.06);border-radius:10px;margin-top:40px;}
+.hero-hitokoto-text{color:#555;}
+.hero-hitokoto-from{font-size:11px;color:#aaa;}
+
+/* posts */
+.post-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:12px;
+  transition:background 0.2s ease;cursor:pointer;
+}
+.post-item:hover{background:rgba(167,139,250,0.08);}
+.post-item .post-dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#a78bfa,#ec4899);
+}
+.post-item .post-info{flex:1;min-width:0;}
+.post-item .post-title{font-size:13px;font-weight:400;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.post-item .post-date{font-size:11px;color:#999;margin-top:2px;}
+
+/* categories */
+.cat-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 12px;border-radius:10px;
+  transition:background 0.2s ease;cursor:pointer;
+}
+.cat-item:hover{background:rgba(167,139,250,0.08);}
+.cat-name{font-size:13px;color:#444;}
+.cat-count{
+  font-size:11px;color:#999;
+  background:rgba(167,139,250,0.1);padding:2px 8px;border-radius:8px;
+}
+
+/* tags cloud */
+.tag-cloud{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0;}
+.tag-cloud .tag{
+  padding:4px 10px;border-radius:10px;font-size:12px;
+  background:rgba(167,139,250,0.08);color:#666;
+  transition:all 0.2s ease;cursor:pointer;
+}
+.tag-cloud .tag:hover{background:rgba(167,139,250,0.18);color:#8b5cf6;}
+
+/* data */
+.data-item{
+  display:flex;justify-content:space-between;padding:6px 0;
+  border-bottom:1px solid rgba(0,0,0,0.04);font-size:13px;
+}
+.data-item:last-child{border-bottom:none;}
+.data-label{color:#666;}
+.data-value{color:#333;font-weight:400;}

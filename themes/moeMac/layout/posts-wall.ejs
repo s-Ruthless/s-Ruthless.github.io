@@ -5,13 +5,13 @@
 
 <div class="page-container">
   <div class="page-header">
-    <h2><i class="fas fa-newspaper"></i> 全部文章 · <%= site.posts.length %> 篇</h2>
+    <h2><i class="fas fa-newspaper"></i> 全部文章 · <span class="badge badge-primary badge-sm"><%= site.posts.length %></span> 篇</h2>
   </div>
   <div class="page-body">
-    <div class="wall-filter">
-      <button class="filter-btn active" data-cat="all">全部</button>
+    <div class="flex flex-wrap gap-2 justify-center mb-6">
+      <button class="filter-btn btn btn-xs btn-primary" data-cat="all">全部</button>
       <% cats.sort('name').each(function(cat) { %>
-        <button class="filter-btn" data-cat="<%= cat.name %>"><%= cat.name %> (<%= cat.posts.length %>)</button>
+        <button class="filter-btn btn btn-xs btn-ghost" data-cat="<%= cat.name %>"><%= cat.name %> <span class="badge badge-xs"><%= cat.posts.length %></span></button>
       <% }); %>
     </div>
     <div class="wall-grid" id="posts-wall-grid">
@@ -29,16 +29,16 @@
       <div class="wall-card ajax-link" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" style="--card-bg:<%= ['#fce4ec','#e3f2fd','#fff3e0','#e8f5e9','#f3e5f5','#e0f7fa','#fff8e1','#efebe9'][idx % 8] %>;">
         <div class="card-top">
           <% if (catName) { %>
-            <span class="card-cat"><%= catName %></span>
+            <span class="card-cat badge badge-xs"><%= catName %></span>
           <% } %>
-          <span class="card-date"><%= date(post.date, 'YYYY-MM-DD') %></span>
+          <span class="card-date text-xs opacity-40"><%= date(post.date, 'YYYY-MM-DD') %></span>
         </div>
         <h3 class="card-title"><%= post.title %></h3>
         <p class="card-summary"><%= summary %><%= fullText.length > maxLen ? '...' : '' %></p>
         <% if (showTags && post.tags && post.tags.length > 0) { %>
-          <div class="card-tags">
+          <div class="card-tags flex gap-1 flex-wrap mt-2">
             <% post.tags.forEach(function(tag) { %>
-              <span class="card-tag">#<%= tag.name %></span>
+              <span class="badge badge-ghost badge-xs">#<%= tag.name %></span>
             <% }); %>
           </div>
         <% } %>
@@ -47,7 +47,8 @@
     <% }); %>
 
     <% if (site.posts.length === 0) { %>
-      <div class="empty-hint" style="grid-column:1/-1;">还没有文章哦，快去写一篇吧～</div>
+      <div class="text-center py-10 opacity-50" style="grid-column:1/-1;">还没有文章哦，快去写一篇吧～</div>
     <% } %>
+    </div>
   </div>
 </div>

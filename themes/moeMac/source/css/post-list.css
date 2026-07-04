@@ -1,0 +1,11 @@
+/* ====== 文章列表页 ====== */
+.post-window{max-width:700px;margin:0 auto;}
+.post-window .win-head{padding:12px 0;}
+.post-window .win-name{font-size:20px;}
+.post-list-item h3{font-size:14px;font-weight:500;color:#333;}
+.post-list-item:hover h3{color:#8b5cf6;}
+.post-excerpt{font-size:12px;color:#999;margin-top:4px;line-height:1.5;}
+.post-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#888;flex-wrap:wrap;}
+.meta-sep{color:#ccc;}
+.pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:20px;}
+.page-info{font-size:13px;color:#888;}

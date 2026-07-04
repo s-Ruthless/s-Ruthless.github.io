@@ -9,6 +9,16 @@
   <link rel="stylesheet" href="<%= lib %>/lib/fontawesome/css/all.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= lib %>/lib/aplayer/APlayer.min.css" media="print" onload="this.media='all'">
   <script src="<%= lib %>/lib/tailwindcss/tailwindcss.js"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: { preflight: false }
+    }
+  </script>
   <link rel="stylesheet" href="<%= lib %>/lib/daisyui/full.min.css">
   <%- css('css/style.css') %>
+  <%- css('css/home.css') %>
+  <%- css('css/post.css') %>
+  <%- css('css/post-list.css') %>
+  <%- css('css/archive.css') %>
+  <%- css('css/pages.css') %>
 </head>

@@ -1,0 +1,41 @@
+/* ====== 友链页 ====== */
+.friend-card{
+  cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.friend-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(167,139,250,0.15) !important;
+}
+
+/* ====== 文章墙 ====== */
+.wall-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:16px;
+}
+.wall-card{
+  background:var(--card-bg,#f3f4f6);border-radius:16px;padding:16px;
+  cursor:pointer;transition:all 0.25s ease;
+  display:flex;flex-direction:column;gap:6px;
+}
+.wall-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.1);}
+.wall-card.hidden{display:none;}
+.card-top{display:flex;justify-content:space-between;align-items:center;}
+.card-cat{
+  font-size:11px;font-weight:500;color:#8b5cf6;
+  background:rgba(167,139,250,0.1);padding:2px 8px;border-radius:6px;
+}
+.card-title{font-size:14px;font-weight:600;color:#333;line-height:1.4;}
+.card-summary{font-size:12px;color:#888;line-height:1.5;}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.card-tag{
+  font-size:10px;color:#a78bfa;background:rgba(167,139,250,0.08);
+  padding:2px 6px;border-radius:4px;
+}
+.wall-card.card-sm{grid-column:span 1;}
+.wall-card.card-md{grid-column:span 1;}
+.wall-card.card-lg{grid-column:span 1;}
+
+/* 通用空状态 */
+.empty-hint{text-align:center;color:#aaa;font-size:14px;padding:40px 0;}

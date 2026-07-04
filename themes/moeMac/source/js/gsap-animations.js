@@ -150,9 +150,7 @@
     }
   };
 
-  document.addEventListener('DOMContentLoaded', function () {
-    GSAPAnimations.run();
-  });
+  /* 由 main.js 在 Drag.init() 完成后调用 GSAPAnimations.run() */
 
   window.GSAPAnimations = GSAPAnimations;
 })();

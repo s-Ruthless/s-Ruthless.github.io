@@ -455,5 +455,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
     loadHitokoto(); MusicPlayer.init();
+    // GSAP 动画在 Drag.init() 定位完成后再执行，避免窗口跑到左上角
+    if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
   });
 })();

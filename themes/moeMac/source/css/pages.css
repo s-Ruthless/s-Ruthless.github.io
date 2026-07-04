@@ -1,5 +1,8 @@
 /* ====== Pages ====== */
 .page-container{max-width:800px;margin:0 auto;padding:20px 16px 100px;}
+.page-header{margin-bottom:24px;text-align:center;}
+.page-header h2{font-size:24px;font-weight:600;color:#333;margin:0;}
+.page-header i{margin-right:6px;color:#8b5cf6;}
 .article-window{
   backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8);
   background:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.55);border-radius:20px;

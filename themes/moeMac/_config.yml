@@ -17,22 +17,10 @@ avatar_text: "屿"
 accent_color: "#a78bfa"
 
 # ====== 静态资源 CDN ======
-# 所有第三方库统一放在 source/lib/ 目录下，部署时整个 lib/ 上传到 CDN
-# 只需修改 base_url 即可一键切换 CDN 源，留空则使用本地 /lib/ 路径
-cdn:
-  # CDN 基础地址（末尾不加 /），例如 https://your-cdn.com/lib
-  # 留空表示使用站点本地 /lib/ 目录
-  base_url: ""
-  # 以下是 lib/ 内的相对路径（一般不需要修改）
-  fontawesome_css: "/lib/fontawesome/css/all.min.css"
-  fontawesome_webfonts: "/lib/fontawesome/webfonts"
-  tailwind_css: "/lib/tailwindcss/tailwindcss.js"
-  daisyui_css: "/lib/daisyui/full.min.css"
-  gsap_js: "/lib/gsap/gsap.min.js"
-  gsap_scrolltrigger_js: "/lib/gsap/ScrollTrigger.min.js"
-  aplayer_css: "/lib/aplayer/APlayer.min.css"
-  aplayer_js: "/lib/aplayer/APlayer.min.js"
-  meting_js: "/lib/meting/Meting.min.js"
+# 所有第三方库统一放在 source/lib/ 目录下
+# 留空 = 本地 /lib/ 路径，填写后所有资源自动走 CDN（末尾不加 /）
+# 例如: "https://your-cdn.com/lib"
+cdn: ""
 
 # ====== 一言 / 每日一句 ======
 # hitokoto: true 启用一言 API，首页实时获取；false 使用下方 sentences 列表随机显示

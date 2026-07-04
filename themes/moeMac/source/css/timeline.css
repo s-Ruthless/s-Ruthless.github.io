@@ -129,42 +129,50 @@
   left:50%;transform:translateX(-50%);
 }
 
-/* 年份居中 */
+/* 年份居中 - 用 flex 让圆点和文字并排 */
 .archive-center .archive-year{
+  display:flex;
+  align-items:center;
   justify-content:center;
   margin:40px 0 20px;
-  position:relative;
-  padding-left:30px;  /* 给圆点留空间 */
 }
 .archive-center .year-dot{
-  position:absolute;
-  left:50%;        /* 定位到容器中间 */
-  top:50%;         /* 垂直居中 */
-  transform:translate(-100%,-50%);  /* 圆点右侧对齐到50%位置 */
-  margin-right:8px;
+  /* flex 子项，自动在文字左侧 */
   width:24px;height:24px;
+  flex-shrink:0;
+  background:linear-gradient(135deg,#8b5cf6,#a855f7);
+  border:3px solid #fff;border-radius:50%;
+  box-shadow:0 0 0 3px rgba(139,92,246,0.2),0 4px 12px rgba(139,92,246,0.3);
+  position:relative;left:auto;
+  margin-right:8px;
 }
 .archive-center .year-text{
-  /* 不需要额外 margin，因为 padding-left 已经留空间 */
+  font-size:28px;font-weight:700;
+  background:linear-gradient(135deg,#8b5cf6,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
 }
 
-/* 月份居中 */
+/* 月份居中 - 用 flex 让圆点和文字并排 */
 .archive-center .archive-month{
+  display:flex;
+  align-items:center;
   justify-content:center;
   margin:24px 0 16px;
-  position:relative;
-  padding-left:24px;  /* 给圆点留空间 */
 }
 .archive-center .month-dot{
-  position:absolute;
-  left:50%;        /* 定位到容器中间 */
-  top:50%;         /* 垂直居中 */
-  transform:translate(-100%,-50%);  /* 圆点右侧对齐到50%位置 */
-  margin-right:6px;
+  /* flex 子项，自动在文字左侧 */
   width:14px;height:14px;
+  flex-shrink:0;
+  background:#a855f7;border:2px solid #fff;border-radius:50%;
+  box-shadow:0 0 0 2px rgba(168,85,247,0.15);
+  position:relative;left:auto;
+  margin-right:6px;
 }
 .archive-center .month-text{
-  /* 不需要额外 margin */
+  font-size:15px;font-weight:600;color:#7c3aed;
+  padding:4px 12px;border-radius:8px;
+  background:rgba(139,92,246,0.08);
 }
 
 /* 文章项 - 左右交替 */

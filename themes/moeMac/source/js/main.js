@@ -93,7 +93,7 @@
             mini: false, autoplay: false, theme: '#8b5cf6',
             loop: 'all', order: 'list', preload: 'metadata', volume: 0.7, mutex: true
           });
-          try { self.ap.list.hide(); } catch (e) {} /* 娓呴櫎 APlayer 鍐呰仈 max-height */ var listEl = mount.querySelector('.aplayer-list'); if (listEl) listEl.style.maxHeight = '';
+          try { self.ap.list.hide(); } catch (e) {} /* 濞撳懘娅?APlayer 閸愬懓浠?max-height */ var listEl = mount.querySelector('.aplayer-list'); if (listEl) listEl.style.maxHeight = '';
           mount.classList.remove('aplayer-init-hide');
           self.initialized = true;
           self.loading = false;
@@ -149,7 +149,7 @@
       item.className = 'dock-item dock-minimized-item dock-item-enter';
       item.setAttribute('data-win-id', id);
       item.innerHTML = '<div class="dock-text">' + name + '</div><div class="dock-item-inner"><i class="' + icon + ' dock-icon"></i></div>';
-      /* 鎻掑叆鍒嗛殧绾匡紙濡傛灉杩樻病鏈夛級 */
+      /* 閹绘帒鍙嗛崚鍡涙缁惧尅绱欐俊鍌涚亯鏉╂ɑ鐥呴張澶涚礆 */
       if (!document.querySelector('.dock-mini-sep')) {
         var sep = document.createElement('div');
         sep.className = 'dock-mini-sep';
@@ -158,7 +158,7 @@
       container.appendChild(item);
 
 
-      /* 寤惰繜涓€甯ц dock 鍥炬爣鍏堝叆鍦哄姩鐢伙紝鍐嶅惎鍔ㄧ獥鍙ｇ缉灏?*/
+      /* 瀵ゆ儼绻滄稉鈧敮褑顔€ dock 閸ョ偓鐖ｉ崗鍫濆弳閸﹀搫濮╅悽浼欑礉閸愬秴鎯庨崝銊х崶閸欙絿缂夌亸?*/
       requestAnimationFrame(function() {
         var iconRect = item.getBoundingClientRect();
         var winRect = win.getBoundingClientRect();
@@ -166,7 +166,7 @@
         var dy = (iconRect.top + iconRect.height / 2) - (winRect.top + winRect.height / 2);
         var targetScale = Math.max(iconRect.width / winRect.width, 0.08);
 
-        /* 绐楀彛缂╁皬鍔ㄧ敾锛氱敤 ease-out 鍏堝揩鍚庢參锛岄厤鍚?dock 鍥炬爣寮瑰叆 */
+        /* 缁愭褰涚紓鈺佺毈閸斻劎鏁鹃敍姘辨暏 ease-out 閸忓牆鎻╅崥搴㈠弮閿涘矂鍘ら崥?dock 閸ョ偓鐖ｅ鐟板弳 */
         win.style.transition = 'transform 0.48s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.48s cubic-bezier(0.22, 0.61, 0.36, 1)';
         win.style.transformOrigin = 'center center';
         win.style.zIndex = '10001';
@@ -197,14 +197,14 @@
       win.classList.remove('win-minimized');
       win.style.display = '';
 
-      /* dock 鍥炬爣閫€鍦哄姩鐢?*/
+      /* dock 閸ョ偓鐖ｉ柅鈧崷鍝勫З閻?*/
       if (miniItem) {
         miniItem.classList.add('dock-item-leave');
         var onAnimEnd = function() {
           miniItem.removeEventListener('animationend', onAnimEnd);
           miniItem.remove();
           var wrap = document.querySelector('.dock-bar-inner');
-          /* 濡傛灉娌℃湁鏈€灏忓寲鍥炬爣浜嗭紝绉婚櫎鍒嗛殧绾?*/
+          /* 婵″倹鐏夊▽鈩冩箒閺堚偓鐏忓繐瀵查崶鐐垼娴滃棴绱濈粔濠氭珟閸掑棝娈х痪?*/
           if (wrap && !wrap.querySelector('.dock-minimized-item')) {
             var s = wrap.querySelector('.dock-mini-sep');
             if (s) s.remove();
@@ -216,11 +216,11 @@
           }
         };
         miniItem.addEventListener('animationend', onAnimEnd);
-        /* 鍏滃簳锛氫竾涓€鍔ㄧ敾浜嬩欢娌¤Е鍙?*/
+        /* 閸忔粌绨抽敍姘娑撯偓閸斻劎鏁炬禍瀣╂濞屄ば曢崣?*/
         setTimeout(function() { if (miniItem.parentNode) onAnimEnd(); }, 350);
       }
 
-      /* 绐楀彛寮瑰嚭鎭㈠ */
+      /* 缁愭褰涘鐟板毉閹垹顦?*/
       win.style.transition = 'none';
       win.style.transform = 'scale(0.4) translateY(30px)';
       win.style.opacity = '0';
@@ -251,7 +251,7 @@
 
   /* ====== Window Drag ====== */
   var Drag = {
-    winW: 0, winH: 0, maxZ: 10, gap: 20, minDist: 40, centerDist: 80, dockH: 80,
+    winW: 0, winH: 0, maxZ: 10, gap: 30, minDist: 60, centerDist: 120, dockH: 80,
     init: function () {
       this.winW = window.innerWidth; this.winH = window.innerHeight;
       var self = this;
@@ -262,9 +262,10 @@
           el.style.top = rect.top + 'px';
         }
       });
+      var placed = [];
       document.querySelectorAll('.drag-win').forEach(function (el) {
         var ew = el.offsetWidth, eh = el.offsetHeight;
-        var best = self.findPos(ew, eh);
+        var best = self.findPos(ew, eh, placed);
         el.style.left = best.x + 'px'; el.style.top = best.y + 'px';
         el.setAttribute('data-pos', '1');
         el.style.visibility = 'visible';
@@ -334,11 +335,11 @@
         ro.observe(el);
       });
     },
-    findPos: function (ew, eh) {
+    findPos: function (ew, eh, placed) {
       var aw = this.winW, ah = this.winH - this.dockH;
       var cl = { l: aw / 2 - 100, t: ah / 2 - 100, w: 200, h: 200 };
-      var placed = [];
-      for (var tries = 0; tries < 200; tries++) {
+      placed = placed || [];
+      for (var tries = 0; tries < 500; tries++) {
         var x = this.gap + Math.random() * (aw - ew - this.gap * 2);
         var y = this.gap + Math.random() * (ah - eh - this.gap * 2);
         if (!this.ov(x, y, ew, eh, cl, placed)) {
@@ -346,7 +347,15 @@
           return { x: x, y: y };
         }
       }
-      return { x: this.gap + Math.random() * (aw - ew - this.gap * 2), y: this.gap + Math.random() * (ah - eh - this.gap * 2) };
+      // 500次都没找到不重叠的位置，用网格兜底
+      var cols = Math.floor(aw / (ew + this.gap));
+      var idx = placed.length;
+      var col = idx % cols;
+      var row = Math.floor(idx / cols);
+      var fx = this.gap + col * (ew + this.gap);
+      var fy = this.gap + row * (eh + this.gap);
+      placed.push({ l: fx, t: fy, w: ew, h: eh });
+      return { x: fx, y: fy };
     },
     focus: function (el) {
       document.querySelectorAll('.app-window').forEach(function (w) { w.classList.remove('win-focused'); });
@@ -423,8 +432,7 @@
               MusicPlayer.moveToWindow();
               window.scrollTo(0, 0);
               if (typeof hljs !== 'undefined') document.querySelectorAll('pre code').forEach(function (b) { hljs.highlightElement(b); });
-              // GSAP 鍔ㄧ敾閲嶈浇锛圓JAX 瀵艰埅鍚庨噸鏂拌Е鍙戝叆鍦哄姩鐢伙級
-              if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
+              // GSAP 閸斻劎鏁鹃柌宥堟祰閿涘湏JAX 鐎佃壈鍩呴崥搴ㄥ櫢閺傛媽袝閸欐垵鍙嗛崷鍝勫З閻紮绱?              if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
             }
           }
           box.classList.remove('fade-out'); box.classList.add('fade-in');
@@ -448,7 +456,6 @@
   document.addEventListener('DOMContentLoaded', function () {
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
     loadHitokoto(); MusicPlayer.init();
-    // GSAP 鍔ㄧ敾鍦?Drag.init() 瀹氫綅瀹屾垚鍚庡啀鎵ц锛岄伩鍏嶇獥鍙ｈ窇鍒板乏涓婅
-    if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
+    // GSAP 閸斻劎鏁鹃崷?Drag.init() 鐎规矮缍呯€瑰本鍨氶崥搴″晙閹笛嗩攽閿涘矂浼╅崗宥囩崶閸欙綀绐囬崚鏉夸箯娑撳﹨顫?    if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
   });
 })();

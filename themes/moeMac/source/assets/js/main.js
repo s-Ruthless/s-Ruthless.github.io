@@ -701,7 +701,10 @@
       }
       trig.addEventListener('click', open);
       if (mask) mask.addEventListener('click', close);
-      if (clear) clear.addEventListener('click', function () { if (input) { input.value = ''; input.focus(); self.render(''); } });
+      if (clear) clear.addEventListener('click', function () {
+  if (input && input.value) { input.value = ''; input.focus(); self.render(''); }
+  else { close(); }
+});
       if (input) {
         input.addEventListener('input', function () {
           clearTimeout(self.timer);
@@ -741,17 +744,26 @@
       q = (q || '').trim();
       if (!q) { box.innerHTML = '<div class="search-hint">输入关键词开始搜索</div>'; return; }
       if (!this.data) { box.innerHTML = '<div class="search-hint">索引加载中…</div>'; return; }
+      if (this.loading) { box.innerHTML = '<div class="search-hint">索引加载中…</div>'; return; }
       var kw = q.toLowerCase();
       var matched = [];
       for (var i = 0; i < this.data.length; i++) {
         var it = this.data[i];
-        var ti = it.title.toLowerCase(), ci = it.content.toLowerCase();
+        var ti = it.title.toLowerCase();
+        /* 去除 content 中的 HTML 标签，提取纯文本 */
+        var plain = it.content.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/gi, ' ').replace(/\s+/g, ' ').trim();
+        var ci = plain.toLowerCase();
         var pos = ci.indexOf(kw);
         if (ti.indexOf(kw) !== -1 || pos !== -1) {
-          var start = Math.max(0, pos - 30);
-          var excerpt = (pos !== -1 ? (start > 0 ? '…' : '') + it.content.substr(start, 120) + '…' : it.content.substr(0, 120) + '…');
-          matched.push({ title: it.title, url: it.url, excerpt: excerpt, date: it.date || '' });
-          if (matched.length >= 30) break;
+          var start = Math.max(0, pos - 40);
+          var excerpt = pos !== -1
+            ? (start > 0 ? '…' : '') + plain.substr(start, 100) + '…'
+            : plain.substr(0, 100) + '…';
+          /* 从 url 提取日期 */
+          var dateMatch = it.url.match(/(\d{4})\/(\d{2})\/(\d{2})/);
+          var dateStr = dateMatch ? dateMatch[1] + '-' + dateMatch[2] + '-' + dateMatch[3] : '';
+          matched.push({ title: it.title, url: it.url, excerpt: excerpt, date: dateStr });
+          if (matched.length >= 20) break;
         }
       }
       if (!matched.length) { box.innerHTML = '<div class="search-empty">没有找到相关结果</div>'; return; }
@@ -761,6 +773,7 @@
         html += '<a class="search-item ajax-link" data-href="' + m.url + '">' +
           '<div class="search-item-title">' + hl(m.title) + '</div>' +
           '<div class="search-item-excerpt">' + hl(m.excerpt) + '</div>' +
+          (m.date ? '<div class="search-item-meta"><i class="far fa-calendar"></i> ' + m.date + '</div>' : '') +
           '</a>';
       });
       box.innerHTML = html;
@@ -824,6 +837,8 @@
               LazyImg.init();
               BackTop.refresh();
               CountUp.init();
+              ArchiveFold.init();
+              Gallery.init();
               DesktopMode.check();
               window.scrollTo(0, 0);
               // GSAP 动画需在 AJAX 加载完成后重新执行
@@ -926,6 +941,153 @@
     }
   };
 
+  /* ====== 归档页面年份折叠 ====== */
+  var ArchiveFold = {
+    init: function () {
+      var sections = document.querySelectorAll('.archive-year-section');
+      if (!sections.length) return;
+      /* 确保 toggleYear 全局可用 */
+      if (typeof window.toggleYear !== 'function') {
+        window.toggleYear = function (year) {
+          var content = document.getElementById('year-content-' + year);
+          var header = document.querySelector('#year-' + year + ' .archive-year-header');
+          var icon = document.querySelector('#year-' + year + ' .year-toggle-icon');
+          if (!content) return;
+          if (content.style.display === 'none') {
+            content.style.display = '';
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            if (header) header.classList.add('expanded');
+          } else {
+            content.style.display = 'none';
+            if (icon) icon.style.transform = 'rotate(-90deg)';
+            if (header) header.classList.remove('expanded');
+          }
+        };
+      }
+      /* 绑定点击事件（AJAX加载后内联onclick可能丢失） */
+      sections.forEach(function (section) {
+        var header = section.querySelector('.archive-year-header');
+        if (header && !header._bound) {
+          header._bound = true;
+          header.addEventListener('click', function () {
+            var year = section.id.replace('year-', '');
+            window.toggleYear(year);
+          });
+        }
+      });
+      /* 默认折叠所有年份 */
+      sections.forEach(function (section) {
+        var yearId = section.id.replace('year-', '');
+        var content = document.getElementById('year-content-' + yearId);
+        if (content && content.style.display !== 'none') {
+          window.toggleYear(yearId);
+        }
+      });
+    }
+  };
+
+  /* ====== 相册页面：瀑布流 + 无限加载 + 灯箱 ====== */
+  var Gallery = {
+    page: 0, perPage: 9, loading: false, finished: false,
+    data: [], currentIdx: 0,
+    init: function () {
+      var container = document.getElementById('galleryMasonry');
+      if (!container) return;
+      if (typeof GALLERY_DATA === 'undefined') return;
+      this.data = GALLERY_DATA;
+      this.container = container;
+      this.loader = document.getElementById('galleryLoader');
+      this.end = document.getElementById('galleryEnd');
+      this.loadMore();
+      /* 无限加载监听 */
+      var self = this;
+      window.addEventListener('scroll', function () {
+        if (self.finished || self.loading) return;
+        var scrollBottom = window.innerHeight + window.scrollY;
+        if (scrollBottom >= document.body.offsetHeight - 200) {
+          self.loadMore();
+        }
+      }, { passive: true });
+      /* 灯箱 */
+      this.initLightbox();
+    },
+    loadMore: function () {
+      if (this.finished) return;
+      this.loading = true;
+      var start = this.page * this.perPage;
+      var end = Math.min(start + this.perPage, this.data.length);
+      if (start >= this.data.length) {
+        this.finished = true;
+        if (this.loader) this.loader.classList.add('hidden');
+        if (this.end) this.end.style.display = '';
+        return;
+      }
+      for (var i = start; i < end; i++) {
+        this.addItem(this.data[i], i);
+      }
+      this.page++;
+      this.loading = false;
+      if (end >= this.data.length) {
+        this.finished = true;
+        if (this.loader) this.loader.classList.add('hidden');
+        if (this.end) this.end.style.display = '';
+      }
+    },
+    addItem: function (item, idx) {
+      var self = this;
+      var div = document.createElement('div');
+      div.className = 'gallery-item';
+      div.dataset.idx = idx;
+      var img = document.createElement('img');
+      img.src = item.thumb || item.src;
+      img.alt = item.title || '';
+      img.loading = 'lazy';
+      img.addEventListener('load', function () { div.classList.add('loaded'); });
+      img.addEventListener('click', function () { self.openLightbox(idx); });
+      var overlay = document.createElement('div');
+      overlay.className = 'gallery-overlay';
+      overlay.innerHTML = '<span>' + (item.title || '') + '</span>';
+      div.appendChild(img);
+      div.appendChild(overlay);
+      this.container.appendChild(div);
+    },
+    initLightbox: function () {
+      var self = this;
+      var lb = document.getElementById('galleryLightbox');
+      if (!lb) return;
+      this.lightbox = lb;
+      this.lbImg = document.getElementById('lightboxImg');
+      var close = document.getElementById('lightboxClose');
+      var prev = document.getElementById('lightboxPrev');
+      var next = document.getElementById('lightboxNext');
+      var mask = lb.querySelector('.lightbox-mask');
+      if (close) close.addEventListener('click', function () { self.closeLightbox(); });
+      if (mask) mask.addEventListener('click', function () { self.closeLightbox(); });
+      if (prev) prev.addEventListener('click', function (e) { e.stopPropagation(); self.showLightbox(-1); });
+      if (next) next.addEventListener('click', function (e) { e.stopPropagation(); self.showLightbox(1); });
+      document.addEventListener('keydown', function (e) {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape') self.closeLightbox();
+        if (e.key === 'ArrowLeft') self.showLightbox(-1);
+        if (e.key === 'ArrowRight') self.showLightbox(1);
+      });
+    },
+    openLightbox: function (idx) {
+      this.currentIdx = idx;
+      this.lbImg.src = this.data[idx].large || this.data[idx].thumb || this.data[idx].src;
+      this.lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    },
+    closeLightbox: function () {
+      this.lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    },
+    showLightbox: function (dir) {
+      this.currentIdx = (this.currentIdx + dir + this.data.length) % this.data.length;
+      this.lbImg.src = this.data[this.currentIdx].large || this.data[this.currentIdx].thumb || this.data[this.currentIdx].src;
+    }
+  };
+
   /* ====== Init ====== */
   document.addEventListener('DOMContentLoaded', function () {
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
@@ -934,6 +1096,8 @@
       TOC.init(); CodeCopy.init(); LazyImg.init(); BackTop.init(); Search.init();
       CountUp.init();
       ThemeToggle.init();
+      ArchiveFold.init();
+      Gallery.init();
       DesktopMode.check();
       syncDockGlass();
     // 窗口最小化/恢复后 dock 宽度变化，同步 glass

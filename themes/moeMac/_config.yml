@@ -82,6 +82,7 @@ dock:
   - { icon: "fas fa-house", label: "首页", page: "/", type: "page" }
   - { icon: "fas fa-newspaper", label: "文章", page: "/posts/", type: "page" }
   - { icon: "fas fa-folder-open", label: "归档", page: "/archives/", type: "page" }
+  - { icon: "fas fa-images", label: "相册", page: "/gallery/", type: "page" }
   - { icon: "fas fa-circle-info", label: "关于", page: "/about/", type: "page" }
   - { icon: "fas fa-link", label: "友链", page: "/links/", type: "page" }
   - { icon: "fas fa-book", label: "豆瓣", page: "/douban/", type: "page" }

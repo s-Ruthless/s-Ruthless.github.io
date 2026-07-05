@@ -113,29 +113,24 @@
     </div>
 
     <script>
-      function toggleYear(year) {
-        var content = document.getElementById('year-content-' + year);
-        var header = document.querySelector('#year-' + year + ' .archive-year-header');
-        var icon = document.querySelector('#year-' + year + ' .year-toggle-icon');
-        if (!content) return;
-
-        if (content.style.display === 'none') {
-          content.style.display = '';
-          if (icon) icon.style.transform = 'rotate(0deg)';
-          if (header) header.classList.add('expanded');
-        } else {
-          content.style.display = 'none';
-          if (icon) icon.style.transform = 'rotate(-90deg)';
-          if (header) header.classList.remove('expanded');
-        }
+      /* toggleYear 定义 — ArchiveFold.init() 也会定义全局版本，这里作为 fallback */
+      if (typeof window.toggleYear !== 'function') {
+        window.toggleYear = function (year) {
+          var content = document.getElementById('year-content-' + year);
+          var header = document.querySelector('#year-' + year + ' .archive-year-header');
+          var icon = document.querySelector('#year-' + year + ' .year-toggle-icon');
+          if (!content) return;
+          if (content.style.display === 'none') {
+            content.style.display = '';
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            if (header) header.classList.add('expanded');
+          } else {
+            content.style.display = 'none';
+            if (icon) icon.style.transform = 'rotate(-90deg)';
+            if (header) header.classList.remove('expanded');
+          }
+        };
       }
-      // 默认折叠所有年份
-      document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.archive-year-section').forEach(function(section) {
-          var yearId = section.id.replace('year-', '');
-          toggleYear(yearId);
-        });
-      });
     </script>
   </div>
 </div>

@@ -2,7 +2,7 @@
 .page-container{max-width:800px;margin:0 auto;padding:20px 16px 100px;}
 .page-header{margin-bottom:24px;text-align:center;}
 .page-header h2{font-size:24px;font-weight:600;color:#333;margin:0;}
-.page-header i{margin-right:6px;color:#8b5cf6;}
+.page-header i{margin-right:6px;color:var(--accent-medium);}
 .page-body{
   backdrop-filter:var(--blur-strong);-webkit-backdrop-filter:var(--blur-strong);
   background:var(--glass-bg-window);border:1px solid var(--glass-border);border-radius:var(--radius-xl);
@@ -283,7 +283,7 @@
 /* ====== 返回顶部按钮 ====== */
 .back-top-btn{
   position:fixed;right:20px;bottom:14px;z-index:901;
-  width:44px;height:44px;border-radius:50%;
+  width:42px;height:42px;border-radius:50%;
   border:1px solid rgba(255,255,255,0.55);
   background:rgba(255,255,255,0.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   color:#8b5cf6;font-size:16px;cursor:pointer;

@@ -60,3 +60,31 @@
   .wall-grid{grid-template-columns:1fr;}
   .links-grid{grid-template-columns:1fr;}
 }
+
+/* ====== APlayer 暗黑模式 ====== */
+[data-theme="dark"] .aplayer .aplayer-title{color:#ffffff!important;}
+[data-theme="dark"] .aplayer .aplayer-author{color:#e0e0e0!important;}
+[data-theme="dark"] .aplayer .aplayer-time{color:rgba(255,255,255,0.8)!important;}
+[data-theme="dark"] .aplayer .aplayer-icon{color:rgba(255,255,255,0.9)!important;}
+[data-theme="dark"] .aplayer .aplayer-icon:hover{color:var(--accent-soft)!important;}
+[data-theme="dark"] .aplayer .aplayer-list ol li{color:#e8e8e8!important;}
+[data-theme="dark"] .aplayer .aplayer-list ol li:hover{background:rgba(255,255,255,0.1)!important;}
+[data-theme="dark"] .aplayer .aplayer-list ol li.aplayer-list-light{background:rgba(167,139,250,0.25)!important;color:#ffffff!important;font-weight:600;}
+[data-theme="dark"] .aplayer .aplayer-list ol li .aplayer-list-index{color:rgba(255,255,255,0.6)!important;}
+[data-theme="dark"] .aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-index{color:#a78bfa!important;font-weight:600;}
+[data-theme="dark"] .aplayer .aplayer-list ol li .aplayer-list-title{color:#f0f0f0!important;font-weight:500;}
+[data-theme="dark"] .aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-title{color:#ffffff!important;font-weight:600;}
+[data-theme="dark"] .aplayer .aplayer-list ol li .aplayer-list-author{color:rgba(255,255,255,0.7)!important;}
+[data-theme="dark"] .aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-author{color:#d0d0d0!important;}
+[data-theme="dark"] .aplayer .aplayer-bar{background:rgba(255,255,255,0.2)!important;}
+[data-theme="dark"] .aplayer .aplayer-loaded{background:rgba(255,255,255,0.1)!important;}
+[data-theme="dark"] .aplayer .aplayer-progress{background:rgba(255,255,255,0.3)!important;}
+[data-theme="dark"] .music-loading{color:#c0c0c0;}
+/* 音乐窗口背景优化 */
+[data-theme="dark"] .window-music[data-theme="dark"]{
+  background:rgba(25,25,35,0.88)!important;
+}
+[data-theme="dark"] .window-music .aplayer.aplayer{
+  background:rgba(255,255,255,0.05)!important;
+  border-radius:12px!important;
+}

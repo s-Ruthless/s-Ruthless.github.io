@@ -1,0 +1,22 @@
+<% if (theme.search !== false) { %>
+<button class="search-trigger" id="search-trigger" title="搜索 (按 / 键)">
+  <i class="fas fa-magnifying-glass"></i>
+</button>
+<div class="search-modal" id="search-modal">
+  <div class="search-modal-mask" id="search-mask"></div>
+  <div class="search-modal-box">
+    <div class="search-input-wrap">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="text" id="search-input" class="search-input" placeholder="搜索文章…" autocomplete="off">
+      <button class="search-clear" id="search-clear" title="清空"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="search-results" id="search-results">
+      <div class="search-hint">输入关键词开始搜索</div>
+    </div>
+    <div class="search-footer">
+      <span><kbd>/</kbd> 唤起搜索</span>
+      <span><kbd>Esc</kbd> 关闭</span>
+    </div>
+  </div>
+</div>
+<% } %>

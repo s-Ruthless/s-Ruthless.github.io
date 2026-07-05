@@ -1,5 +1,6 @@
 <% var dockItems = theme.dock || []; %>
 <nav class="dock-bar">
+  <div class="dock-glass"></div>
   <div class="dock-bar-inner">
     <% dockItems.forEach(function(item) { %>
     <div class="dock-item" data-href="<%= item.page %>" data-type="<%= item.type || 'page' %>">
@@ -7,6 +8,6 @@
       <div class="dock-item-inner"><i class="<%= item.icon %> dock-icon"></i></div>
     </div>
     <% }); %>
+    <div class="dock-mini-zone" id="dock-mini-zone"></div>
   </div>
-  <div class="dock-mini-zone" id="dock-mini-zone"></div>
 </nav>

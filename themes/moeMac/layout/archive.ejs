@@ -15,6 +15,9 @@
 
   // 热门分类
   var cats = site.categories.sort('length', -1).limit(8);
+
+  // 热门标签
+  var tags = site.tags.sort('length', -1).limit(12);
 %>
 
 <div class="page-container">
@@ -24,51 +27,72 @@
   </div>
 
   <div class="page-body archive-page">
-    <!-- 统计卡片区 -->
+    <!-- 统计看板 -->
     <div class="archive-stats">
-      <!-- 年份柱状图 -->
-      <div class="stat-card stat-chart">
-        <div class="stat-title"><i class="fas fa-chart-bar"></i> 年度文章</div>
-        <div class="chart-bars">
-          <% years.forEach(function(y) { %>
-            <div class="chart-col">
-              <div class="chart-bar-wrap">
-                <div class="chart-bar" style="height: <%= (yearMap[y] / maxCount * 100) %>%">
-                  <span class="chart-count"><%= yearMap[y] %></span>
+      <!-- 三宫格数字卡片 -->
+      <div class="stat-hero-row">
+        <div class="stat-hero-card stat-hero-posts">
+          <div class="stat-hero-icon"><i class="fas fa-file-lines"></i></div>
+          <div class="stat-hero-body">
+            <span class="stat-hero-num"><%= totalPosts %></span>
+            <span class="stat-hero-label">篇文章</span>
+          </div>
+        </div>
+        <div class="stat-hero-card stat-hero-cats">
+          <div class="stat-hero-icon"><i class="fas fa-folder-tree"></i></div>
+          <div class="stat-hero-body">
+            <span class="stat-hero-num"><%= totalCategories %></span>
+            <span class="stat-hero-label">个分类</span>
+          </div>
+        </div>
+        <div class="stat-hero-card stat-hero-tags">
+          <div class="stat-hero-icon"><i class="fas fa-hashtag"></i></div>
+          <div class="stat-hero-body">
+            <span class="stat-hero-num"><%= totalTags %></span>
+            <span class="stat-hero-label">个标签</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 年度柱状图 + 热门分类 -->
+      <div class="stat-detail-row">
+        <div class="stat-card stat-chart">
+          <div class="stat-title"><i class="fas fa-chart-column"></i> 年度文章</div>
+          <div class="chart-bars">
+            <% years.forEach(function(y) { %>
+              <div class="chart-col">
+                <div class="chart-bar-wrap">
+                  <div class="chart-bar" style="height: <%= (yearMap[y] / maxCount * 100) %>%">
+                    <span class="chart-count"><%= yearMap[y] %></span>
+                  </div>
                 </div>
+                <span class="chart-label"><%= y %></span>
               </div>
-              <span class="chart-label"><%= y %></span>
-            </div>
-          <% }); %>
+            <% }); %>
+          </div>
         </div>
-      </div>
 
-      <!-- 总数卡片 -->
-      <div class="stat-card stat-numbers">
-        <div class="stat-item">
-          <span class="stat-num"><%= totalPosts %></span>
-          <span class="stat-label">文章</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num"><%= totalCategories %></span>
-          <span class="stat-label">分类</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num"><%= totalTags %></span>
-          <span class="stat-label">标签</span>
-        </div>
-      </div>
-
-      <!-- 热门分类 -->
-      <div class="stat-card stat-cats">
-        <div class="stat-title"><i class="fas fa-fire"></i> 热门分类</div>
-        <div class="cat-tags">
-          <% cats.forEach(function(cat) { %>
-            <a class="cat-tag ajax-link" data-href="<%- url_for(cat.path) %>">
-              <span class="cat-name"><%= cat.name %></span>
-              <span class="cat-count"><%= cat.length %></span>
-            </a>
-          <% }); %>
+        <div class="stat-card stat-cats">
+          <div class="stat-title"><i class="fas fa-fire"></i> 热门分类</div>
+          <div class="cat-tags">
+            <% cats.forEach(function(cat) { %>
+              <a class="cat-tag ajax-link" data-href="<%- url_for(cat.path) %>">
+                <span class="cat-name"><%= cat.name %></span>
+                <span class="cat-count"><%= cat.length %></span>
+              </a>
+            <% }); %>
+          </div>
+          <% if (tags.length > 0) { %>
+          <div class="stat-title stat-title-tags"><i class="fas fa-tags"></i> 热门标签</div>
+          <div class="cat-tags">
+            <% tags.forEach(function(tag) { %>
+              <a class="cat-tag cat-tag-sm ajax-link" data-href="<%- url_for(tag.path) %>">
+                <span class="cat-name"><%= tag.name %></span>
+                <span class="cat-count"><%= tag.length %></span>
+              </a>
+            <% }); %>
+          </div>
+          <% } %>
         </div>
       </div>
     </div>

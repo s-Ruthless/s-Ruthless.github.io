@@ -1,11 +1,42 @@
+<%
+  var lib = theme.cdn || '';
+  var pageDesc = strip_html(page.description || page.excerpt || config.description || '');
+  var ogTitle = page.title ? page.title + ' | ' + config.title : config.title;
+  var ogUrl = (config.url ? config.url.replace(/\/$/,'') : '') + url_for(page.path);
+  var ogImage = page.cover || theme.og_image || theme.avatar_url || '';
+  var favicon = theme.favicon || ('data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">' + (theme.favicon_emoji || '🌿') + '</text></svg>'));
+%>
 <!DOCTYPE html>
 <html lang="<%= config.language || 'zh-CN' %>">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-  <title><%= page.title ? page.title + ' | ' + config.title : config.title %></title>
-  <meta name="description" content="<%= strip_html(page.description || config.description || '') %>">
-  <% var lib = theme.cdn || ''; %>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title><%= ogTitle %></title>
+  <meta name="description" content="<%= pageDesc %>">
+  <% if (config.keywords || theme.keywords) { %><meta name="keywords" content="<%= config.keywords || theme.keywords %>"><% } %>
+  <meta name="author" content="<%= config.author || theme.author || '' %>">
+  <meta name="theme-color" content="#a78bfa">
+
+  <!-- favicon -->
+  <link rel="icon" href="<%= favicon %>">
+  <link rel="apple-touch-icon" href="<%= theme.apple_touch_icon || favicon %>">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="<%= page.layout === 'post' ? 'article' : 'website' %>">
+  <meta property="og:title" content="<%= page.title || config.title %>">
+  <meta property="og:description" content="<%= pageDesc %>">
+  <meta property="og:url" content="<%= ogUrl %>">
+  <meta property="og:site_name" content="<%= config.title %>">
+  <% if (ogImage) { %><meta property="og:image" content="<%= ogImage %>"><% } %>
+  <% if (page.date) { %><meta property="article:published_time" content="<%= date(page.date, 'YYYY-MM-DDTHH:mm:ss') %>"><% } %>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="<%= ogImage ? 'summary_large_image' : 'summary' %>">
+  <meta name="twitter:title" content="<%= page.title || config.title %>">
+  <meta name="twitter:description" content="<%= pageDesc %>">
+  <% if (ogImage) { %><meta name="twitter:image" content="<%= ogImage %>"><% } %>
+  <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
+
   <link rel="stylesheet" href="<%= lib %>/lib/fontawesome/css/all.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= lib %>/lib/aplayer/APlayer.min.css" media="print" onload="this.media='all'">
   <script src="<%= lib %>/lib/tailwindcss/tailwindcss.js"></script>
@@ -23,4 +54,7 @@
   <%- css('css/timeline.css') %>
   <%- css('css/postlist.css') %>
   <%- css('css/hover.css') %>
+  <%- css('css/highlight.css') %>
+  <%- css('css/search.css') %>
+  <%- css('css/ui-enhance.css') %>
 </head>

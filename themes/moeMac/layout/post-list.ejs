@@ -27,6 +27,15 @@
             <% if (post.excerpt || post.content) { %>
               <p class="text-xs opacity-40 line-clamp-2 mt-1"><%- strip_html(post.excerpt || post.content || '').substring(0, 120) %></p>
             <% } %>
+            <% if (post.tags && post.tags.length > 0) { %>
+              <div class="post-list-tags flex flex-wrap gap-1.5 mt-2">
+                <% post.tags.forEach(function(tag) { %>
+                  <a class="post-list-tag ajax-link" data-href="<%- url_for(tag.path) %>">
+                    <i class="fas fa-hashtag"></i><%= tag.name %>
+                  </a>
+                <% }); %>
+              </div>
+            <% } %>
           </div>
         </div>
       <% }); %>

@@ -2,12 +2,61 @@
 .archive-page{padding:24px 16px;}
 .archive-subtitle{text-align:center;font-size:14px;color:#888;margin-top:4px;}
 
-/* ====== 统计卡片区 ====== */
-.archive-stats{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  margin-bottom:32px;
+/* ====== 统计看板 ====== */
+.archive-stats{margin-bottom:32px;}
+
+/* 三宫格数字卡片 */
+.stat-hero-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;
+}
+.stat-hero-card{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 20px;border-radius:16px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.5);
+  box-shadow:0 4px 20px rgba(0,0,0,0.05);
+  position:relative;overflow:hidden;
+  transition:transform 0.25s ease,box-shadow 0.25s ease;
+}
+.stat-hero-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.stat-hero-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.1);
+}
+.stat-hero-posts{
+  background:linear-gradient(135deg,rgba(255,255,255,0.5),rgba(255,228,228,0.3));
+}
+.stat-hero-posts::before{background:linear-gradient(90deg,#ff6b6b,#ffa36b);}
+.stat-hero-cats{
+  background:linear-gradient(135deg,rgba(255,255,255,0.5),rgba(228,238,255,0.3));
+}
+.stat-hero-cats::before{background:linear-gradient(90deg,#6b9eff,#6bd4ff);}
+.stat-hero-tags{
+  background:linear-gradient(135deg,rgba(255,255,255,0.5),rgba(238,228,255,0.3));
+}
+.stat-hero-tags::before{background:linear-gradient(90deg,#a06bff,#ff6bd4);}
+.stat-hero-icon{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  background:rgba(255,255,255,0.6);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.stat-hero-posts .stat-hero-icon{color:#ff6b6b;}
+.stat-hero-cats .stat-hero-icon{color:#6b9eff;}
+.stat-hero-tags .stat-hero-icon{color:#a06bff;}
+.stat-hero-body{display:flex;flex-direction:column;}
+.stat-hero-num{
+  font-size:28px;font-weight:800;line-height:1.1;
+  background:linear-gradient(135deg,#8b5cf6,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-hero-label{font-size:12px;color:#888;margin-top:2px;}
+
+/* 详情行：图表 + 分类 */
+.stat-detail-row{
+  display:grid;grid-template-columns:1.2fr 1fr;gap:14px;
 }
 .stat-card{
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -22,40 +71,37 @@
   margin-bottom:14px;
 }
 .stat-title i{color:#8b5cf6;margin-right:6px;}
+.stat-title-tags{margin-top:18px;}
 
-/* 柱状图 - 占两列 */
-.stat-chart{grid-column:span 2;}
-.chart-bars{display:flex;align-items:flex-end;gap:12px;height:120px;padding-top:10px;}
+/* 柱状图 */
+.chart-bars{display:flex;align-items:flex-end;gap:14px;height:130px;padding-top:14px;}
 .chart-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;}
 .chart-bar-wrap{width:100%;height:100px;display:flex;align-items:flex-end;}
 .chart-bar{
   width:100%;border-radius:8px 8px 4px 4px;
-  background:linear-gradient(180deg,#a78bfa,#8b5cf6);
+  background:linear-gradient(180deg,#c084fc,#8b5cf6);
   min-height:8px;position:relative;
-  transition:height 0.4s cubic-bezier(0.4,0,0.2,1);
+  transition:height 0.5s cubic-bezier(0.4,0,0.2,1),background 0.25s ease;
+  cursor:pointer;
+}
+.chart-bar::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:40%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.25),transparent);
+  border-radius:8px 8px 0 0;
 }
 .chart-bar:hover{
-  background:linear-gradient(180deg,#c084fc,#7c3aed);
+  background:linear-gradient(180deg,#d8b4fe,#7c3aed);
+  filter:brightness(1.08);
 }
 .chart-count{
-  position:absolute;top:-20px;left:50%;transform:translateX(-50%);
-  font-size:11px;font-weight:600;color:#8b5cf6;white-space:nowrap;
+  position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  font-size:11px;font-weight:700;color:#7c3aed;white-space:nowrap;
+  opacity:0;transition:opacity 0.2s ease;
 }
+.chart-col:hover .chart-count{opacity:1;}
 .chart-label{font-size:11px;color:#999;font-weight:500;}
 
-/* 总数卡片 */
-.stat-numbers{display:flex;flex-direction:column;justify-content:center;gap:12px;}
-.stat-item{display:flex;align-items:baseline;gap:8px;}
-.stat-num{
-  font-size:28px;font-weight:700;
-  background:linear-gradient(135deg,#8b5cf6,#ec4899);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.stat-label{font-size:13px;color:#999;}
-
-/* 热门分类 */
-.stat-cats{}
+/* 热门分类/标签 */
 .cat-tags{display:flex;flex-wrap:wrap;gap:8px;}
 .cat-tag{
   display:inline-flex;align-items:center;gap:6px;
@@ -68,19 +114,28 @@
   background:rgba(139,92,246,0.15);
   border-color:rgba(139,92,246,0.3);
   transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(139,92,246,0.12);
 }
+.cat-tag-sm{padding:4px 10px;}
 .cat-name{font-size:13px;font-weight:500;color:#7c3aed;}
+.cat-tag-sm .cat-name{font-size:12px;}
 .cat-count{
   font-size:11px;color:#fff;font-weight:600;
-  background:#a78bfa;padding:1px 7px;border-radius:6px;
+  background:linear-gradient(135deg,#a78bfa,#8b5cf6);
+  padding:1px 7px;border-radius:6px;
 }
 
 /* ====== 文章列表区 ====== */
 .archive-list{}
 .archive-year-label{
   font-size:22px;font-weight:700;color:#333;
-  margin:28px 0 12px;padding-left:4px;
+  margin:28px 0 12px;
   border-left:4px solid #a78bfa;padding-left:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.archive-year-label::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(167,139,250,0.3),transparent);
 }
 .archive-year-label:first-child{margin-top:0;}
 
@@ -117,9 +172,9 @@
 
 /* ====== 响应式 ====== */
 @media (max-width:600px) {
-  .archive-stats{grid-template-columns:1fr;}
-  .stat-chart{grid-column:span 1;}
-  .chart-bars{height:80px;gap:8px;}
+  .stat-hero-row{grid-template-columns:1fr;gap:10px;}
+  .stat-detail-row{grid-template-columns:1fr;}
+  .chart-bars{height:90px;gap:8px;}
   .chart-bar-wrap{height:60px;}
   .archive-row{padding:10px 12px;gap:8px;}
   .row-cat{display:none;}

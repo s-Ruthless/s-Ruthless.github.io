@@ -1,0 +1,75 @@
+<%
+  var c = theme.comments || {};
+  if (c.enable !== true) return;
+  var p = c.provider || 'waline';
+%>
+<div class="comments-wrap" id="comments-wrap">
+  <div class="comments-head"><i class="fas fa-comments"></i> 评论</div>
+  <div id="comments-mount">
+    <div class="comments-loading"><div class="music-loading-spinner"></div><span>评论加载中…</span></div>
+  </div>
+</div>
+
+<% if (p === 'waline' && c.waline && c.waline.serverURL) { %>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.js';
+  init({
+    el: '#comments-mount',
+    serverURL: '<%= c.waline.serverURL %>',
+    dark: 'html[data-theme="dark"]',
+    lang: 'zh-CN'
+  });
+</script>
+
+<% } else if (p === 'twikoo' && c.twikoo && c.twikoo.envId) { %>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"></script>
+<script>
+  (function(){
+    function init(){ twikoo.init({ envId: '<%= c.twikoo.envId %>', el: '#comments-mount' }); }
+    if (window.twikoo) init();
+    else document.addEventListener('DOMContentLoaded', init);
+  })();
+</script>
+
+<% } else if (p === 'giscus' && c.giscus && c.giscus.repo) { %>
+<script src="https://giscus.app/client.js"
+  data-repo="<%= c.giscus.repo %>"
+  data-repo-id="<%= c.giscus.repoId %>"
+  data-category="<%= c.giscus.category %>"
+  data-category-id="<%= c.giscus.categoryId %>"
+  data-mapping="<%= c.giscus.mapping || 'pathname' %>"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="light"
+  data-lang="zh-CN"
+  crossorigin="anonymous"
+  async>
+</script>
+
+<% } else if (p === 'gitalk' && c.gitalk && c.gitalk.clientID) { %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+  (function(){
+    function init(){
+      var gitalk = new Gitalk({
+        clientID: '<%= c.gitalk.clientID %>',
+        clientSecret: '<%= c.gitalk.clientSecret %>',
+        repo: '<%= c.gitalk.repo %>',
+        owner: '<%= c.gitalk.owner %>',
+        admin: <%= JSON.stringify(c.gitalk.admin || []) %>,
+        id: location.pathname,
+        distractionFreeMode: false
+      });
+      gitalk.render('comments-mount');
+    }
+    if (window.Gitalk) init();
+    else document.addEventListener('DOMContentLoaded', init);
+  })();
+</script>
+<% } else { %>
+<div class="comments-config-hint">评论系统已开启但配置不完整，请在主题 <code>_config.yml</code> 的 <code>comments</code> 中填写对应 provider 的字段。</div>
+<% } %>

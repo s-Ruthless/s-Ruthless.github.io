@@ -102,3 +102,12 @@ theme: moeMac
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: ''
+
+# Search
+search:
+  path: search.xml
+  field: post
+  content: true
+  format: html
+  limit: 10000
+

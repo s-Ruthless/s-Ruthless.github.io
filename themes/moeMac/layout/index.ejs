@@ -1,14 +1,14 @@
 <% var windows = theme.home_windows || ['posts','categories','tags','music','data']; %>
-<% var winClassMap = { posts:'window-article', categories:'window-categories', sentence:'window-sentence', tags:'window-tag', music:'window-music', data:'window-data' }; %>
-<% var winTitleMap = { posts:'最新文章', categories:'分类', sentence:'心语', tags:'标签云', music:'歌单', data:'站点数据' }; %>
-<% var winIconMap = { posts:'fas fa-newspaper', categories:'fas fa-folder', sentence:'fas fa-heart', tags:'fas fa-tags', music:'fas fa-music', data:'fas fa-chart-bar' }; %>
+<% var winClassMap = { posts:'window-article', categories:'window-categories', tags:'window-tag', music:'window-music', data:'window-data' }; %>
+<% var winTitleMap = { posts:'最新文章', categories:'分类', tags:'标签云', music:'歌单', data:'站点数据' }; %>
+<% var winIconMap = { posts:'fas fa-newspaper', categories:'fas fa-folder', tags:'fas fa-tags', music:'fas fa-music', data:'fas fa-chart-bar' }; %>
 <% var useImageAvatar = theme.avatar_type === 'image' && theme.avatar_url; %>
 
 <div class="app-window window-main drag-win" id="win-hero" style="left:50%;top:50%;">
   <div class="win-traffic">
-    <button class="win-traffic-btn win-btn-close" title="关闭"><i class="fas fa-xmark"></i></button>
-    <button class="win-traffic-btn win-btn-minimize" title="最小化"><i class="fas fa-minus"></i></button>
-    <button class="win-traffic-btn win-btn-pin" title="置顶"><i class="fas fa-thumbtack"></i></button>
+    <button class="win-traffic-btn win-btn-close" data-tip="关闭" aria-label="关闭"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M3 3L9 9M9 3L3 9"/></svg></button>
+    <button class="win-traffic-btn win-btn-minimize" data-tip="最小化" aria-label="最小化"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M3 6H9"/></svg></button>
+    <button class="win-traffic-btn win-btn-pin" data-tip="置顶" aria-label="置顶"><svg viewBox="0 0 12 12" fill="#fff"><path d="M6 1L4 3v3L2.5 7.5V9h3V11h1V9h3V7.5L8 6V3L6 1z"/></svg></button>
   </div>
   <div class="win-head drag-bar">
     <div class="win-name">我的主页</div>
@@ -39,9 +39,9 @@
 <% windows.forEach(function(w) { %>
 <div class="app-window <%= winClassMap[w] || 'window-article' %> drag-win" id="win-<%= w %>">
   <div class="win-traffic">
-    <button class="win-traffic-btn win-btn-close" title="关闭"><i class="fas fa-xmark"></i></button>
-    <button class="win-traffic-btn win-btn-minimize" title="最小化"><i class="fas fa-minus"></i></button>
-    <button class="win-traffic-btn win-btn-pin" title="置顶"><i class="fas fa-thumbtack"></i></button>
+    <button class="win-traffic-btn win-btn-close" data-tip="关闭" aria-label="关闭"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M3 3L9 9M9 3L3 9"/></svg></button>
+    <button class="win-traffic-btn win-btn-minimize" data-tip="最小化" aria-label="最小化"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M3 6H9"/></svg></button>
+    <button class="win-traffic-btn win-btn-pin" data-tip="置顶" aria-label="置顶"><svg viewBox="0 0 12 12" fill="#fff"><path d="M6 1L4 3v3L2.5 7.5V9h3V11h1V9h3V7.5L8 6V3L6 1z"/></svg></button>
   </div>
   <div class="win-head drag-bar">
     <div class="win-name"><%= winTitleMap[w] || w %></div>
@@ -51,8 +51,6 @@
       <%- partial('_partial/window-posts') %>
     <% } else if (w === 'categories') { %>
       <%- partial('_partial/window-categories') %>
-    <% } else if (w === 'sentence') { %>
-      <%- partial('_partial/window-sentence') %>
     <% } else if (w === 'tags') { %>
       <%- partial('_partial/window-tags') %>
     <% } else if (w === 'music') { %>

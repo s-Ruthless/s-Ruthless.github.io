@@ -1,0 +1,403 @@
+/**
+ * 豆瓣书影音同步脚本
+ *
+ * 用法：
+ *   npx hexo douban              # 抓取全部（书 + 影 + 音）
+ *   npx hexo douban --books      # 只抓书
+ *   npx hexo douban --movies     # 只抓电影
+ *   npx hexo douban --music      # 只抓音乐
+ *
+ * 配置（themes/moeMac/_config.yml）：
+ *   douban:
+ *     user_id: "your-douban-id"   # 豆瓣个人主页 URL 中的 ID
+ *     cookie: ""                   # 可选：登录 cookie，用于访问受限页面
+ *
+ * 数据保存到 source/_data/douban.json，page-douban.ejs 自动读取。
+ */
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
+
+function fetchPage(url, cookie) {
+  return new Promise(function (resolve, reject) {
+    var headers = {
+      'User-Agent': UA,
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+      'Referer': 'https://www.douban.com/',
+    };
+    if (cookie) headers['Cookie'] = cookie;
+
+    var redirectCount = 0;
+    function doFetch(u) {
+      var mod = u.startsWith('https') ? require('https') : require('http');
+      mod.get(u, { headers: headers }, function (res) {
+        // Handle redirects
+        if ([301, 302, 303, 307, 308].indexOf(res.statusCode) !== -1 && res.headers.location && redirectCount < 5) {
+          redirectCount++;
+          var next = res.headers.location;
+          if (next.startsWith('/')) next = new URL(u).origin + next;
+          res.resume();
+          return doFetch(next);
+        }
+        if (res.statusCode !== 200) {
+          res.resume();
+          return reject(new Error('HTTP ' + res.statusCode + ' for ' + u));
+        }
+        var chunks = [];
+        res.on('data', function (c) { chunks.push(c); });
+        res.on('end', function () {
+          var html = Buffer.concat(chunks).toString('utf-8');
+          resolve(html);
+        });
+      }).on('error', reject);
+    }
+    doFetch(url);
+  });
+}
+
+/**
+ * 下载封面图到本地（豆瓣有防盗链，必须带 Referer 才能下载）
+ * 返回本地相对路径，如 /images/douban/books/s5961934.jpg
+ */
+function downloadCover(imgUrl, type, baseDir) {
+  return new Promise(function (resolve) {
+    if (!imgUrl) return resolve('');
+
+    // 从 URL 提取文件名: .../s5961934.jpg -> s5961934.jpg
+    var fname = imgUrl.split('/').pop();
+    // 去掉尺寸前缀 (s_, m_, l_) 统一用原始 ID
+    fname = fname.replace(/^[sml]_/, '');
+    var relPath = '/images/douban/' + type + '/' + fname;
+    var absPath = path.join(baseDir, 'source' + relPath);
+
+    // 已存在则跳过
+    if (fs.existsSync(absPath)) {
+      return resolve(relPath);
+    }
+
+    var dir = path.dirname(absPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+    var mod = imgUrl.startsWith('https') ? require('https') : require('http');
+    mod.get(imgUrl, {
+      headers: {
+        'User-Agent': UA,
+        'Referer': 'https://www.douban.com/',
+        'Accept': 'image/*,*/*',
+      }
+    }, function (res) {
+      if (res.statusCode !== 200) {
+        res.resume();
+        console.error('    ✗ 封面下载失败: HTTP ' + res.statusCode + ' ' + fname);
+        return resolve('');
+      }
+      var chunks = [];
+      res.on('data', function (c) { chunks.push(c); });
+      res.on('end', function () {
+        fs.writeFileSync(absPath, Buffer.concat(chunks));
+        resolve(relPath);
+      });
+    }).on('error', function (e) {
+      console.error('    ✗ 封面下载出错: ' + e.message + ' ' + fname);
+      resolve('');
+    });
+  });
+}
+
+/**
+ * 从条目块中提取字段（标题/封面/评分/日期/笔记/链接）
+ */
+function extractItem(block) {
+  if (block.indexOf('subject') === -1 && block.indexOf('nbg') === -1) return null;
+
+  // 标题提取优先级：
+  // 1. <em>标签（电影有，格式如 "复仇者联盟4：终局之战 / Avengers: Endgame"）
+  // 2. title="" 属性（书籍有，是中文名；电影图片的 title 是英文名）
+  // 3. <a>标签内文本
+  // 对于 <em> 格式 "中文名 / English Name"，取第一部分（中文名）
+  var emMatch = block.match(/<em>([\s\S]*?)<\/em>/i);
+  var titleAttrMatch = block.match(/title="([^"]+)"/);
+  var linkTextMatch = block.match(/<a[^>]*href="[^"]*subject[^"]*"[^>]*>([\s\S]*?)<\/a>/i);
+
+  var fullName = '';
+  var title = '';
+
+  if (emMatch) {
+    // <em>复仇者联盟4：终局之战 / Avengers: Endgame</em>
+    fullName = emMatch[1].replace(/<[^>]*>/g, '').trim();
+    // 取第一个 / 之前的部分作为中文名
+    var parts = fullName.split(/\s*\/\s*/);
+    title = parts[0].trim();
+  } else if (titleAttrMatch) {
+    // title="流浪地球" 或 title="Avengers: Endgame"
+    title = titleAttrMatch[1].replace(/<[^>]*>/g, '').trim();
+    fullName = title;
+  } else if (linkTextMatch) {
+    // 从链接文本提取
+    title = linkTextMatch[1].replace(/<[^>]*>/g, '').trim();
+    // 清理多余空白
+    title = title.split(/\n/)[0].trim();
+    fullName = title;
+  }
+
+  if (!title) return null;
+
+  // 原始名（英文或别名）：如果 <em> 里有 / 分隔，第二部分就是
+  var originalName = '';
+  if (emMatch && fullName.indexOf('/') > -1) {
+    var nameParts = fullName.split(/\s*\/\s*/);
+    if (nameParts.length > 1) {
+      originalName = nameParts.slice(1).join(' / ').trim();
+    }
+  }
+
+  // 条目链接（用于提取 subject ID）
+  var linkMatch = block.match(/href="(https?:\/\/(?:book|movie|music)\.douban\.com\/subject\/(\d+)\/)"/i);
+  var link = linkMatch ? linkMatch[1] : '';
+  var subjectId = linkMatch ? linkMatch[2] : '';
+
+  // 封面图：优先 src，其次 data-src（懒加载）
+  var coverMatch = block.match(/<img[^>]*\ssrc="(https?:[^"]+)"[^>]*>/i)
+    || block.match(/<img[^>]*\sdata-src="(https?:[^"]+)"[^>]*>/i)
+    || block.match(/<img[^>]*\ssrc="(\/\/[^"]+)"[^>]*>/i);
+  var cover = coverMatch ? coverMatch[1] : '';
+  if (cover && cover.indexOf('//') === 0) cover = 'https:' + cover;
+  if (cover) {
+    cover = cover
+      .replace(/\/view\/subject\/[msl]\//, '/view/subject/l/')
+      .replace(/\/view\/photo\/[msl]_/, '/view/photo/l_')
+      .replace(/_s\./, '_m.')
+      .replace(/_s_ratio_poster/, '_l_ratio_poster');
+  }
+
+  // 评分（rating5-t = 5星 → 10 分制，无评分则为 0）
+  var ratingMatch = block.match(/rating(\d)-t/);
+  var rating = ratingMatch ? parseInt(ratingMatch[1], 10) * 2 : 0;
+
+  // 日期
+  var dateMatch = block.match(/<span\s+class="date">([\s\S]*?)<\/span>/i);
+  var dateStr = dateMatch ? dateMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+  var dateClean = dateStr.match(/(\d{4}[-/.]\d{1,2}[-/.]\d{1,2})/);
+  dateStr = dateClean ? dateClean[1] : dateStr;
+
+  // 笔记/评论
+  var noteMatch = block.match(/<p\s+class="comment[^"]*"[^>]*>([\s\S]*?)<\/p>/i)
+    || block.match(/<span\s+class="comment">([\s\S]*?)<\/span>/i);
+  var note = noteMatch ? noteMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+
+  return { name: title, original_name: originalName, cover: cover, cover_local: '', id: subjectId, link: link, rating: rating, date: dateStr, note: note };
+}
+
+/**
+ * 解析豆瓣收藏页 HTML，提取条目列表
+ * 适配豆瓣新版页面结构：
+ *   书籍: <li class="subject-item"> 含 pic / info / short-note
+ *   电影: <div class="item comment-item"> 含 pic / info
+ *   音乐: 结构同电影
+ */
+function parseItems(html) {
+  var items = [];
+
+  // 检查是否需要登录
+  if (html.indexOf('form-login') !== -1) {
+    console.error('  ✗ 需要登录，请在配置中填写 cookie');
+    return items;
+  }
+
+  // 模式 1：书籍页 <li class="subject-item">
+  var bookBlocks = html.split(/<li\s+class="subject-item"/);
+  if (bookBlocks.length > 1) {
+    for (var i = 1; i < bookBlocks.length; i++) {
+      var item = extractItem(bookBlocks[i].substring(0, 2000));
+      if (item) items.push(item);
+    }
+    return items;
+  }
+
+  // 模式 2：电影/音乐页 <div class="item ...">（在 grid-view 内）
+  var gridStart = html.indexOf('class="grid-view"');
+  var searchHtml = gridStart > -1 ? html.substring(gridStart) : html;
+  var movieBlocks = searchHtml.split(/<div\s+class="item(?:\s+[^"]*)?"/);
+  if (movieBlocks.length > 1) {
+    for (var j = 1; j < movieBlocks.length; j++) {
+      var item = extractItem(movieBlocks[j].substring(0, 2000));
+      if (item) items.push(item);
+    }
+  }
+
+  return items;
+}
+
+/**
+ * 抓取某个分类的全部收藏（自动翻页），并下载封面图到本地
+ */
+async function fetchCategory(baseUrl, userId, type, cookie, baseDir) {
+  var allItems = [];
+  var perPage = type === 'movies' ? 30 : 15;
+  var maxPages = 15;
+  var seenNames = {};
+  var typeShort = type.replace(/s$/, ''); // books->book, movies->movie, music->music
+
+  for (var page = 0; page < maxPages; page++) {
+    var start = page * perPage;
+    var url = baseUrl + '/people/' + userId + '/collect?start=' + start + '&sort=time&rating=all&filter=all&mode=grid';
+    console.log('  [page ' + (page + 1) + '] ' + url);
+
+    var html;
+    try {
+      html = await fetchPage(url, cookie);
+    } catch (e) {
+      console.error('  ✗ 请求失败: ' + e.message);
+      break;
+    }
+
+    var items = parseItems(html);
+    if (items.length === 0) {
+      console.log('  ✓ 无更多数据，共 ' + allItems.length + ' 条');
+      break;
+    }
+
+    // 去重（按名称）
+    var newCount = 0;
+    for (var k = 0; k < items.length; k++) {
+      if (!seenNames[items[k].name]) {
+        seenNames[items[k].name] = true;
+        allItems.push(items[k]);
+        newCount++;
+      }
+    }
+
+    console.log('  ✓ 获取 ' + items.length + ' 条' + (newCount < items.length ? '（' + (items.length - newCount) + ' 条重复已跳过）' : '') + '，累计 ' + allItems.length + ' 条');
+
+    if (items.length < perPage || newCount === 0) break;
+
+    // 礼貌延迟，避免被封
+    await new Promise(function (r) { setTimeout(r, 2000); });
+  }
+
+  // 下载所有封面图到本地（豆瓣有防盗链，必须下载）
+  console.log('  📥 下载封面图到本地...');
+  for (var i = 0; i < allItems.length; i++) {
+    var item = allItems[i];
+    if (!item.cover) {
+      console.log('    [' + (i + 1) + '/' + allItems.length + '] ' + item.name + ' - 无封面');
+      continue;
+    }
+    var localPath = await downloadCover(item.cover, typeShort, baseDir);
+    item.cover_local = localPath;
+    if (localPath) {
+      console.log('    [' + (i + 1) + '/' + allItems.length + '] ' + item.name + ' ✓');
+    } else {
+      console.log('    [' + (i + 1) + '/' + allItems.length + '] ' + item.name + ' ✗ 下载失败');
+    }
+    // 小延迟避免被封
+    await new Promise(function (r) { setTimeout(r, 500); });
+  }
+
+  return allItems;
+}
+
+hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_data/douban.json', {
+  options: [
+    { name: '--books', desc: '只抓取书籍' },
+    { name: '--movies', desc: '只抓取电影' },
+    { name: '--music', desc: '只抓取音乐' },
+    { name: '--force', desc: '强制重新抓取（忽略缓存）' }
+  ]
+}, async function (args) {
+  /* 必须先 load 才能拿到 theme.config */
+  await this.load();
+  var cfg = this.theme.config.douban || {};
+  var userId = cfg.user_id || '';
+
+  if (!userId) {
+    console.log('\n  ⚠ 未配置豆瓣用户 ID');
+    console.log('  请在 themes/moeMac/_config.yml 中设置：');
+    console.log('    douban:');
+    console.log('      user_id: "你的豆瓣ID"');
+    console.log('  豆瓣 ID = 个人主页 URL 中的 ID，如 douban.com/people/xxx/ 中的 xxx\n');
+    return;
+  }
+
+  var cookie = cfg.cookie || '';
+  var fetchBooks = args.books || (!args.books && !args.movies && !args.music);
+  var fetchMovies = args.movies || (!args.books && !args.movies && !args.music);
+  var fetchMusic = args.music || (!args.books && !args.movies && !args.music);
+
+  console.log('\n🔄 开始同步豆瓣收藏 [用户: ' + userId + ']\n');
+
+  var result = {};
+
+  // 读取已有数据（作为回退）
+  var dataPath = path.join(this.base_dir, 'source/_data/douban.json');
+  var existing = {};
+  if (fs.existsSync(dataPath)) {
+    try { existing = JSON.parse(fs.readFileSync(dataPath, 'utf-8')); } catch (e) {}
+  }
+
+  if (fetchBooks) {
+    console.log('📚 抓取书籍...');
+    try {
+      result.books = await fetchCategory('https://book.douban.com', userId, 'books', cookie, this.base_dir);
+    } catch (e) {
+      console.error('  ✗ 书籍抓取失败: ' + e.message);
+      result.books = existing.books || [];
+    }
+    console.log('');
+  } else {
+    result.books = existing.books || [];
+  }
+
+  if (fetchMovies) {
+    console.log('🎬 抓取电影...');
+    try {
+      result.movies = await fetchCategory('https://movie.douban.com', userId, 'movies', cookie, this.base_dir);
+    } catch (e) {
+      console.error('  ✗ 电影抓取失败: ' + e.message);
+      result.movies = existing.movies || [];
+    }
+    console.log('');
+  } else {
+    result.movies = existing.movies || [];
+  }
+
+  if (fetchMusic) {
+    console.log('🎵 抓取音乐...');
+    try {
+      result.music = await fetchCategory('https://music.douban.com', userId, 'music', cookie, this.base_dir);
+    } catch (e) {
+      console.error('  ✗ 音乐抓取失败: ' + e.message);
+      result.music = existing.music || [];
+    }
+    console.log('');
+  } else {
+    result.music = existing.music || [];
+  }
+
+  // 保存
+  var dataDir = path.join(this.base_dir, 'source/_data');
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+
+  result._meta = {
+    user_id: userId,
+    synced_at: new Date().toISOString(),
+    total: {
+      books: (result.books || []).length,
+      movies: (result.movies || []).length,
+      music: (result.music || []).length
+    }
+  };
+
+  fs.writeFileSync(dataPath, JSON.stringify(result, null, 2), 'utf-8');
+
+  console.log('✅ 同步完成！');
+  console.log('   📚 书籍: ' + result._meta.total.books + ' 条');
+  console.log('   🎬 电影: ' + result._meta.total.movies + ' 条');
+  console.log('   🎵 音乐: ' + result._meta.total.music + ' 条');
+  console.log('   📁 保存至: source/_data/douban.json\n');
+  console.log('   运行 hexo clean && hexo generate 重新生成页面');
+});

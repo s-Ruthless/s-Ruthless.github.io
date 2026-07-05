@@ -20,5 +20,16 @@
     <% if (posts.length === 0) { %>
       <div class="text-center py-10 opacity-50">该标签下还没有文章～</div>
     <% } %>
+    <% if (typeof page.total !== 'undefined' && page.total > 1) { %>
+      <div class="join flex justify-center mt-6">
+        <% if (page.prev) { %>
+          <a class="join-item btn btn-sm btn-ghost ajax-link" data-href="<%- url_for(page.prev_link) %>"><i class="fas fa-chevron-left"></i> 上一页</a>
+        <% } %>
+        <span class="join-item btn btn-sm btn-ghost no-animation"><%= page.current %> / <%= page.total %></span>
+        <% if (page.next) { %>
+          <a class="join-item btn btn-sm btn-ghost ajax-link" data-href="<%- url_for(page.next_link) %>">下一页 <i class="fas fa-chevron-right"></i></a>
+        <% } %>
+      </div>
+    <% } %>
   </div>
 </div>

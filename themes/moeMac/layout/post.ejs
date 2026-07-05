@@ -1,3 +1,23 @@
+<% var showToc = theme.post && theme.post.show_toc !== false; %>
+<% if (showToc) {
+  var tocHtml = toc(page.content, { class: 'post-toc-list', list_number: false, max_depth: 3, min_depth: 2 });
+  var hasToc = tocHtml && tocHtml.replace(/\s/g,'').length > 0 && tocHtml.indexOf('<ol') !== -1;
+} else { var tocHtml = ''; var hasToc = false; } %>
+<% if (showToc && hasToc) { %>
+<aside class="post-toc-wrap" id="post-toc-wrap">
+  <div class="post-toc-inner">
+    <div class="post-toc-head">
+      <span><i class="fas fa-list-ul"></i> 目录</span>
+      <button class="post-toc-toggle" id="post-toc-toggle" title="收起/展开"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="post-toc-body" id="post-toc-body">
+      <%- tocHtml %>
+    </div>
+  </div>
+</aside>
+<button class="post-toc-fab" id="post-toc-fab" title="目录" style="display:none;"><i class="fas fa-list-ul"></i></button>
+<% } %>
+
 <div class="page-container">
   <div class="page-header">
     <h2><%= page.title %></h2>
@@ -7,6 +27,11 @@
       <div class="flex items-center gap-2 text-xs opacity-50 flex-wrap">
         <i class="fas fa-calendar-days"></i>
         <span><%= date(page.date, 'YYYY-MM-DD HH:mm') %></span>
+        <% if (page.updated && String(page.updated) !== String(page.date)) { %>
+          <span>·</span>
+          <i class="fas fa-pen-to-square"></i>
+          <span><%= date(page.updated, 'YYYY-MM-DD HH:mm') %></span>
+        <% } %>
         <% if (page.categories && page.categories.length > 0) { %>
           <span>·</span>
           <i class="fas fa-folder"></i>
@@ -42,5 +67,6 @@
         </a>
       <% } %>
     </div>
+    <%- partial('_partial/comments') %>
   </div>
 </div>

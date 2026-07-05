@@ -93,7 +93,7 @@
             mini: false, autoplay: false, theme: '#8b5cf6',
             loop: 'all', order: 'list', preload: 'metadata', volume: 0.7, mutex: true
           });
-          try { self.ap.list.hide(); } catch (e) {} /* 濞撳懘娅?APlayer 閸愬懓浠?max-height */ var listEl = mount.querySelector('.aplayer-list'); if (listEl) listEl.style.maxHeight = '';
+          try { self.ap.list.hide(); } catch (e) {} /* 隐藏列表以重置 APlayer 的 max-height */ var listEl = mount.querySelector(".aplayer-list"); if (listEl) listEl.style.maxHeight = "";
           mount.classList.remove('aplayer-init-hide');
           self.initialized = true;
           self.loading = false;
@@ -141,52 +141,70 @@
     minimize: function (win) {
       if (win.classList.contains('win-minimized') || win.style.display === 'none') return;
       var id = this.winId(win);
-      var container = document.getElementById('dock-mini-zone');
-      if (!container) { win.style.display = 'none'; return; }
+      var zone = document.getElementById('dock-mini-zone');
+      if (!zone) { win.style.display = 'none'; return; }
+      if (typeof gsap === 'undefined') { win.style.display = 'none'; win.classList.add('win-minimized'); return; }
       var icon = this.iconMap[id] || 'fas fa-window-maximize';
       var name = this.nameMap[id] || '';
       var item = document.createElement('div');
-      item.className = 'dock-item dock-minimized-item dock-item-enter';
+      item.className = 'dock-minimized-item';
       item.setAttribute('data-win-id', id);
+      gsap.set(item, { scale: 0, y: 16, opacity: 0 });
       item.innerHTML = '<div class="dock-text">' + name + '</div><div class="dock-item-inner"><i class="' + icon + ' dock-icon"></i></div>';
-      /* 閹绘帒鍙嗛崚鍡涙缁惧尅绱欐俊鍌涚亯鏉╂ɑ鐥呴張澶涚礆 */
-      if (!document.querySelector('.dock-mini-sep')) {
+      if (!zone.querySelector('.dock-mini-sep')) {
         var sep = document.createElement('div');
         sep.className = 'dock-mini-sep';
-        container.appendChild(sep);
+        zone.appendChild(sep);
       }
-      container.appendChild(item);
+      zone.appendChild(item);
+      /* 动态创建的最小化图标也绑定 tooltip */
+      DockTip.init();
 
+      /* 先让 zone 可测量，然后获取目标宽度，再用 GSAP 动画宽度展开 */
+      /* 动画期间 overflow:hidden 防止内容溢出；动画完成后加 expanded 切换 overflow:visible */
+      zone.style.width = '0px';
+      zone.classList.remove('expanded');
+      var targetWidth = zone.scrollWidth;
 
-      /* 瀵ゆ儼绻滄稉鈧敮褑顔€ dock 閸ョ偓鐖ｉ崗鍫濆弳閸﹀搫濮╅悽浼欑礉閸愬秴鎯庨崝銊х崶閸欙絿缂夌亸?*/
-      requestAnimationFrame(function() {
-        var iconRect = item.getBoundingClientRect();
-        var winRect = win.getBoundingClientRect();
-        var dx = (iconRect.left + iconRect.width / 2) - (winRect.left + winRect.width / 2);
-        var dy = (iconRect.top + iconRect.height / 2) - (winRect.top + winRect.height / 2);
-        var targetScale = Math.max(iconRect.width / winRect.width, 0.08);
+      /* 保存当前位置，动画结束后清除 GSAP transform 并恢复 Drag 的 left/top */
+      var savedLeft = win.style.left, savedTop = win.style.top;
 
-        /* 缁愭褰涚紓鈺佺毈閸斻劎鏁鹃敍姘辨暏 ease-out 閸忓牆鎻╅崥搴㈠弮閿涘矂鍘ら崥?dock 閸ョ偓鐖ｅ鐟板弳 */
-        win.style.transition = 'transform 0.48s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.48s cubic-bezier(0.22, 0.61, 0.36, 1)';
-        win.style.transformOrigin = 'center center';
-        win.style.zIndex = '10001';
-        win.style.pointerEvents = 'none';
-        requestAnimationFrame(function() {
-          win.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + targetScale + ')';
-          win.style.opacity = '0';
-        });
+      var iconRect = item.getBoundingClientRect();
+      var winRect = win.getBoundingClientRect();
+      var dx = (iconRect.left + iconRect.width / 2) - (winRect.left + winRect.width / 2);
+      var dy = (iconRect.top + iconRect.height / 2) - (winRect.top + winRect.height / 2);
+      var targetScale = Math.max(iconRect.width / winRect.width, 0.06);
+
+      /* GSAP timeline：窗口 Genie 吸入 → dock 图标弹入 + dock-mini-zone 宽度展开 */
+      var tl = gsap.timeline({
+        onComplete: function () {
+          gsap.set(win, { clearProps: 'all' });
+          win.classList.add('win-minimized');
+          win.style.display = 'none';
+          win.style.left = savedLeft; win.style.top = savedTop;
+          zone.style.width = 'auto';
+          zone.classList.add('expanded'); /* 动画完成，切换 overflow:visible 让 hover 不被裁切 */
+          syncDockGlass();
+        }
       });
-
-      setTimeout(function() {
-        win.classList.add('win-minimized');
-        win.style.display = 'none';
-        win.style.transition = '';
-        win.style.transform = '';
-        win.style.opacity = '';
-        win.style.zIndex = '';
-        win.style.pointerEvents = '';
-        item.classList.remove('dock-item-enter');
-      }, 520);
+      tl.to(win, {
+        x: dx, y: dy,
+        scale: targetScale, scaleY: 0.6,
+        opacity: 0, filter: 'blur(2px)',
+        duration: 0.42, ease: 'power2.in'
+      });
+      tl.to(item, {
+        scale: 1, y: 0, opacity: 1,
+        duration: 0.32, ease: 'back.out(1.6)'
+      }, '-=0.1');
+      /* dock-mini-zone 宽度展开动画（与窗口吸入并行） */
+      tl.to(zone, {
+        width: targetWidth,
+        duration: 0.42, ease: 'power2.out'
+      }, 0);
+      /* 保存位置到 dataset（clearProps 后仍能恢复） */
+      win.dataset.savedLeft = savedLeft;
+      win.dataset.savedTop = savedTop;
     },
 
     restore: function (win, miniItem) {
@@ -196,44 +214,101 @@
       }
       win.classList.remove('win-minimized');
       win.style.display = '';
-
-      /* dock 閸ョ偓鐖ｉ柅鈧崷鍝勫З閻?*/
-      if (miniItem) {
-        miniItem.classList.add('dock-item-leave');
-        var onAnimEnd = function() {
-          miniItem.removeEventListener('animationend', onAnimEnd);
-          miniItem.remove();
-          var wrap = document.querySelector('.dock-bar-inner');
-          /* 婵″倹鐏夊▽鈩冩箒閺堚偓鐏忓繐瀵查崶鐐垼娴滃棴绱濈粔濠氭珟閸掑棝娈х痪?*/
-          if (wrap && !wrap.querySelector('.dock-minimized-item')) {
-            var s = wrap.querySelector('.dock-mini-sep');
-            if (s) s.remove();
-          }
-          var container = document.getElementById('dock-mini-wrap');
-          if (container && container.children.length === 0) {
-            var sep = document.querySelector('.dock-mini-wraparator');
-            if (sep) sep.classList.remove('visible');
-          }
-        };
-        miniItem.addEventListener('animationend', onAnimEnd);
-        /* 閸忔粌绨抽敍姘娑撯偓閸斻劎鏁炬禍瀣╂濞屄ば曢崣?*/
-        setTimeout(function() { if (miniItem.parentNode) onAnimEnd(); }, 350);
+      /* 恢复动画期间隐藏红绿灯（窗口从 dock 弹出时不应显示） */
+      win.classList.add('win-restoring');
+      /* 读取最小化前保存的位置 */
+      var savedLeft = win.dataset.savedLeft || win.style.left;
+      var savedTop  = win.dataset.savedTop  || win.style.top;
+      /* GSAP 不可用时降级为直接显示 */
+      if (typeof gsap === 'undefined') {
+        win.classList.remove('win-restoring');
+        if (miniItem && miniItem.parentNode) miniItem.remove();
+        var zone0 = document.getElementById('dock-mini-zone');
+        if (zone0 && !zone0.querySelector('.dock-minimized-item')) { zone0.classList.remove('expanded'); zone0.style.width = '0px'; var s0 = zone0.querySelector('.dock-mini-sep'); if (s0) s0.remove(); }
+        Drag.focus(win); return;
       }
 
-      /* 缁愭褰涘鐟板毉閹垹顦?*/
-      win.style.transition = 'none';
-      win.style.transform = 'scale(0.4) translateY(30px)';
-      win.style.opacity = '0';
-      win.offsetHeight;
-      win.style.transition = 'transform 0.42s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease';
-      win.style.transform = 'scale(1) translateY(0)';
-      win.style.opacity = '1';
-      setTimeout(function() {
-        win.style.transition = '';
-        win.style.transform = '';
-        win.style.opacity = '';
-      }, 450);
-      Drag.focus(win);
+      var zone = document.getElementById('dock-mini-zone');
+      var sep = zone ? zone.querySelector('.dock-mini-sep') : null;
+
+      var iconRect = miniItem ? miniItem.getBoundingClientRect() : null;
+      var winRect = win.getBoundingClientRect();
+      var dx = 0, dy = 0, startScale = 0.1;
+      if (iconRect) {
+        dx = (iconRect.left + iconRect.width / 2) - (winRect.left + winRect.width / 2);
+        dy = (iconRect.top + iconRect.height / 2) - (winRect.top + winRect.height / 2);
+        startScale = Math.max(iconRect.width / winRect.width, 0.06);
+      }
+
+      /* 判断 zone 里是否只剩这一个 miniItem（restore 后就空了） */
+      var otherItems = zone ? zone.querySelectorAll('.dock-minimized-item:not([data-win-id="' + this.winId(win) + '"])') : [];
+      var shouldCollapseZone = zone && zone.classList.contains('expanded') && otherItems.length === 0;
+
+      /* GSAP timeline：窗口从 dock 位置展开 + dock 图标缩小消失 + zone 宽度收起，同步进行 */
+      gsap.set(win, { x: dx, y: dy, scale: startScale, scaleY: 0.6, opacity: 0, filter: 'blur(2px)' });
+      var tl = gsap.timeline({
+        onComplete: function () {
+          if (!shouldCollapseZone) zone.style.width = 'auto';
+          syncDockGlass();
+        }
+      });
+
+      /* 窗口展开动画 */
+      tl.to(win, {
+        x: 0, y: 0, scale: 1, scaleY: 1, opacity: 1, filter: 'blur(0px)',
+        duration: 0.4, ease: 'back.out(1.4)'
+      });
+
+      /* dock 图标缩小消失（与窗口展开同时进行）*/
+      if (miniItem) {
+        tl.to(miniItem, {
+          scale: 0.3, y: -8, opacity: 0,
+          duration: 0.25, ease: 'power2.in'
+        }, 0);
+      }
+
+      /* zone 宽度收起动画（仅当最后一个 icon 被 restore 时）*/
+      if (shouldCollapseZone) {
+        zone.classList.remove('expanded'); /* 动画期间 overflow:hidden */
+        var currentWidth = zone.scrollWidth;
+        zone.style.width = currentWidth + 'px';
+        tl.to(zone, {
+          width: 0,
+          duration: 0.32, ease: 'power2.inOut'
+        }, 0);
+        tl.call(function () {
+          if (miniItem && miniItem.parentNode) miniItem.remove();
+          if (sep && sep.parentNode) sep.remove();
+          zone.style.width = '0px';
+        });
+      } else {
+        /* 还有其他 icon，窗口展开完成后移除当前 icon 并自适应宽度 */
+        tl.call(function () {
+          if (miniItem && miniItem.parentNode) miniItem.remove();
+          if (sep && sep.parentNode && !zone.querySelector('.dock-minimized-item')) sep.remove();
+          if (zone && zone.querySelector('.dock-minimized-item')) {
+            zone.classList.remove('expanded'); /* 动画期间 overflow:hidden */
+            var newW = zone.scrollWidth;
+            zone.style.width = zone.offsetWidth + 'px';
+            gsap.to(zone, { width: newW, duration: 0.28, ease: 'power2.out',
+              onComplete: function () {
+                zone.style.width = 'auto';
+                zone.classList.add('expanded'); /* 恢复 overflow:visible */
+                syncDockGlass();
+              }
+            });
+          }
+        }, null, 0.4);
+      }
+
+      /* 动画完成后清除 GSAP transform，并恢复 Drag 的原始 left/top */
+      tl.set(win, { clearProps: 'all' }, '>');
+      tl.call(function () {
+        win.style.left = win.dataset.savedLeft || savedLeft || win.style.left;
+        win.style.top  = win.dataset.savedTop  || savedTop  || win.style.top;
+        win.classList.remove('win-restoring');
+        Drag.focus(win); /* 动画完成后才 focus（避免 restore 中途弹出红绿灯） */
+      }, null, '>');
     },
 
     togglePin: function (win) {
@@ -246,6 +321,25 @@
       if (win.id) return win.id;
       win.id = 'win-' + Math.random().toString(36).substr(2, 6);
       return win.id;
+    }
+  };
+
+  /* ====== Dock Tooltip — 独立于 GSAP，确保始终可用 ====== */
+  var DockTip = {
+    init: function () {
+      document.querySelectorAll('.dock-item, .dock-minimized-item').forEach(function (item) {
+        var tip = item.querySelector('.dock-text');
+        if (!tip) return;
+        /* 用 dataset 防重复绑定 */
+        if (tip.dataset.tipBound) return;
+        tip.dataset.tipBound = '1';
+        item.addEventListener('mouseenter', function () {
+          tip.classList.add('tip-show');
+        });
+        item.addEventListener('mouseleave', function () {
+          tip.classList.remove('tip-show');
+        });
+      });
     }
   };
 
@@ -299,6 +393,35 @@
             document.addEventListener('mousemove', mv);
             document.addEventListener('mouseup', up);
           });
+          /* 触摸拖拽（移动端） */
+          bar.addEventListener('touchstart', function (e) {
+            if (e.target.closest('.win-traffic-btn')) return;
+            if (e.touches.length !== 1) return;
+            var t = e.touches[0];
+            ox = el.offsetLeft; oy = el.offsetTop; sx = t.clientX; sy = t.clientY;
+            el.classList.add('win-dragging'); self.focus(el); moving = true;
+            function tmv(ev) {
+              if (!moving || ev.touches.length !== 1) return;
+              var tt = ev.touches[0];
+              var newX = ox + tt.clientX - sx;
+              var newY = oy + tt.clientY - sy;
+              var maxX = document.documentElement.clientWidth - el.offsetWidth;
+              var maxY = document.documentElement.clientHeight - el.offsetHeight;
+              newX = Math.max(0, Math.min(newX, maxX));
+              newY = Math.max(0, Math.min(newY, maxY));
+              el.style.left = newX + 'px';
+              el.style.top = newY + 'px';
+            }
+            function tup() {
+              moving = false; el.classList.remove('win-dragging');
+              document.removeEventListener('touchmove', tmv);
+              document.removeEventListener('touchend', tup);
+              document.removeEventListener('touchcancel', tup);
+            }
+            document.addEventListener('touchmove', tmv, { passive: false });
+            document.addEventListener('touchend', tup);
+            document.addEventListener('touchcancel', tup);
+          }, { passive: true });
         }
         var rh = el.querySelector('.win-resize-handle');
         if (rh) {
@@ -390,6 +513,260 @@
     });
   }
 
+  /* ====== 文章目录 TOC ====== */
+  var TOC = {
+    spyTimer: null,
+    init: function () {
+      var wrap = document.getElementById('post-toc-wrap');
+      var fab = document.getElementById('post-toc-fab');
+      if (!wrap) return;
+
+      var toggle = document.getElementById('post-toc-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          wrap.classList.toggle('collapsed');
+        });
+      }
+
+      /* 移动端 FAB 开关 */
+      if (fab) {
+        fab.addEventListener('click', function (e) {
+          e.stopPropagation();
+          wrap.classList.toggle('fab-open');
+        });
+        document.addEventListener('click', function (e) {
+          if (!wrap.contains(e.target) && e.target !== fab && !fab.contains(e.target)) {
+            wrap.classList.remove('fab-open');
+          }
+        });
+      }
+
+      /* 点击目录项平滑滚动 */
+      var links = wrap.querySelectorAll('.post-toc-list a');
+      links.forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var id = decodeURIComponent(a.getAttribute('href').replace(/^#/, ''));
+          var target = document.getElementById(id);
+          if (target) {
+            var top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+          wrap.classList.remove('fab-open');
+        });
+      });
+
+      this.scrollSpy();
+    },
+    scrollSpy: function () {
+      var wrap = document.getElementById('post-toc-wrap');
+      if (!wrap) return;
+      var links = wrap.querySelectorAll('.post-toc-list a');
+      if (!links.length) return;
+      var content = document.getElementById('post-content') || document.querySelector('.article-content');
+      if (!content) return;
+      var headings = [];
+      links.forEach(function (a) {
+        var id = decodeURIComponent(a.getAttribute('href').replace(/^#/, ''));
+        var h = document.getElementById(id);
+        if (h) headings.push({ el: h, link: a });
+      });
+      if (!headings.length) return;
+
+      var self = this;
+      function update() {
+        var pos = window.pageYOffset + 100;
+        var current = headings[0];
+        for (var i = 0; i < headings.length; i++) {
+          if (headings[i].el.offsetTop <= pos) current = headings[i];
+        }
+        headings.forEach(function (h) { h.link.classList.toggle('toc-active', h === current); });
+        /* 当前项滚入 TOC 可视区 */
+        if (current) {
+          var body = document.getElementById('post-toc-body');
+          if (body) {
+            var r = current.link.getBoundingClientRect();
+            var br = body.getBoundingClientRect();
+            if (r.top < br.top || r.bottom > br.bottom) {
+              current.link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+          }
+        }
+      }
+      window.addEventListener('scroll', function () {
+        clearTimeout(self.spyTimer);
+        self.spyTimer = setTimeout(update, 60);
+      }, { passive: true });
+      update();
+    }
+  };
+
+  /* ====== 代码块复制按钮 ====== */
+  var CodeCopy = {
+    init: function () {
+      var blocks = document.querySelectorAll('.article-content figure.highlight, .article-content pre');
+      blocks.forEach(function (pre) {
+        if (pre.querySelector('.code-copy-btn')) return;
+        /* 只对代码块加，跳过已被 figure 包裹的 pre（避免重复） */
+        if (pre.tagName === 'PRE' && pre.closest('figure.highlight')) return;
+        var btn = document.createElement('button');
+        btn.className = 'code-copy-btn';
+        btn.type = 'button';
+        btn.innerHTML = '<i class="fas fa-copy"></i>';
+        btn.title = '复制代码';
+        btn.addEventListener('click', function () {
+          var codeEl = pre.querySelector('td.code pre') || pre.querySelector('pre') || pre;
+          var text = codeEl.innerText.replace(/\n$/,'');
+          var done = function () { btn.innerHTML = '<i class="fas fa-check"></i>'; btn.classList.add('copied'); setTimeout(function () { btn.innerHTML = '<i class="fas fa-copy"></i>'; btn.classList.remove('copied'); }, 1600); };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(function () { CodeCopy._legacy(text, done); });
+          } else { CodeCopy._legacy(text, done); }
+        });
+        pre.appendChild(btn);
+      });
+    },
+    _legacy: function (text, cb) {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); cb(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  };
+
+  /* ====== 图片懒加载 ====== */
+  var LazyImg = {
+    init: function () {
+      var imgs = document.querySelectorAll('.article-content img:not([loading]), .page-body img:not([loading])');
+      imgs.forEach(function (img) { img.setAttribute('loading', 'lazy'); img.setAttribute('decoding', 'async'); });
+    }
+  };
+
+  /* ====== 返回顶部 ====== */
+  var BackTop = {
+    el: null, timer: null,
+    init: function () {
+      if (document.getElementById('back-top-btn')) { this.el = document.getElementById('back-top-btn'); return; }
+      var btn = document.createElement('button');
+      btn.id = 'back-top-btn'; btn.className = 'back-top-btn'; btn.type = 'button';
+      btn.innerHTML = '<i class="fas fa-arrow-up"></i>'; btn.title = '返回顶部';
+      btn.style.display = 'none';
+      btn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      document.body.appendChild(btn);
+      this.el = btn;
+      var self = this;
+      window.addEventListener('scroll', function () {
+        clearTimeout(self.timer); self.timer = setTimeout(function () { self.toggle(); }, 100);
+      }, { passive: true });
+      this.toggle();
+    },
+    toggle: function () {
+      if (!this.el) return;
+      this.el.style.display = window.pageYOffset > 400 ? 'flex' : 'none';
+    },
+    refresh: function () { this.toggle(); }
+  };
+
+  /* ====== 站内搜索 ====== */
+  var Search = {
+    data: null, loading: false, timer: null,
+    init: function () {
+      var trig = document.getElementById('search-trigger');
+      var modal = document.getElementById('search-modal');
+      var mask = document.getElementById('search-mask');
+      var input = document.getElementById('search-input');
+      var clear = document.getElementById('search-clear');
+      if (!trig || !modal) return;
+      var self = this;
+
+      function open() {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () { if (input) input.focus(); }, 80);
+        if (!self.data && !self.loading) self.loadData();
+      }
+      function close() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+      trig.addEventListener('click', open);
+      if (mask) mask.addEventListener('click', close);
+      if (clear) clear.addEventListener('click', function () { if (input) { input.value = ''; input.focus(); self.render(''); } });
+      if (input) {
+        input.addEventListener('input', function () {
+          clearTimeout(self.timer);
+          self.timer = setTimeout(function () { self.render(input.value); }, 180);
+        });
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') close();
+        });
+      }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault(); open();
+        }
+        if (e.key === 'Escape' && modal.classList.contains('open')) close();
+      });
+    },
+    loadData: function () {
+      var self = this;
+      this.loading = true;
+      fetch('/search.xml').then(function (r) { return r.text(); }).then(function (txt) {
+        var xml = new DOMParser().parseFromString(txt, 'text/xml');
+        var entries = xml.querySelectorAll('entry');
+        self.data = [];
+        entries.forEach(function (en) {
+          self.data.push({
+            title: (en.querySelector('title') || {}).textContent || '',
+            url: (en.querySelector('url') || {}).textContent || '',
+            content: (en.querySelector('content') || {}).textContent || ''
+          });
+        });
+        self.loading = false;
+      }).catch(function () { self.loading = false; });
+    },
+    render: function (q) {
+      var box = document.getElementById('search-results');
+      if (!box) return;
+      q = (q || '').trim();
+      if (!q) { box.innerHTML = '<div class="search-hint">输入关键词开始搜索</div>'; return; }
+      if (!this.data) { box.innerHTML = '<div class="search-hint">索引加载中…</div>'; return; }
+      var kw = q.toLowerCase();
+      var matched = [];
+      for (var i = 0; i < this.data.length; i++) {
+        var it = this.data[i];
+        var ti = it.title.toLowerCase(), ci = it.content.toLowerCase();
+        var pos = ci.indexOf(kw);
+        if (ti.indexOf(kw) !== -1 || pos !== -1) {
+          var start = Math.max(0, pos - 30);
+          var excerpt = (pos !== -1 ? (start > 0 ? '…' : '') + it.content.substr(start, 120) + '…' : it.content.substr(0, 120) + '…');
+          matched.push({ title: it.title, url: it.url, excerpt: excerpt, date: it.date || '' });
+          if (matched.length >= 30) break;
+        }
+      }
+      if (!matched.length) { box.innerHTML = '<div class="search-empty">没有找到相关结果</div>'; return; }
+      var hl = function (s) { return s.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig'), '<em>$1</em>'); };
+      var html = '';
+      matched.forEach(function (m) {
+        html += '<a class="search-item ajax-link" data-href="' + m.url + '">' +
+          '<div class="search-item-title">' + hl(m.title) + '</div>' +
+          '<div class="search-item-excerpt">' + hl(m.excerpt) + '</div>' +
+          '</a>';
+      });
+      box.innerHTML = html;
+      var self = this;
+      box.querySelectorAll('.search-item').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var modal = document.getElementById('search-modal');
+          if (modal) modal.classList.remove('open');
+          document.body.style.overflow = '';
+          var href = a.getAttribute('data-href');
+          if (Nav && Nav.go) Nav.go(href);
+        });
+      });
+    }
+  };
+
   /* ====== AJAX Nav ====== */
   var Nav = {
     box: null, busy: false,
@@ -428,11 +805,19 @@
               var t = doc.querySelector('title'); if (t) document.title = t.textContent;
               if (push) history.pushState(null, null, u);
               Drag.init(); WallFilter(); self.dockHL();
+              DockTip.init();
               loadHitokoto();
               MusicPlayer.moveToWindow();
+              TOC.init();
+              CodeCopy.init();
+              LazyImg.init();
+              BackTop.refresh();
+              DesktopMode.check();
               window.scrollTo(0, 0);
-              if (typeof hljs !== 'undefined') document.querySelectorAll('pre code').forEach(function (b) { hljs.highlightElement(b); });
-              // GSAP 閸斻劎鏁鹃柌宥堟祰閿涘湏JAX 鐎佃壈鍩呴崥搴ㄥ櫢閺傛媽袝閸欐垵鍙嗛崷鍝勫З閻紮绱?              if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
+              // GSAP 动画需在 AJAX 加载完成后重新执行
+              if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
+              // UI 增强效果重新初始化
+              if (typeof UIEnhance !== "undefined") UIEnhance.init();
             }
           }
           box.classList.remove('fade-out'); box.classList.add('fade-in');
@@ -449,13 +834,41 @@
         var h = el.getAttribute('data-href');
         el.classList.toggle('active', h === c || (h === '/' && c === '/'));
       });
+      syncDockGlass();
     }
   };
+
+  /* ====== 桌面模式切换（首页禁止滚动） ====== */
+  var DesktopMode = {
+    check: function () {
+      var hasDesktop = !!document.querySelector('.drag-win');
+      document.documentElement.classList.toggle('is-desktop', hasDesktop);
+      document.body.classList.toggle('is-desktop', hasDesktop);
+    }
+  };
+
+  /* ====== 同步 dock-glass 宽度到 dock-bar-inner ====== */
+  function syncDockGlass() {
+    var inner = document.querySelector('.dock-bar-inner');
+    var glass = document.querySelector('.dock-glass');
+    if (inner && glass) {
+      glass.style.width = inner.offsetWidth + 'px';
+    }
+  }
 
   /* ====== Init ====== */
   document.addEventListener('DOMContentLoaded', function () {
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
+    DockTip.init(); /* dock tooltip — 不依赖 GSAP */
     loadHitokoto(); MusicPlayer.init();
-    // GSAP 閸斻劎鏁鹃崷?Drag.init() 鐎规矮缍呯€瑰本鍨氶崥搴″晙閹笛嗩攽閿涘矂浼╅崗宥囩崶閸欙綀绐囬崚鏉夸箯娑撳﹨顫?    if (typeof GSAPAnimations !== 'undefined') GSAPAnimations.run();
+    TOC.init(); CodeCopy.init(); LazyImg.init(); BackTop.init(); Search.init();
+    DesktopMode.check();
+    syncDockGlass();
+    // 窗口最小化/恢复后 dock 宽度变化，同步 glass
+    window.addEventListener('resize', syncDockGlass);
+    // GSAP 动画需在 Drag.init() 定位窗口之后执行
+    if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
+    // UI 增强效果（粒子拖尾只初始化一次，其余每次 AJAX 都重新初始化）
+    if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }
   });
 })();

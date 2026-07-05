@@ -18,6 +18,20 @@
 .post-list-item .post-meta a:hover{text-decoration:underline;}
 .post-excerpt{font-size:13px;color:#777;line-height:1.5;margin-top:6px;}
 
+/* 文章列表标签 */
+.post-list-tags{margin-top:6px;}
+.post-list-tag{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;
+  color:#7c3aed;background:rgba(167,139,250,0.1);
+  transition:all 0.18s ease;cursor:pointer;text-decoration:none;
+}
+.post-list-tag i{font-size:9px;opacity:0.6;}
+.post-list-tag:hover{
+  background:rgba(167,139,250,0.2);color:#6d28d9;
+  transform:translateY(-1px);
+}
+
 /* 分页 */
 .pagination{
   display:flex;justify-content:center;align-items:center;gap:16px;

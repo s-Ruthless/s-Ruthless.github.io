@@ -24,7 +24,7 @@
         var fullText = strip_html(post.excerpt || post.content || '');
         var maxLen = size === 'card-sm' ? 30 : size === 'card-lg' ? 100 : 55;
         var summary = fullText.substring(0, maxLen);
-        var showTags = size !== 'card-sm';
+        var showTags = true;
       %>
       <div class="wall-card ajax-link" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" style="--card-bg:<%= ['#fce4ec','#e3f2fd','#fff3e0','#e8f5e9','#f3e5f5','#e0f7fa','#fff8e1','#efebe9'][idx % 8] %>;">
         <div class="card-top">

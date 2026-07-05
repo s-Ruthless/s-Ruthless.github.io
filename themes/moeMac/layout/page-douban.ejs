@@ -1,0 +1,71 @@
+<%
+  // 优先读取 _data/douban.json（hexo douban 命令抓取的数据），回退到主题配置
+  var db = (site.data && site.data.douban) ? site.data.douban : (theme.douban || {});
+  // 过滤掉非数据字段（_meta 等）
+  var sections = [
+    { key: 'books',  title: '书籍', icon: 'fas fa-book-open',  empty: '还没有读过书哦～' },
+    { key: 'movies', title: '电影', icon: 'fas fa-film',       empty: '还没有看过电影哦～' },
+    { key: 'music',  title: '音乐', icon: 'fas fa-compact-disc', empty: '还没有听过歌单哦～' }
+  ];
+  function stars(rating){
+    var s = Math.round((rating||0) / 2); // 10分制 -> 5星
+    var html = '';
+    for (var i=0;i<5;i++){ html += '<i class="fas fa-star '+(i<s?'star-on':'star-off')+'"></i>'; }
+    return html;
+  }
+%>
+<div class="page-container douban-page">
+  <div class="page-header">
+    <h2><i class="fas fa-clapperboard"></i> <%= page.title || '豆瓣' %></h2>
+    <p class="archive-subtitle">书 · 影 · 音 的碎片收藏</p>
+  </div>
+  <div class="page-body">
+    <% sections.forEach(function(sec) { var items = db[sec.key] || []; if (items.length === 0) return; %>
+    <section class="douban-section">
+      <div class="douban-sec-head">
+        <h3><i class="<%= sec.icon %>"></i> <%= sec.title %></h3>
+        <span class="douban-count"><%= items.length %></span>
+      </div>
+      <div class="douban-grid">
+        <% items.forEach(function(it) { %>
+          <article class="douban-card">
+            <div class="douban-cover">
+              <% var coverSrc = it.cover_local || it.cover; %>
+              <% if (coverSrc) { %>
+                <img src="<%= coverSrc %>" alt="<%= it.name %>" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'douban-cover-ph\'><i class=\'<%= sec.icon %>\'></i></div>'">
+              <% } else { %>
+                <div class="douban-cover-ph"><i class="<%= sec.icon %>"></i></div>
+              <% } %>
+            </div>
+            <div class="douban-info">
+              <h4 class="douban-name"><%= it.name %></h4>
+              <% if (it.original_name) { %><p class="douban-original-name"><%= it.original_name %></p><% } %>
+              <div class="douban-rating">
+                <span class="douban-stars"><%- stars(it.rating) %></span>
+                <% if (it.rating) { %><span class="douban-score"><%= it.rating %></span><% } %>
+              </div>
+              <% if (it.date) { %><div class="douban-date"><i class="fas fa-calendar-day"></i> <%= it.date %></div><% } %>
+              <% if (it.note) { %><p class="douban-note"><%= it.note %></p><% } %>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    </section>
+    <% }); %>
+
+    <% var hasAny = sections.some(function(sec){ return (db[sec.key]||[]).length > 0; }); %>
+    <% if (!hasAny) { %>
+      <div class="douban-empty">
+        <i class="fas fa-box-open"></i>
+        <p>还没有收藏内容</p>
+        <span>方式一：在主题配置 <code>_config.yml</code> 的 <code>douban.user_id</code> 填写豆瓣 ID，运行 <code>npx hexo douban</code> 自动抓取</span><br>
+        <span>方式二：在 <code>douban.books / movies / music</code> 下手动添加条目</span>
+      </div>
+    <% } %>
+
+    <% if (page.content && page.content.trim()) { %>
+      <div class="divider my-6"></div>
+      <div class="article-content"><%- page.content %></div>
+    <% } %>
+  </div>
+</div>

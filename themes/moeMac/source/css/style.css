@@ -1,6 +1,6 @@
 /* ====== moeMac Theme ====== */
 *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}
-html{height:100%;overflow-y:scroll;overflow-x:hidden;}
+html{height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable;}
 body{
   min-height:100%;overflow-x:hidden;overflow-y:auto;color:#333;
   background:
@@ -9,11 +9,28 @@ body{
     radial-gradient(ellipse at 30% 80%,rgba(255,223,186,0.32) 0%,transparent 45%),
     radial-gradient(ellipse at 75% 85%,rgba(221,191,255,0.32) 0%,transparent 45%),#f7f8fc;
   background-attachment:fixed;user-select:none;
+  -webkit-user-select:none;
 }
-::-webkit-scrollbar{width:6px;height:6px;}
+/* 首页桌面模式：禁止 html+body 滚动，消除多余滚动条 */
+html.is-desktop,html.is-desktop body{overflow:hidden;}
+/* 正文内容允许选中复制 */
+.article-content,.article-content *{user-select:text;-webkit-user-select:text;}
+.about-content,.about-content *{user-select:text;-webkit-user-select:text;}
+
+/* ====== 全局滚动条美化 ====== */
+::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:3px;}
-::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.2);}
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,rgba(167,139,250,0.35),rgba(139,92,246,0.3));
+  border-radius:4px;border:2px solid transparent;background-clip:padding-box;
+}
+::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,rgba(167,139,250,0.55),rgba(139,92,246,0.5));
+  background-clip:padding-box;
+}
+::-webkit-scrollbar-corner{background:transparent;}
+/* Firefox */
+*{scrollbar-width:thin;scrollbar-color:rgba(167,139,250,0.35) transparent;}
 a{color:inherit;text-decoration:none;font-family:inherit;}
 
 /* progress bar */
@@ -63,23 +80,74 @@ a{color:inherit;text-decoration:none;font-family:inherit;}
 .app-window:hover .win-resize-handle{opacity:1;}
 .win-resize-handle:hover{background:linear-gradient(135deg,transparent 45%,rgba(167,139,250,0.35) 45%);}
 
-/* traffic lights */
+/* traffic lights — macOS style
+   仅 hover 时显示，不用 win-focused（避免 restore 后立即弹出） */
 .win-traffic{
-  position:absolute;top:12px;left:14px;z-index:5;display:flex;gap:7px;
+  position:absolute;top:12px;left:14px;z-index:5;display:flex;gap:8px;
   opacity:0;pointer-events:none;transition:opacity 0.25s ease;
 }
 .app-window:hover .win-traffic{opacity:1;pointer-events:auto;}
+/* 恢复动画期间隐藏红绿灯（窗口从 dock 弹出时不应显示） */
+.app-window.win-restoring .win-traffic{opacity:0!important;pointer-events:none!important;}
 .win-traffic-btn{
-  width:13px;height:13px;border-radius:50%;border:none;cursor:pointer;
+  width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;padding:0;font-size:0;line-height:1;
-  transition:all 0.2s ease;position:relative;
+  position:relative;flex-shrink:0;
+  /* CSS 控制放大动画 — 替代 GSAP，自动重置无残留 */
+  transition:transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
 }
-.win-traffic-btn i{font-size:7px;opacity:0;transition:opacity 0.15s;}
-.app-window:hover .win-traffic-btn i{opacity:1;}
-.win-btn-close{background:#ff5f57;}.win-btn-close:hover{background:#ff3b30;}.win-btn-close i{color:#800;}
-.win-btn-minimize{background:#febc2e;}.win-btn-minimize:hover{background:#f5a623;}.win-btn-minimize i{color:#8a6d00;}
-.win-btn-pin{background:#28c840;}.win-btn-pin:hover{background:#1db954;}.win-btn-pin i{color:#0a6b1a;}
-.win-btn-pin.is-pinned{background:#8b5cf6;}.win-btn-pin.is-pinned i{color:#fff;}
+/* hover 放大 — 仅鼠标设备（触摸设备不触发，避免 sticky hover） */
+@media (hover:hover){
+  .win-traffic-btn:hover{transform:scale(1.3);}
+  .win-traffic-btn:active{transform:scale(1.15);}
+}
+/* 图标：窗口 hover 时半显（诱导），按钮 hover 时全显
+   不设 fill/stroke — 让 SVG 内联属性各自生效（close/minimize 用 stroke，pin 用 fill） */
+.win-traffic-btn svg{
+  width:10px;height:10px;opacity:0;
+  pointer-events:none;
+  transition:opacity 0.15s ease;
+}
+/* 窗口 hover → 所有按钮的图标半显 */
+.app-window:hover .win-traffic-btn svg,
+.app-window.win-focused .win-traffic-btn svg{opacity:0.5;}
+/* 按钮 hover → 该按钮的图标全显 */
+.win-traffic-btn:hover svg{opacity:1;}
+/* 置顶状态 → 图钉常显 */
+.win-btn-pin.is-pinned svg{opacity:1;}
+
+/* ★ 自定义 tooltip — macOS 风格毛玻璃气泡，CSS :hover 控制 */
+.win-traffic-btn::after{
+  content:attr(data-tip);
+  position:absolute;top:calc(100% + 10px);left:50%;
+  transform:translateX(-50%) translateY(4px);
+  padding:4px 10px;border-radius:6px;
+  font-size:11px;font-weight:500;line-height:1.4;white-space:nowrap;
+  color:#fff;
+  background:rgba(0,0,0,0.72);
+  backdrop-filter:blur(12px) saturate(1.5);-webkit-backdrop-filter:blur(12px) saturate(1.5);
+  box-shadow:0 2px 12px rgba(0,0,0,0.2);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.18s ease 0.15s,transform 0.18s ease 0.15s;
+  z-index:10;
+}
+.win-traffic-btn::before{
+  content:'';position:absolute;top:calc(100% + 5px);left:50%;
+  transform:translateX(-50%);
+  border:5px solid transparent;
+  border-bottom-color:rgba(0,0,0,0.72);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.18s ease 0.15s;
+  z-index:10;
+}
+.win-traffic-btn:hover::after,
+.win-traffic-btn:hover::before{opacity:1;}
+/* 各按钮颜色固定，hover 不变色 */
+.win-btn-close{background:#ff5f57;}
+.win-btn-minimize{background:#febc2e;}
+.win-btn-pin{background:#28c840;}
+.win-btn-pin.is-pinned{background:#8b5cf6;}
+.win-btn-pin.is-pinned svg{opacity:1;fill:#fff;}
 
 /* window title */
 .win-head{padding:8px 16px 6px;text-align:center;}

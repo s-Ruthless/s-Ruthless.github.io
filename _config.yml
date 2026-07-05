@@ -103,7 +103,10 @@ theme: moeMac
 deploy:
   type: ''
 
-# Search
+# Search — hexo-generator-searchdb 插件配置（生成 search.xml 搜索索引）
+# 注意：与主题 _config.yml 中的 search: true 不冲突
+#   此处配置插件如何生成索引文件
+#   主题中的 search: true 控制搜索 UI 是否显示
 search:
   path: search.xml
   field: post

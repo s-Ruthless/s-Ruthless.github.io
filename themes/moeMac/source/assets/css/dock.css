@@ -105,7 +105,7 @@
 .dock-minimized-item.dock-item-enter{animation:dock-item-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;}
 .dock-minimized-item.dock-item-leave{animation:dock-item-leave 0.28s cubic-bezier(0.4,0,0.2,1) forwards;pointer-events:none;}
 
-/* fade transitions */
-.fade-out{opacity:0;transition:opacity 0.25s ease;}
-.fade-in{opacity:1;transition:opacity 0.3s ease;}
+/* fade transitions — 增强版页面切换动画 */
+.fade-out{opacity:0;transform:translateY(-8px) scale(0.99);transition:opacity 0.25s ease,transform 0.25s ease;}
+.fade-in{opacity:1;transform:translateY(0) scale(1);transition:opacity 0.3s ease,transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}
 

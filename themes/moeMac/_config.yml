@@ -160,5 +160,6 @@ comments:
 
 # ====== 搜索 ======
 # 需安装 hexo-generator-searchdb 插件：npm i hexo-generator-searchdb
-# search: true 开启站内搜索（基于 search.xml），点击右下角搜索按钮触发
+# search: true 开启站内搜索 UI（基于站点 _config.yml 中插件生成的 search.xml）
+# 注意：此处仅控制 UI 显示，插件配置在站点 _config.yml 的 search 字段中
 search: true

@@ -823,6 +823,7 @@
               CodeCopy.init();
               LazyImg.init();
               BackTop.refresh();
+              CountUp.init();
               DesktopMode.check();
               window.scrollTo(0, 0);
               // GSAP 动画需在 AJAX 加载完成后重新执行
@@ -867,6 +868,63 @@
     }
   }
 
+  /* ====== 统计数字计数动画 ====== */
+  var CountUp = {
+    init: function () {
+      var nums = document.querySelectorAll('.stat-hero-num');
+      nums.forEach(function (el) {
+        var target = parseInt(el.textContent, 10);
+        if (isNaN(target) || target === 0) return;
+        el.textContent = '0';
+        var start = 0;
+        var duration = 800;
+        var startTime = null;
+        function step(ts) {
+          if (!startTime) startTime = ts;
+          var progress = Math.min((ts - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.floor(eased * target).toString();
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = target.toString();
+        }
+        requestAnimationFrame(step);
+      });
+    }
+  };
+
+  /* ====== 暗黑模式切换 ====== */
+  var ThemeToggle = {
+    init: function () {
+      /* 从 localStorage 读取主题偏好 */
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+      /* 创建切换按钮 */
+      var btn = document.createElement('button');
+      btn.className = 'theme-toggle';
+      btn.type = 'button';
+      btn.innerHTML = '<i class="fas fa-moon"></i>';
+      btn.title = '切换暗黑模式';
+      btn.addEventListener('click', function () {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          document.documentElement.removeAttribute('data-theme');
+          localStorage.setItem('theme', 'light');
+          btn.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+          btn.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+      });
+      /* 如果已经是暗黑模式，显示太阳图标 */
+      if (document.documentElement.getAttribute('data-theme') === 'dark') {
+        btn.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+      document.body.appendChild(btn);
+    }
+  };
 
   /* ====== Init ====== */
   document.addEventListener('DOMContentLoaded', function () {
@@ -874,8 +932,10 @@
     DockTip.init(); /* dock tooltip — 不依赖 GSAP */
       loadHitokoto(); MusicPlayer.init();
       TOC.init(); CodeCopy.init(); LazyImg.init(); BackTop.init(); Search.init();
+      CountUp.init();
+      ThemeToggle.init();
       DesktopMode.check();
-    syncDockGlass();
+      syncDockGlass();
     // 窗口最小化/恢复后 dock 宽度变化，同步 glass
     window.addEventListener('resize', syncDockGlass);
     // GSAP 动画需在 Drag.init() 定位窗口之后执行

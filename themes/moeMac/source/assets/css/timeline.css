@@ -11,12 +11,12 @@
 }
 .stat-hero-card{
   display:flex;align-items:center;gap:16px;
-  padding:20px 24px;border-radius:20px;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.6);
+  padding:20px 24px;border-radius:var(--radius-xl);
+  backdrop-filter:var(--blur-medium);-webkit-backdrop-filter:var(--blur-medium);
+  border:1px solid var(--glass-border-light);
   box-shadow:0 6px 24px rgba(0,0,0,0.06);
   position:relative;overflow:hidden;
-  transition:transform 0.3s ease,box-shadow 0.3s ease;
+  transition:transform var(--duration-slow) ease,box-shadow var(--duration-slow) ease;
 }
 .stat-hero-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
@@ -61,9 +61,9 @@
 
 /* 全宽度统计图表 */
 .stat-chart-full{
-  padding:24px;border-radius:20px;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  background:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.6);
+  padding:24px;border-radius:var(--radius-xl);
+  backdrop-filter:var(--blur-medium);-webkit-backdrop-filter:var(--blur-medium);
+  background:var(--glass-bg-medium);border:1px solid var(--glass-border-light);
   box-shadow:0 6px 24px rgba(0,0,0,0.06);margin-top:8px;
 }
 .chart-bars-full{
@@ -188,11 +188,24 @@
 .archive-empty{text-align:center;padding:40px;color:#999;font-size:14px;}
 
 /* ====== 响应式 ====== */
+/* 平板设备 */
+@media (max-width:1024px) and (min-width:601px) {
+  .stat-hero-row{grid-template-columns:repeat(2,1fr);}
+  .stat-hero-card:nth-child(3){grid-column:span 2;}
+  .chart-bars-full{gap:16px;}
+}
+
+/* 小屏幕 */
 @media (max-width:600px) {
   .stat-hero-row{grid-template-columns:1fr;gap:10px;}
   .stat-detail-row{grid-template-columns:1fr;}
   .chart-bars{height:90px;gap:8px;}
   .chart-bar-wrap{height:60px;}
+  .chart-bars-full{gap:10px;min-height:90px;padding:12px 0;}
   .archive-row{padding:10px 12px;gap:8px;}
   .row-cat{display:none;}
+  .archive-page{padding:16px 10px;}
+  .stat-chart-full{padding:16px;}
+  .archive-year-header{padding:10px 14px;}
+  .year-label-text{font-size:16px;}
 }

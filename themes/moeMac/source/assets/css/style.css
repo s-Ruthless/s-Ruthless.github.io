@@ -1,4 +1,72 @@
 /* ====== moeMac Theme ====== */
+
+/* ====== 设计系统：CSS 变量 ====== */
+:root{
+  /* 主色调层次 */
+  --accent-soft:#a78bfa;
+  --accent-medium:#8b5cf6;
+  --accent-strong:#7c3aed;
+  --accent-gradient:linear-gradient(135deg,#a78bfa,#8b5cf6);
+
+  /* 文本层次 */
+  --text-primary:#2a2a2a;
+  --text-secondary:#555;
+  --text-tertiary:#777;
+  --text-hint:#999;
+
+  /* 毛玻璃层次 */
+  --glass-bg-strong:rgba(255,255,255,0.5);
+  --glass-bg-medium:rgba(255,255,255,0.45);
+  --glass-bg-light:rgba(255,255,255,0.4);
+  --glass-bg-window:rgba(255,255,255,0.28);
+  --glass-border:rgba(255,255,255,0.55);
+  --glass-border-light:rgba(255,255,255,0.6);
+  --glass-shadow:0 8px 32px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.6);
+  --glass-shadow-hover:0 20px 60px rgba(0,0,0,0.12),0 8px 24px rgba(167,139,250,0.08),inset 0 1px 0 rgba(255,255,255,0.7);
+
+  /* 模糊级别 */
+  --blur-strong:blur(40px) saturate(1.8);
+  --blur-medium:blur(20px);
+  --blur-light:blur(12px) saturate(1.5);
+  --blur-dock:blur(50px) saturate(1.8);
+
+  /* 圆角 */
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --radius-xl:20px;
+
+  /* 动画时长 */
+  --duration-fast:0.15s;
+  --duration-normal:0.25s;
+  --duration-slow:0.35s;
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --ease-smooth:cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ====== 毛玻璃工具类 ====== */
+.glass-strong{
+  backdrop-filter:var(--blur-strong);-webkit-backdrop-filter:var(--blur-strong);
+  background:var(--glass-bg-window);border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow);
+}
+.glass-medium{
+  backdrop-filter:var(--blur-medium);-webkit-backdrop-filter:var(--blur-medium);
+  background:var(--glass-bg-medium);border:1px solid var(--glass-border-light);
+  box-shadow:0 6px 24px rgba(0,0,0,0.06);
+}
+.glass-light{
+  backdrop-filter:var(--blur-medium);-webkit-backdrop-filter:var(--blur-medium);
+  background:var(--glass-bg-light);border:1px solid var(--glass-border-light);
+  box-shadow:0 2px 12px rgba(0,0,0,0.04);
+}
+
+/* ====== 文本工具类 ====== */
+.text-primary{color:var(--text-primary);font-weight:600;}
+.text-secondary{color:var(--text-secondary);font-weight:500;}
+.text-tertiary{color:var(--text-tertiary);font-weight:400;}
+.text-hint{color:var(--text-hint);font-weight:400;}
+
 *{margin:0;padding:0;box-sizing:border-box;font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}
 html{height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable;}
 body{
@@ -49,14 +117,14 @@ a{color:inherit;text-decoration:none;font-family:inherit;}
 
 /* ====== glass window ====== */
 .app-window{
-  position:absolute;backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8);
-  background:rgba(255,255,255,0.28);border:1px solid rgba(255,255,255,0.55);border-radius:20px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.6);
-  transition:box-shadow 0.35s ease;
+  position:absolute;backdrop-filter:var(--blur-strong);-webkit-backdrop-filter:var(--blur-strong);
+  background:var(--glass-bg-window);border:1px solid var(--glass-border);border-radius:var(--radius-xl);
+  box-shadow:var(--glass-shadow);
+  transition:box-shadow var(--duration-slow) ease;
   will-change:transform,box-shadow;z-index:10;
 }
 .app-window:hover{
-  box-shadow:0 20px 60px rgba(0,0,0,0.12),0 8px 24px rgba(167,139,250,0.08),inset 0 1px 0 rgba(255,255,255,0.7);
+  box-shadow:var(--glass-shadow-hover);
   border-color:rgba(167,139,250,0.15);
 }
 .app-window.win-focused{
@@ -64,8 +132,9 @@ a{color:inherit;text-decoration:none;font-family:inherit;}
   border-color:rgba(167,139,250,0.2);
 }
 .app-window.win-dragging{
-  box-shadow:0 24px 70px rgba(0,0,0,0.18),0 10px 30px rgba(167,139,250,0.15),inset 0 1px 0 rgba(255,255,255,0.7);
-  border-color:rgba(167,139,250,0.3);
+  box-shadow:0 32px 80px rgba(0,0,0,0.18),0 16px 40px rgba(167,139,250,0.18),inset 0 1px 0 rgba(255,255,255,0.7);
+  border-color:rgba(167,139,250,0.35);
+  transition:box-shadow 0.15s ease;
 }
 .app-window.win-pinned{border-color:rgba(167,139,250,0.4);}
 .app-window.win-resizing{
@@ -172,3 +241,58 @@ a{color:inherit;text-decoration:none;font-family:inherit;}
 .window-music{width:330px;min-height:140px;}
 .window-data{width:300px;min-height:200px;}
 
+/* ====== 暗黑模式适配 ====== */
+[data-theme="dark"]{
+  --text-primary:#f0f0f0;
+  --text-secondary:#c0c0c0;
+  --text-tertiary:#a0a0a0;
+  --text-hint:#808080;
+  --glass-bg-window:rgba(40,40,50,0.5);
+  --glass-bg-medium:rgba(50,50,60,0.6);
+  --glass-bg-light:rgba(50,50,60,0.5);
+  --glass-bg-strong:rgba(50,50,60,0.65);
+  --glass-border:rgba(255,255,255,0.15);
+  --glass-border-light:rgba(255,255,255,0.12);
+  --glass-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08);
+  --glass-shadow-hover:0 20px 60px rgba(0,0,0,0.4),0 8px 24px rgba(167,139,250,0.12),inset 0 1px 0 rgba(255,255,255,0.1);
+}
+[data-theme="dark"] body{
+  background:
+    radial-gradient(ellipse at 20% 20%,rgba(80,40,100,0.25) 0%,transparent 45%),
+    radial-gradient(ellipse at 80% 30%,rgba(40,60,100,0.25) 0%,transparent 45%),
+    radial-gradient(ellipse at 30% 80%,rgba(100,60,40,0.2) 0%,transparent 45%),
+    radial-gradient(ellipse at 75% 85%,rgba(60,40,100,0.25) 0%,transparent 45%),#1a1a2e;
+  color:#e0e0e0;
+}
+[data-theme="dark"] .win-name{color:#ccc;}
+[data-theme="dark"] .dock-icon{color:#aaa;}
+
+/* 暗黑模式切换按钮 */
+.theme-toggle{
+  position:fixed;bottom:70px;right:20px;z-index:9998;
+  width:40px;height:40px;border-radius:50%;
+  backdrop-filter:var(--blur-medium);-webkit-backdrop-filter:var(--blur-medium);
+  background:var(--glass-bg-medium);border:1px solid var(--glass-border-light);
+  box-shadow:0 4px 16px rgba(0,0,0,0.1);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all var(--duration-normal) ease;
+  font-size:16px;color:var(--accent-soft);
+}
+.theme-toggle:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 20px rgba(167,139,250,0.2);
+}
+
+/* ====== 性能优化 ====== */
+/* GPU加速关键动画元素 */
+.dock-bar,.app-window{
+  will-change:transform;
+  transform:translateZ(0);
+}
+/* 优化重排 containment */
+.chart-bars,.chart-bars-full{
+  contain:layout style;
+}
+.stat-hero-row{
+  contain:layout style;
+}

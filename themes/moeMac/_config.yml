@@ -29,9 +29,18 @@ twitter: ""
 accent_color: "#a78bfa"
 
 # ====== 静态资源 CDN ======
-# 所有第三方库统一放在 source/lib/ 目录下
-# 留空 = 本地 /lib/ 路径，填写后所有资源自动走 CDN（末尾不加 /）
-# 例如: "https://your-cdn.com/lib"
+# 所有静态资源按类型统一放在 source/assets/ 下：
+#   assets/css/   — 所有 CSS（主题 + 第三方）
+#   assets/js/    — 所有 JS（主题 + 第三方）
+#   assets/fonts/ — 所有字体（SF Pro + FontAwesome webfonts）
+#
+# 留空 = 使用本地 /assets/ 路径
+# 填写后所有资源自动走 CDN（末尾不加 /）
+# 使用方法：
+#   1. 将 source/assets/ 目录整体上传到你的 CDN/OSS
+#   2. 在此填写 CDN 中 assets 目录的完整 URL
+#   例如: cdn: "https://your-cdn.com/moemac/assets"
+#   或:   cdn: "https://cdn.jsdelivr.net/gh/user/repo/assets"
 cdn: ""
 
 # ====== 一言 / 每日一句 ======

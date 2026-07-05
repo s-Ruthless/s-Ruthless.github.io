@@ -1,5 +1,8 @@
 <%
-  var lib = theme.cdn || '';
+  /* cdn 配置：留空 = 使用本地 /assets/ 路径；填写后所有资源走 CDN
+     例如: cdn: "https://your-cdn.com/moemac/assets"
+     末尾不加 / — 统一拼接路径 */
+  var A = (theme.cdn || '') + '/assets';
   var pageDesc = strip_html(page.description || page.excerpt || config.description || '');
   var ogTitle = page.title ? page.title + ' | ' + config.title : config.title;
   var ogUrl = (config.url ? config.url.replace(/\/$/,'') : '') + url_for(page.path);
@@ -37,24 +40,30 @@
   <% if (ogImage) { %><meta name="twitter:image" content="<%= ogImage %>"><% } %>
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
-  <link rel="stylesheet" href="<%= lib %>/lib/fontawesome/css/all.min.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="<%= lib %>/lib/aplayer/APlayer.min.css" media="print" onload="this.media='all'">
-  <script src="<%= lib %>/lib/tailwindcss/tailwindcss.js"></script>
+  <!-- 第三方库 CSS -->
+  <link rel="stylesheet" href="<%= A %>/css/all.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/full.min.css">
+
+  <!-- 第三方库 JS -->
+  <script src="<%= A %>/js/tailwindcss.js"></script>
   <script>
     tailwind.config = {
       corePlugins: { preflight: false }
     }
   </script>
-  <link rel="stylesheet" href="<%= lib %>/lib/daisyui/full.min.css">
-  <%- css('css/style.css') %>
-  <%- css('css/home.css') %>
-  <%- css('css/dock.css') %>
-  <%- css('css/pages.css') %>
-  <%- css('css/aplayer.css') %>
-  <%- css('css/timeline.css') %>
-  <%- css('css/postlist.css') %>
-  <%- css('css/hover.css') %>
-  <%- css('css/highlight.css') %>
-  <%- css('css/search.css') %>
-  <%- css('css/ui-enhance.css') %>
+
+  <!-- 主题 CSS -->
+  <link rel="stylesheet" href="<%= A %>/css/fonts.css">
+  <link rel="stylesheet" href="<%= A %>/css/style.css">
+  <link rel="stylesheet" href="<%= A %>/css/home.css">
+  <link rel="stylesheet" href="<%= A %>/css/dock.css">
+  <link rel="stylesheet" href="<%= A %>/css/pages.css">
+  <link rel="stylesheet" href="<%= A %>/css/aplayer.css">
+  <link rel="stylesheet" href="<%= A %>/css/timeline.css">
+  <link rel="stylesheet" href="<%= A %>/css/postlist.css">
+  <link rel="stylesheet" href="<%= A %>/css/hover.css">
+  <link rel="stylesheet" href="<%= A %>/css/highlight.css">
+  <link rel="stylesheet" href="<%= A %>/css/search.css">
+  <link rel="stylesheet" href="<%= A %>/css/ui-enhance.css">
 </head>

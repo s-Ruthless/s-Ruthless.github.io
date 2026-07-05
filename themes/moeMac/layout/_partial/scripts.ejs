@@ -1,8 +1,11 @@
-<% var lib = theme.cdn || ''; %>
-<script src="<%= lib %>/lib/aplayer/APlayer.min.js" defer></script>
-<script src="<%= lib %>/lib/meting/Meting.min.js" defer></script>
-<script src="<%= lib %>/lib/gsap/gsap.min.js"></script>
-<script src="<%= lib %>/lib/gsap/ScrollTrigger.min.js"></script>
-<%- js('js/main.js') %>
-<%- js('js/gsap-animations.js') %>
-<%- js('js/ui-enhance.js') %>
+<%
+  /* cdn 配置与 head.ejs 一致，所有 JS 资源统一加 cdn 前缀 */
+  var A = (theme.cdn || '') + '/assets';
+%>
+<script src="<%= A %>/js/APlayer.min.js" defer></script>
+<script src="<%= A %>/js/Meting.min.js" defer></script>
+<script src="<%= A %>/js/gsap.min.js"></script>
+<script src="<%= A %>/js/ScrollTrigger.min.js"></script>
+<script src="<%= A %>/js/main.js"></script>
+<script src="<%= A %>/js/gsap-animations.js"></script>
+<script src="<%= A %>/js/ui-enhance.js"></script>

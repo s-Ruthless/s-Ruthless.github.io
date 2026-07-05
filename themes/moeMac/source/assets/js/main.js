@@ -164,6 +164,8 @@
       /* 动画期间 overflow:hidden 防止内容溢出；动画完成后加 expanded 切换 overflow:visible */
       zone.style.width = '0px';
       zone.classList.remove('expanded');
+      /* 强制布局同步，确保 scrollWidth 计算准确 */
+      void zone.offsetWidth;
       var targetWidth = zone.scrollWidth;
 
       /* 保存当前位置，动画结束后清除 GSAP transform 并恢复 Drag 的 left/top */
@@ -193,15 +195,17 @@
         opacity: 0, filter: 'blur(2px)',
         duration: 0.42, ease: 'power2.in'
       });
-      tl.to(item, {
-        scale: 1, y: 0, opacity: 1,
-        duration: 0.32, ease: 'back.out(1.6)'
-      }, '-=0.1');
-      /* dock-mini-zone 宽度展开动画（与窗口吸入并行） */
+      /* dock-mini-zone 宽度展开 + 玻璃背景实时同步 */
       tl.to(zone, {
         width: targetWidth,
-        duration: 0.42, ease: 'power2.out'
+        duration: 0.35, ease: 'power2.out',
+        onUpdate: syncDockGlass
       }, 0);
+      /* dock图标弹入动画 */
+      tl.to(item, {
+        scale: 1, y: 0, opacity: 1,
+        duration: 0.28, ease: 'back.out(1.6)'
+      }, '-=0.1');
       /* 保存位置到 dataset（clearProps 后仍能恢复） */
       win.dataset.savedLeft = savedLeft;
       win.dataset.savedTop = savedTop;
@@ -270,16 +274,20 @@
       /* zone 宽度收起动画（仅当最后一个 icon 被 restore 时）*/
       if (shouldCollapseZone) {
         zone.classList.remove('expanded'); /* 动画期间 overflow:hidden */
+        /* 强制布局同步，确保当前宽度计算准确 */
+        void zone.offsetWidth;
         var currentWidth = zone.scrollWidth;
         zone.style.width = currentWidth + 'px';
         tl.to(zone, {
           width: 0,
-          duration: 0.32, ease: 'power2.inOut'
+          duration: 0.32, ease: 'power2.inOut',
+          onUpdate: syncDockGlass
         }, 0);
         tl.call(function () {
           if (miniItem && miniItem.parentNode) miniItem.remove();
           if (sep && sep.parentNode) sep.remove();
           zone.style.width = '0px';
+          syncDockGlass();
         });
       } else {
         /* 还有其他 icon，窗口展开完成后移除当前 icon 并自适应宽度 */
@@ -288,9 +296,12 @@
           if (sep && sep.parentNode && !zone.querySelector('.dock-minimized-item')) sep.remove();
           if (zone && zone.querySelector('.dock-minimized-item')) {
             zone.classList.remove('expanded'); /* 动画期间 overflow:hidden */
+            /* 强制布局同步，确保新宽度计算准确 */
+            void zone.offsetWidth;
             var newW = zone.scrollWidth;
             zone.style.width = zone.offsetWidth + 'px';
             gsap.to(zone, { width: newW, duration: 0.28, ease: 'power2.out',
+              onUpdate: syncDockGlass,
               onComplete: function () {
                 zone.style.width = 'auto';
                 zone.classList.add('expanded'); /* 恢复 overflow:visible */
@@ -856,13 +867,14 @@
     }
   }
 
+
   /* ====== Init ====== */
   document.addEventListener('DOMContentLoaded', function () {
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
     DockTip.init(); /* dock tooltip — 不依赖 GSAP */
-    loadHitokoto(); MusicPlayer.init();
-    TOC.init(); CodeCopy.init(); LazyImg.init(); BackTop.init(); Search.init();
-    DesktopMode.check();
+      loadHitokoto(); MusicPlayer.init();
+      TOC.init(); CodeCopy.init(); LazyImg.init(); BackTop.init(); Search.init();
+      DesktopMode.check();
     syncDockGlass();
     // 窗口最小化/恢复后 dock 宽度变化，同步 glass
     window.addEventListener('resize', syncDockGlass);

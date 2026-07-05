@@ -13,7 +13,7 @@
 
     killAll: function () {
       if (this._master) { this._master.kill(); this._master = null; }
-      var sels = '.app-window,.post-list-item,.timeline-item,.timeline-dot,.article-header,.article-content,.article-nav,.page-header,#dock-bar,.win-traffic-btn,.dock-item-inner';
+      var sels = '.app-window,.post-list-item,.timeline-item,.timeline-dot,.article-header,.article-content,.article-nav,.page-header,.dock-bar,.win-traffic-btn,.dock-item-inner';
       gsap.killTweensOf(sels);
       gsap.set(sels, { clearProps: 'opacity,transform' });
     },
@@ -37,7 +37,7 @@
 
     /** Dock 栏弹入 */
     dockBounce: function () {
-      var dock = document.getElementById('dock-bar');
+      var dock = document.querySelector('.dock-bar');
       if (!dock) return;
       gsap.fromTo(dock,
         { y: 60, opacity: 0 },

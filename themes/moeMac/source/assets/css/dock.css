@@ -15,6 +15,7 @@
   pointer-events:auto;z-index:0;
   /* width 由 JS 动态设置，匹配 dock-bar-inner 宽度 */
   width:300px;
+  transition:width 0.06s linear; /* 微平滑，配合 onUpdate 实时同步 */
 }
 .dock-bar-inner{
   display:flex;align-items:flex-end;gap:0;
@@ -58,6 +59,7 @@
   display:flex;align-items:flex-end;gap:0;
   width:0;overflow:hidden;flex-shrink:0;
   position:relative;
+  will-change:width; /* 提前告知浏览器宽度可能变化，优化性能 */
 }
 .dock-mini-zone.expanded{overflow:visible;}
 /* 最小化区分隔符 */

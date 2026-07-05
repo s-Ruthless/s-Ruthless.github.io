@@ -13,11 +13,17 @@
   var years = Object.keys(yearMap).sort().reverse();
   var maxCount = Math.max.apply(null, Object.values(yearMap));
 
-  // 热门分类
-  var cats = site.categories.sort('length', -1).limit(8);
-
-  // 热门标签
-  var tags = site.tags.sort('length', -1).limit(12);
+  // 按年份分组文章（避免在循环中开关 div）
+  var yearGroups = {};
+  var yearOrder = [];
+  posts.each(function(post) {
+    var y = date(post.date, 'YYYY');
+    if (!yearGroups[y]) {
+      yearGroups[y] = [];
+      yearOrder.push(y);
+    }
+    yearGroups[y].push(post);
+  });
 %>
 
 <div class="page-container">
@@ -54,73 +60,82 @@
         </div>
       </div>
 
-      <!-- 年度柱状图 + 热门分类 -->
-      <div class="stat-detail-row">
-        <div class="stat-card stat-chart">
-          <div class="stat-title"><i class="fas fa-chart-column"></i> 年度文章</div>
-          <div class="chart-bars">
-            <% years.forEach(function(y) { %>
-              <div class="chart-col">
-                <div class="chart-bar-wrap">
-                  <div class="chart-bar" style="height: <%= (yearMap[y] / maxCount * 100) %>%">
-                    <span class="chart-count"><%= yearMap[y] %></span>
-                  </div>
+      <!-- 年度文章统计 -->
+      <div class="stat-chart-full">
+        <div class="stat-title"><i class="fas fa-chart-column"></i> 年度文章统计</div>
+        <div class="chart-bars chart-bars-full">
+          <% years.forEach(function(y) { %>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height: <%= (yearMap[y] / maxCount * 100) %>%">
+                  <span class="chart-count"><%= yearMap[y] %></span>
                 </div>
-                <span class="chart-label"><%= y %></span>
               </div>
-            <% }); %>
-          </div>
-        </div>
-
-        <div class="stat-card stat-cats">
-          <div class="stat-title"><i class="fas fa-fire"></i> 热门分类</div>
-          <div class="cat-tags">
-            <% cats.forEach(function(cat) { %>
-              <a class="cat-tag ajax-link" data-href="<%- url_for(cat.path) %>">
-                <span class="cat-name"><%= cat.name %></span>
-                <span class="cat-count"><%= cat.length %></span>
-              </a>
-            <% }); %>
-          </div>
-          <% if (tags.length > 0) { %>
-          <div class="stat-title stat-title-tags"><i class="fas fa-tags"></i> 热门标签</div>
-          <div class="cat-tags">
-            <% tags.forEach(function(tag) { %>
-              <a class="cat-tag cat-tag-sm ajax-link" data-href="<%- url_for(tag.path) %>">
-                <span class="cat-name"><%= tag.name %></span>
-                <span class="cat-count"><%= tag.length %></span>
-              </a>
-            <% }); %>
-          </div>
-          <% } %>
+              <span class="chart-label"><%= y %></span>
+            </div>
+          <% }); %>
         </div>
       </div>
     </div>
 
-    <!-- 文章列表区 -->
+    <!-- 文章列表区 — 按年份分组渲染，结构清晰无歧义 -->
     <div class="archive-list">
-      <% var prevYear = ''; %>
-      <% posts.each(function(post) { %>
-        <%
-          var y = date(post.date, 'YYYY');
-          var m = date(post.date, 'MM');
-          var d = date(post.date, 'DD');
-        %>
-        <% if (y !== prevYear) { %>
-          <% prevYear = y; %>
-          <div class="archive-year-label"><%= y %></div>
-        <% } %>
-        <div class="archive-row ajax-link" data-href="<%- url_for(post.path) %>">
-          <span class="row-date"><%= m %>-<%= d %></span>
-          <a class="row-title ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></a>
-          <% if (post.categories && post.categories.length > 0) { %>
-            <span class="row-cat"><%= post.categories.first().name %></span>
-          <% } %>
+      <% yearOrder.forEach(function(y) { %>
+        <div class="archive-year-section" id="year-<%= y %>">
+          <div class="archive-year-header" onclick="toggleYear('<%= y %>')">
+            <div class="archive-year-label">
+              <span class="year-label-text"><%= y %></span>
+              <span class="year-post-count"><%= yearGroups[y].length %> 篇</span>
+            </div>
+            <i class="fas fa-chevron-down year-toggle-icon"></i>
+          </div>
+          <div class="archive-year-content" id="year-content-<%= y %>">
+            <% yearGroups[y].forEach(function(post) { %>
+              <%
+                var m = date(post.date, 'MM');
+                var d = date(post.date, 'DD');
+              %>
+              <div class="archive-row ajax-link" data-href="<%- url_for(post.path) %>">
+                <span class="row-date"><%= m %>-<%= d %></span>
+                <a class="row-title ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></a>
+                <% if (post.categories && post.categories.length > 0) { %>
+                  <span class="row-cat"><%= post.categories.first().name %></span>
+                <% } %>
+              </div>
+            <% }); %>
+          </div>
         </div>
       <% }); %>
+
       <% if (totalPosts === 0) { %>
         <div class="archive-empty">还没有文章哦~</div>
       <% } %>
     </div>
+
+    <script>
+      function toggleYear(year) {
+        var content = document.getElementById('year-content-' + year);
+        var header = document.querySelector('#year-' + year + ' .archive-year-header');
+        var icon = document.querySelector('#year-' + year + ' .year-toggle-icon');
+        if (!content) return;
+
+        if (content.style.display === 'none') {
+          content.style.display = '';
+          if (icon) icon.style.transform = 'rotate(0deg)';
+          if (header) header.classList.add('expanded');
+        } else {
+          content.style.display = 'none';
+          if (icon) icon.style.transform = 'rotate(-90deg)';
+          if (header) header.classList.remove('expanded');
+        }
+      }
+      // 默认折叠所有年份
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.archive-year-section').forEach(function(section) {
+          var yearId = section.id.replace('year-', '');
+          toggleYear(yearId);
+        });
+      });
+    </script>
   </div>
 </div>

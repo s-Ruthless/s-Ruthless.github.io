@@ -7,16 +7,16 @@
 
 /* 三宫格数字卡片 */
 .stat-hero-row{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;
 }
 .stat-hero-card{
-  display:flex;align-items:center;gap:14px;
-  padding:18px 20px;border-radius:16px;
+  display:flex;align-items:center;gap:16px;
+  padding:20px 24px;border-radius:20px;
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.5);
-  box-shadow:0 4px 20px rgba(0,0,0,0.05);
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 6px 24px rgba(0,0,0,0.06);
   position:relative;overflow:hidden;
-  transition:transform 0.25s ease,box-shadow 0.25s ease;
+  transition:transform 0.3s ease,box-shadow 0.3s ease;
 }
 .stat-hero-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
@@ -57,6 +57,19 @@
 /* 详情行：图表 + 分类 */
 .stat-detail-row{
   display:grid;grid-template-columns:1.2fr 1fr;gap:14px;
+}
+
+/* 全宽度统计图表 */
+.stat-chart-full{
+  padding:24px;border-radius:20px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 6px 24px rgba(0,0,0,0.06);margin-top:8px;
+}
+.chart-bars-full{
+  display:flex;align-items:flex-end;gap:20px;
+  justify-content:center;min-height:120px;
+  padding:20px 0;
 }
 .stat-card{
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -101,43 +114,47 @@
 .chart-col:hover .chart-count{opacity:1;}
 .chart-label{font-size:11px;color:#999;font-weight:500;}
 
-/* 热门分类/标签 */
-.cat-tags{display:flex;flex-wrap:wrap;gap:8px;}
-.cat-tag{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:6px 14px;border-radius:10px;cursor:pointer;
-  background:rgba(139,92,246,0.08);
-  border:1px solid rgba(139,92,246,0.12);
-  transition:all 0.2s ease;
-}
-.cat-tag:hover{
-  background:rgba(139,92,246,0.15);
-  border-color:rgba(139,92,246,0.3);
-  transform:translateY(-2px);
-  box-shadow:0 4px 12px rgba(139,92,246,0.12);
-}
-.cat-tag-sm{padding:4px 10px;}
-.cat-name{font-size:13px;font-weight:500;color:#7c3aed;}
-.cat-tag-sm .cat-name{font-size:12px;}
-.cat-count{
-  font-size:11px;color:#fff;font-weight:600;
-  background:linear-gradient(135deg,#a78bfa,#8b5cf6);
-  padding:1px 7px;border-radius:6px;
-}
 
 /* ====== 文章列表区 ====== */
 .archive-list{}
+
+/* 年份折叠样式 */
+.archive-year-section{margin-bottom:8px;}
+.archive-year-header{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;padding:14px 18px;
+  background:rgba(167,139,250,0.06);border-radius:12px;
+  transition:all 0.2s ease;
+  border:1px solid transparent;
+  user-select:none;
+}
+.archive-year-header:hover{
+  background:rgba(167,139,250,0.12);
+  border-color:rgba(167,139,250,0.2);
+}
+.archive-year-header.expanded{
+  background:rgba(167,139,250,0.1);
+  border-color:rgba(167,139,250,0.3);
+}
 .archive-year-label{
-  font-size:22px;font-weight:700;color:#333;
-  margin:28px 0 12px;
-  border-left:4px solid #a78bfa;padding-left:12px;
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:10px;
 }
-.archive-year-label::after{
-  content:'';flex:1;height:1px;
-  background:linear-gradient(90deg,rgba(167,139,250,0.3),transparent);
+.year-label-text{
+  font-size:18px;font-weight:700;color:#333;
 }
-.archive-year-label:first-child{margin-top:0;}
+.year-post-count{
+  font-size:12px;font-weight:500;color:#a78bfa;
+  padding:2px 8px;border-radius:6px;
+  background:rgba(167,139,250,0.12);
+}
+.year-toggle-icon{
+  transition:transform 0.3s ease;color:#a78bfa;
+  font-size:14px;font-weight:bold;
+}
+.archive-year-content{
+  padding:4px 8px 8px 8px;
+  overflow:hidden;
+}
 
 .archive-row{
   display:flex;align-items:center;gap:12px;

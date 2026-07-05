@@ -16,6 +16,7 @@ html.is-desktop,html.is-desktop body{overflow:hidden;}
 /* 正文内容允许选中复制 */
 .article-content,.article-content *{user-select:text;-webkit-user-select:text;}
 .about-content,.about-content *{user-select:text;-webkit-user-select:text;}
+.page-body,.page-body *{user-select:text;-webkit-user-select:text;}
 
 /* ====== 全局滚动条美化 ====== */
 ::-webkit-scrollbar{width:8px;height:8px;}

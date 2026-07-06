@@ -36,24 +36,52 @@
   (function(){
     var loading = document.getElementById('comments-loading');
     if(!loading) return;
+    var hidden = false;
     function hideLoading(){
-      if(loading) loading.style.display = 'none';
+      if(hidden) return;
+      hidden = true;
+      loading.style.display = 'none';
     }
-    /* 监听整个评论区容器内的变化（Giscus 的 iframe 插在 script 旁边，现已移入 #comments-mount） */
+
     var wrap = document.getElementById('comments-wrap');
     if(wrap){
       var mo = new MutationObserver(function(){
-        if(wrap.querySelector('iframe, .gt-container, .tk-comment, .wl-panel')){
+        /* 非Giscus评论系统：检测到容器即隐藏 */
+        if(wrap.querySelector('.gt-container, .tk-comment, .wl-panel')){
           hideLoading();
           mo.disconnect();
+          return;
+        }
+        /* Giscus：iframe已插入，但不立即隐藏loading
+           等iframe真正加载完成（去掉giscus-frame--loading类）再隐藏 */
+        var iframe = wrap.querySelector('iframe.giscus-frame');
+        if(iframe && !iframe._watched){
+          iframe._watched = true;
+          /* 方法1：监听iframe load事件 */
+          iframe.addEventListener('load', function(){
+            setTimeout(hideLoading, 200);
+          });
+          /* 方法2：轮询检查loading类是否被移除 */
+          var checkInterval = setInterval(function(){
+            if(!iframe.classList.contains('giscus-frame--loading')){
+              hideLoading();
+              clearInterval(checkInterval);
+            }
+          }, 200);
+          /* 5秒后强制隐藏（防止load事件不触发） */
+          setTimeout(function(){ clearInterval(checkInterval); }, 5000);
         }
       });
       mo.observe(wrap, { childList: true, subtree: true });
     }
-    /* 监听 Giscus iframe 消息 */
+
+    /* 监听 Giscus iframe 消息（备选方案） */
     window.addEventListener('message', function(e){
-      if(e.origin === 'https://giscus.app'){ hideLoading(); }
+      if(e.origin === 'https://giscus.app'){
+        setTimeout(hideLoading, 300);
+      }
     });
+
     /* 超时兜底 */
     setTimeout(hideLoading, 15000);
   })();

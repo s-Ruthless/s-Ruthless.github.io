@@ -83,12 +83,12 @@ dock:
   - { icon: "fas fa-newspaper", label: "文章", page: "/posts/", type: "page" }
   - { icon: "fas fa-folder-open", label: "归档", page: "/archives/", type: "page" }
   - { icon: "fas fa-images", label: "相册", page: "/gallery/", type: "page" }
-  - { icon: "fas fa-circle-info", label: "关于", page: "/about/", type: "page" }
-  - { icon: "fas fa-link", label: "友链", page: "/links/", type: "page" }
   - { icon: "fas fa-book", label: "豆瓣", page: "/douban/", type: "page" }
+  - { icon: "fas fa-link", label: "友链", page: "/links/", type: "page" }
+  - { icon: "fas fa-circle-info", label: "关于", page: "/about/", type: "page" }
 
 # ====== 首页 ======
-# home_windows: 首页显示的浮动窗口（可选: posts, categories, tags, music, data）
+# home_windows: 首页显示的浮动窗口（可选: posts, categories, tags, music, data, info）
 # recent_posts_count: 最新文章窗口显示的文章数量
 home_windows:
   - "posts"
@@ -96,7 +96,19 @@ home_windows:
   - "tags"
   - "music"
   - "data"
+  - "info"
 recent_posts_count: 5
+
+# ====== 网站信息（info 窗口） ======
+# icp: ICP备案号（留空则不显示，点击跳转工信部）
+# psbc: 公安备案号（留空则不显示，点击跳转公安备案网站）
+# start_date: 建站日期（用于计算建站天数，格式 YYYY-MM-DD）
+# copyright: 版权声明文字
+site_info:
+  icp: "备icp124341245"
+  psbc: "网备11515"
+  start_date: "2023-01-01"
+  copyright: "@2026"
 
 # ====== 友链 ======
 friends:
@@ -136,9 +148,13 @@ wallpaper_path: "https://img.netbian.com/file/2024/0525/001431sFPe6.jpg"
 # enable: false 关闭；true 开启
 # provider: waline / twikoo / giscus / gitalk
 # 各 provider 的配置见下方对应字段，按需填写其一
+#
+# 页面级开关：在文章/页面的 front-matter 中添加 comment: true/false
+#   文章（post）：默认显示评论，写 comment: false 可关闭
+#   自定义页面（page）：默认不显示，写 comment: true 可开启
 comments:
   enable: true
-  provider: "gitalk"
+  provider: "giscus"
   # Waline: https://waline.js.org/
   waline:
     serverURL: "https://waline-demo.vercel.app"
@@ -146,12 +162,18 @@ comments:
   twikoo:
     envId: ""               # 腾讯云环境ID 或自建地址
   # Giscus: https://giscus.app/
+  # inputPosition: top 评论框在上 / bottom 评论框在下
+  # theme: preferred_color_scheme 跟随系统 / noborder_light / noborder_dark
+  # reactionsEnabled: 1 开启表情反应 / 0 关闭
   giscus:
-    repo: ""                # owner/repo
-    repoId: ""
+    repo: "s-Ruthless/moeMac-comments"                # owner/repo
+    repoId: "R_kgDOTPRTtA"
     category: "Announcements"
-    categoryId: ""
+    categoryId: "DIC_kwDOTPRTtM4DAnxQ"
     mapping: "pathname"
+    inputPosition: "top"
+    theme: "preferred_color_scheme"
+    reactionsEnabled: 0
   # Gitalk: https://github.com/gitalk/gitalk
   gitalk:
     clientID: ""

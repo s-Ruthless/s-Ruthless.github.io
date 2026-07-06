@@ -792,6 +792,22 @@
   };
 
   /* ====== AJAX Nav ====== */
+
+  /* 重新执行容器内所有 <script> 标签
+     浏览器对 innerHTML 设置的 script 不会执行，需手动重建 */
+  function execScripts(container) {
+    var scripts = container.querySelectorAll('script');
+    scripts.forEach(function (oldScript) {
+      var newScript = document.createElement('script');
+      var attrs = oldScript.attributes;
+      for (var i = 0; i < attrs.length; i++) {
+        newScript.setAttribute(attrs[i].name, attrs[i].value);
+      }
+      newScript.textContent = oldScript.textContent;
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }
+
   var Nav = {
     box: null, busy: false,
     init: function () {
@@ -826,6 +842,9 @@
             var nc = doc.getElementById('ajax-container');
             if (nc) {
               box.innerHTML = nc.innerHTML;
+              /* 关键：innerHTML 不执行 <script>，需手动重建执行
+                 必须在 init 调用之前，因为 Gallery.init 等依赖内联脚本设置的变量（如 GALLERY_DATA） */
+              execScripts(box);
               var t = doc.querySelector('title'); if (t) document.title = t.textContent;
               if (push) history.pushState(null, null, u);
               Drag.init(); WallFilter(); self.dockHL();
@@ -1009,10 +1028,17 @@
       var container = document.getElementById('galleryMasonry');
       if (!container) return;
       if (typeof GALLERY_DATA === 'undefined') return;
+      /* 重置状态 — AJAX 导航回到相册页时旧状态会残留 */
+      this.page = 0;
+      this.loading = false;
+      this.finished = false;
       this.data = GALLERY_DATA;
       this.container = container;
+      container.innerHTML = '';
       this.loader = document.getElementById('galleryLoader');
       this.end = document.getElementById('galleryEnd');
+      if (this.loader) this.loader.classList.remove('hidden');
+      if (this.end) this.end.style.display = 'none';
       this.loadMore();
       /* 无限加载监听 */
       var self = this;

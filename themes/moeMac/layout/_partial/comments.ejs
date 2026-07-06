@@ -1,19 +1,90 @@
 <%
+  var A = (theme.cdn || '') + '/assets';
   var c = theme.comments || {};
   if (c.enable !== true) return;
+  /* 评论开关：page.comment 优先；未设置时文章默认显示，自定义页面默认不显示 */
+  var isPost = page.layout === 'post';
+  var showComments = page.comment !== undefined ? page.comment : isPost;
+  if (!showComments) return;
   var p = c.provider || 'waline';
+  var giscusOk = p === 'giscus' && c.giscus && c.giscus.repo;
 %>
 <div class="comments-wrap" id="comments-wrap">
-  <div class="comments-head"><i class="fas fa-comments"></i> 评论</div>
+  <div class="comments-loading" id="comments-loading"><div class="music-loading-spinner"></div><span>评论加载中…</span></div>
   <div id="comments-mount">
-    <div class="comments-loading"><div class="music-loading-spinner"></div><span>评论加载中…</span></div>
+    <% if (giscusOk) { %>
+    <script src="https://giscus.app/client.js"
+      data-repo="<%= c.giscus.repo %>"
+      data-repo-id="<%= c.giscus.repoId %>"
+      data-category="<%= c.giscus.category %>"
+      data-category-id="<%= c.giscus.categoryId %>"
+      data-mapping="<%= c.giscus.mapping || 'pathname' %>"
+      data-strict="1"
+      data-reactions-enabled="<%= c.giscus.reactionsEnabled !== undefined ? c.giscus.reactionsEnabled : 0 %>"
+      data-emit-metadata="0"
+      data-input-position="<%= c.giscus.inputPosition || 'top' %>"
+      data-theme="<%= c.giscus.theme || 'preferred_color_scheme' %>"
+      data-lang="zh-CN"
+      crossorigin="anonymous"
+      async>
+    </script>
+    <% } %>
   </div>
 </div>
+<script>
+  /* 评论系统加载完成后隐藏 loading */
+  (function(){
+    var loading = document.getElementById('comments-loading');
+    if(!loading) return;
+    function hideLoading(){
+      if(loading) loading.style.display = 'none';
+    }
+    /* 监听整个评论区容器内的变化（Giscus 的 iframe 插在 script 旁边，现已移入 #comments-mount） */
+    var wrap = document.getElementById('comments-wrap');
+    if(wrap){
+      var mo = new MutationObserver(function(){
+        if(wrap.querySelector('iframe, .gt-container, .tk-comment, .wl-panel')){
+          hideLoading();
+          mo.disconnect();
+        }
+      });
+      mo.observe(wrap, { childList: true, subtree: true });
+    }
+    /* 监听 Giscus iframe 消息 */
+    window.addEventListener('message', function(e){
+      if(e.origin === 'https://giscus.app'){ hideLoading(); }
+    });
+    /* 超时兜底 */
+    setTimeout(hideLoading, 15000);
+  })();
+</script>
 
-<% if (p === 'waline' && c.waline && c.waline.serverURL) { %>
-<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<% if (giscusOk) { %>
+<script>
+  /* 暗黑模式同步给 Giscus（仅当 theme 为 preferred_color_scheme 时生效） */
+  (function(){
+    var themeMode = '<%= c.giscus.theme || 'preferred_color_scheme' %>';
+    if(themeMode !== 'preferred_color_scheme') return;
+    function syncTheme(){
+      var iframe = document.querySelector('iframe.giscus-frame');
+      if(!iframe) return;
+      var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      iframe.contentWindow.postMessage({
+        giscus: { setConfig: { theme: dark ? 'noborder_dark' : 'noborder_light' } }
+      }, 'https://giscus.app');
+    }
+    var observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    var checkInterval = setInterval(function(){
+      if(document.querySelector('iframe.giscus-frame')){ syncTheme(); clearInterval(checkInterval); }
+    }, 500);
+  })();
+</script>
+
+<% } else if (p === 'waline' && c.waline && c.waline.serverURL) { %>
+<link rel="stylesheet" href="<%= A %>/css/waline.css">
 <script type="module">
-  import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.js';
+  import { init } from '<%= A %>/js/waline.js';
   init({
     el: '#comments-mount',
     serverURL: '<%= c.waline.serverURL %>',
@@ -23,7 +94,7 @@
 </script>
 
 <% } else if (p === 'twikoo' && c.twikoo && c.twikoo.envId) { %>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"></script>
+<script src="<%= A %>/js/twikoo.all.min.js"></script>
 <script>
   (function(){
     function init(){ twikoo.init({ envId: '<%= c.twikoo.envId %>', el: '#comments-mount' }); }
@@ -32,26 +103,9 @@
   })();
 </script>
 
-<% } else if (p === 'giscus' && c.giscus && c.giscus.repo) { %>
-<script src="https://giscus.app/client.js"
-  data-repo="<%= c.giscus.repo %>"
-  data-repo-id="<%= c.giscus.repoId %>"
-  data-category="<%= c.giscus.category %>"
-  data-category-id="<%= c.giscus.categoryId %>"
-  data-mapping="<%= c.giscus.mapping || 'pathname' %>"
-  data-strict="0"
-  data-reactions-enabled="1"
-  data-emit-metadata="0"
-  data-input-position="top"
-  data-theme="light"
-  data-lang="zh-CN"
-  crossorigin="anonymous"
-  async>
-</script>
-
 <% } else if (p === 'gitalk' && c.gitalk && c.gitalk.clientID) { %>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<link rel="stylesheet" href="<%= A %>/css/gitalk.css">
+<script src="<%= A %>/js/gitalk.min.js"></script>
 <script>
   (function(){
     function init(){

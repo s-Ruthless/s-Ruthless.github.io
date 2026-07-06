@@ -1,29 +1,22 @@
-/* SF Pro Text — 本地自托管字体（备选） */
+/* ====== 苹方 SC — 本地自托管字体（仅保留 3 个常用字重） ====== */
 @font-face{
-  font-family:'SF Pro Text';
+  font-family:'PingFang SC';
   font-weight:400;
   font-style:normal;
   font-display:swap;
-  src:url('../fonts/SF-Pro-Text-Regular.woff2') format('woff2');
+  src:url('../fonts/PingFangSC-Regular.woff2') format('woff2');
 }
 @font-face{
-  font-family:'SF Pro Text';
+  font-family:'PingFang SC';
   font-weight:500;
   font-style:normal;
   font-display:swap;
-  src:url('../fonts/SF-Pro-Text-Semibold.woff2') format('woff2');
+  src:url('../fonts/PingFangSC-Medium.woff2') format('woff2');
 }
 @font-face{
-  font-family:'SF Pro Text';
+  font-family:'PingFang SC';
   font-weight:600;
   font-style:normal;
   font-display:swap;
-  src:url('../fonts/SF-Pro-Text-Semibold.woff2') format('woff2');
-}
-@font-face{
-  font-family:'SF Pro Text';
-  font-weight:700;
-  font-style:normal;
-  font-display:swap;
-  src:url('../fonts/SF-Pro-Text-Bold.woff2') format('woff2');
+  src:url('../fonts/PingFangSC-Semibold.woff2') format('woff2');
 }

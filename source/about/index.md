@@ -2,6 +2,7 @@
 title: 关于
 date: 2026-07-03 10:00:00
 layout: page-about
+comment: true
 ---
 
 ## 关于这个博客

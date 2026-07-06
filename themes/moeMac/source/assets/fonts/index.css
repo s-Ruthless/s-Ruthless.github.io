@@ -1,0 +1,24 @@
+/* 苹方-简 常规体 */
+@font-face {
+    font-family: 'PingFang SC';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url('./PingFangSC-Regular.woff2') format('woff2');
+}
+/* 苹方-简 中黑体 */
+@font-face {
+    font-family: 'PingFang SC';
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: url('./PingFangSC-Medium.woff2') format('woff2');
+}
+/* 苹方-简 中粗体 */
+@font-face {
+    font-family: 'PingFang SC';
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: url('./PingFangSC-Semibold.woff2') format('woff2');
+}

@@ -16,14 +16,14 @@
       <% }); %>
     </div>
     <div class="wall-grid" id="posts-wall-grid">
-    <% var sizes = ['card-sm','card-md','card-lg','card-md','card-sm','card-md','card-lg','card-sm','card-md','card-sm']; %>
+    <% var sizes = ['card-sm','card-md','card-lg','card-md','card-sm','card-xl','card-md','card-sm','card-lg','card-md','card-sm','card-lg']; %>
     <% var idx = 0; %>
     <% posts.each(function(post) { %>
       <%
         var size = sizes[idx % sizes.length];
         var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : '';
         var fullText = strip_html(post.excerpt || post.content || '');
-        var maxLen = size === 'card-sm' ? 30 : size === 'card-lg' ? 100 : 55;
+        var maxLen = size === 'card-sm' ? 20 : size === 'card-md' ? 60 : size === 'card-lg' ? 120 : 180;
         var summary = fullText.substring(0, maxLen);
         var showTags = true;
       %>
@@ -48,7 +48,7 @@
     <% }); %>
 
     <% if (site.posts.length === 0) { %>
-      <div class="text-center py-10 opacity-50" style="grid-column:1/-1;">还没有文章哦，快去写一篇吧～</div>
+      <div class="text-center py-10 opacity-50" style="column-span:all;">还没有文章哦，快去写一篇吧～</div>
     <% } %>
     </div>
     </div>

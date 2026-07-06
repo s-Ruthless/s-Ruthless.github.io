@@ -115,8 +115,8 @@
 
   /* ====== Window Manager ====== */
   var WinMgr = {
-    iconMap: { 'win-hero': 'fas fa-house', 'win-posts': 'fas fa-newspaper', 'win-categories': 'fas fa-folder', 'win-tags': 'fas fa-tags', 'win-music': 'fas fa-music', 'win-data': 'fas fa-chart-bar' },
-    nameMap: { 'win-hero': '\u6211\u7684\u4e3b\u9875', 'win-posts': '\u6700\u65b0\u6587\u7ae0', 'win-categories': '\u5206\u7c7b', 'win-tags': '\u6807\u7b7e\u4e91', 'win-music': '\u6b4c\u5355', 'win-data': '\u7ad9\u70b9\u6570\u636e' },
+    iconMap: { 'win-hero': 'fas fa-house', 'win-posts': 'fas fa-newspaper', 'win-categories': 'fas fa-folder', 'win-tags': 'fas fa-tags', 'win-music': 'fas fa-music', 'win-data': 'fas fa-chart-bar', 'win-info': 'fas fa-circle-info' },
+    nameMap: { 'win-hero': '\u6211\u7684\u4e3b\u9875', 'win-posts': '\u6700\u65b0\u6587\u7ae0', 'win-categories': '\u5206\u7c7b', 'win-tags': '\u6807\u7b7e\u4e91', 'win-music': '\u6b4c\u5355', 'win-data': '\u7ad9\u70b9\u6570\u636e', 'win-info': '\u7f51\u7ad9\u4fe1\u606f' },
     init: function () {
       var self = this;
       document.addEventListener('click', function (e) {

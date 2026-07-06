@@ -16,7 +16,7 @@
 .archive-year::before{
   content:'';position:absolute;left:-20px;top:8px;width:10px;height:10px;
   border-radius:50%;background:var(--accent-color);border:2px solid #fff;
-  box-shadow:0 0 0 2px rgba(139,92,246,0.3);
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--accent-color) 30%,transparent);
 }
 .archive-month{font-size:14px;font-weight:600;color:#444;margin:16px 0 8px;padding-left:8px;}
 .archive-list{list-style:none;padding:0;margin:0;}
@@ -24,7 +24,7 @@
   display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:10px;
   transition:background 0.2s ease;cursor:pointer;
 }
-.archive-list li:hover{background:rgba(167,139,250,0.08);}
+.archive-list li:hover{background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
 .archive-list .arc-date{font-size:12px;color:#444;flex-shrink:0;width:50px;}
 .archive-list .arc-title{font-size:13px;color:#111;}
 
@@ -96,10 +96,10 @@
   content:'';position:absolute;top:0;left:0;right:0;height:40%;
   background:linear-gradient(180deg,rgba(255,255,255,0.25),transparent);border-radius:8px 8px 0 0;
 }
-.chart-bar:hover{background:linear-gradient(180deg,#d8b4fe,#7c3aed);filter:brightness(1.08);}
+.chart-bar:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--accent-color) 70%,white),var(--accent-color));filter:brightness(1.08);}
 .chart-count{
   position:absolute;top:-22px;left:50%;transform:translateX(-50%);
-  font-size:11px;font-weight:700;color:#7c3aed;white-space:nowrap;
+  font-size:11px;font-weight:700;color:var(--accent-color);white-space:nowrap;
   opacity:0;transition:opacity 0.2s ease;
 }
 .chart-col:hover .chart-count{opacity:1;}
@@ -110,16 +110,16 @@
 .archive-year-header{
   display:flex;align-items:center;justify-content:space-between;
   cursor:pointer;padding:14px 18px;
-  background:rgba(167,139,250,0.06);border-radius:12px;
+  background:color-mix(in srgb,var(--accent-color) 6%,transparent);border-radius:12px;
   transition:all 0.2s ease;border:1px solid transparent;user-select:none;
 }
-.archive-year-header:hover{background:rgba(167,139,250,0.12);border-color:rgba(167,139,250,0.2);}
-.archive-year-header.expanded{background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3);}
+.archive-year-header:hover{background:color-mix(in srgb,var(--accent-color) 12%,transparent);border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);}
+.archive-year-header.expanded{background:color-mix(in srgb,var(--accent-color) 10%,transparent);border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);}
 .archive-year-label{display:flex;align-items:center;gap:10px;}
 .year-label-text{font-size:18px;font-weight:700;color:#111;}
 .year-post-count{
   font-size:12px;font-weight:500;color:var(--accent-color);padding:2px 8px;border-radius:6px;
-  background:rgba(167,139,250,0.12);
+  background:color-mix(in srgb,var(--accent-color) 12%,transparent);
 }
 .year-toggle-icon{transition:transform 0.3s ease;color:var(--accent-color);font-size:14px;font-weight:bold;}
 .archive-year-content{
@@ -133,19 +133,19 @@
   display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;
   cursor:pointer;transition:all 0.2s ease;
 }
-.archive-row:hover{background:rgba(139,92,246,0.06);}
+.archive-row:hover{background:color-mix(in srgb,var(--accent-color) 6%,transparent);}
 .row-date{
   font-size:12px;font-weight:500;color:var(--accent-color);
-  padding:3px 10px;border-radius:8px;background:rgba(167,139,250,0.1);flex-shrink:0;
+  padding:3px 10px;border-radius:8px;background:color-mix(in srgb,var(--accent-color) 10%,transparent);flex-shrink:0;
 }
 .row-title{
   font-size:14px;font-weight:500;color:#111;flex:1;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color 0.2s ease;
 }
-.archive-row:hover .row-title{color:#7c3aed;}
+.archive-row:hover .row-title{color:var(--accent-color);}
 .row-cat{
   font-size:11px;color:var(--accent-color);padding:3px 10px;border-radius:8px;
-  background:rgba(139,92,246,0.08);flex-shrink:0;
+  background:color-mix(in srgb,var(--accent-color) 8%,transparent);flex-shrink:0;
 }
 .archive-empty{text-align:center;padding:40px;color:#444;font-size:14px;}
 
@@ -188,12 +188,12 @@
 [data-theme="dark"] .stat-hero-posts{background:var(--card-bg);}
 [data-theme="dark"] .stat-hero-cats{background:var(--card-bg);}
 [data-theme="dark"] .stat-hero-tags{background:var(--card-bg);}
-[data-theme="dark"] .archive-year-header{background:rgba(167,139,250,0.1);}
-[data-theme="dark"] .archive-year-header:hover{background:rgba(167,139,250,0.15);}
-[data-theme="dark"] .archive-year-header.expanded{background:rgba(167,139,250,0.12);border-color:rgba(167,139,250,0.25);}
-[data-theme="dark"] .row-date{background:rgba(167,139,250,0.15);}
-[data-theme="dark"] .row-cat{background:rgba(139,92,246,0.12);}
-[data-theme="dark"] .year-post-count{background:rgba(167,139,250,0.18);}
+[data-theme="dark"] .archive-year-header{background:color-mix(in srgb,var(--accent-color) 10%,transparent);}
+[data-theme="dark"] .archive-year-header:hover{background:color-mix(in srgb,var(--accent-color) 15%,transparent);}
+[data-theme="dark"] .archive-year-header.expanded{background:color-mix(in srgb,var(--accent-color) 12%,transparent);border-color:color-mix(in srgb,var(--accent-color) 25%,transparent);}
+[data-theme="dark"] .row-date{background:color-mix(in srgb,var(--accent-color) 15%,transparent);}
+[data-theme="dark"] .row-cat{background:color-mix(in srgb,var(--accent-color) 12%,transparent);}
+[data-theme="dark"] .year-post-count{background:color-mix(in srgb,var(--accent-color) 18%,transparent);}
 
 /* 确保展开状态的年份内容有足够的高度 */
 .archive-year-header.expanded + .archive-year-content {

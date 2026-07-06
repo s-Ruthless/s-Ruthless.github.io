@@ -85,7 +85,7 @@ dock:
   - { icon: "fas fa-images", label: "相册", page: "/gallery/", type: "page" }
   - { icon: "fas fa-book", label: "豆瓣", page: "/douban/", type: "page" }
   - { icon: "fas fa-link", label: "友链", page: "/links/", type: "page" }
-  - { icon: "fas fa-circle-info", label: "关于", page: "/about/", type: "page" }
+  - { icon: "fas fa-heart", label: "关于", page: "/about/", type: "page" }
 
 # ====== 首页 ======
 # home_windows: 首页显示的浮动窗口（可选: posts, categories, tags, music, data, info）

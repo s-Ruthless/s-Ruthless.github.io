@@ -39,10 +39,17 @@
     }
   }
 %>
+<%
+  var _icon = 'fas fa-images';
+  var _path = (page.path || '').replace(/\/index\.html$/, '').replace(/^\/|\/$/g, '');
+  (theme.dock || []).forEach(function(item){
+    if ((item.page || '').replace(/^\/|\/$/g, '') === _path) _icon = item.icon;
+  });
+%>
 <div class="page-container">
   <div class="page-body gallery-page">
     <div class="page-header">
-      <h2><i class="<%- dock_icon() || 'fas fa-images' %>"></i> 相册</h2>
+      <h2><i class="<%- _icon %>"></i> 相册</h2>
       <p class="archive-subtitle">用镜头记录生活中的美好瞬间</p>
     </div>
     <div class="page-content">

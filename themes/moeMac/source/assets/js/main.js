@@ -848,6 +848,9 @@
               try { execScripts(box); } catch(e) { console.warn('execScripts error:', e); }
               var t = doc.querySelector('title'); if (t) document.title = t.textContent;
               if (push) history.pushState(null, null, u);
+              /* DesktopMode 必须先执行：移除首页的 overflow:hidden，
+                 否则非首页内容不可滚动 */
+              try { DesktopMode.check(); } catch(e) { console.warn('DesktopMode error:', e); }
               try {
               Drag.init(); WallFilter(); self.dockHL();
               DockTip.init();
@@ -860,7 +863,6 @@
               CountUp.init();
               ArchiveFold.init();
               Gallery.init();
-              DesktopMode.check();
               window.scrollTo(0, 0);
               // GSAP 动画需在 AJAX 加载完成后重新执行
               if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
@@ -870,6 +872,7 @@
             }
           }
           } catch(e3) { console.warn('AJAX load error:', e3); }
+          /* 无论成功失败，必须重置 UI 状态和 busy 标志 */
           box.classList.remove('fade-out'); box.classList.add('fade-in');
           setTimeout(function () { box.classList.remove('fade-in'); }, 300);
           ProgressBar.done(); self.busy = false;

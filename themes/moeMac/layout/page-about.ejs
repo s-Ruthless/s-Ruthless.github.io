@@ -1,7 +1,14 @@
+<%
+  var _icon = 'fas fa-circle-info';
+  var _path = (page.path || '').replace(/\/index\.html$/, '').replace(/^\/|\/$/g, '');
+  (theme.dock || []).forEach(function(item){
+    if ((item.page || '').replace(/^\/|\/$/g, '') === _path) _icon = item.icon;
+  });
+%>
 <div class="page-container">
   <div class="page-body">
     <div class="page-header">
-      <h2><i class="<%- dock_icon() || 'fas fa-circle-info' %>"></i> <%= page.title || '关于' %></h2>
+      <h2><i class="<%- _icon %>"></i> <%= page.title || '关于' %></h2>
     </div>
     <div class="page-content">
     <div class="article-content"><%- page.content %></div>

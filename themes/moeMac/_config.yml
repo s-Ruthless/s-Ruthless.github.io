@@ -88,7 +88,13 @@ dock:
   - { icon: "fas fa-heart", label: "关于", page: "/about/", type: "page" }
 
 # ====== 首页 ======
-# home_windows: 首页显示的浮动窗口（可选: posts, categories, tags, music, data, info）
+# home_windows: 首页显示的浮动窗口（按顺序排列，可随意增删和调整顺序）
+#   posts      — 最新文章窗口（显示 recent_posts_count 篇文章）
+#   categories — 分类窗口（显示所有分类及文章数）
+#   tags       — 标签云窗口（显示所有标签）
+#   music      — 音乐窗口（加载歌单播放器）
+#   data       — 站点数据窗口（文章/分类/标签总数等统计）
+#   info       — 网站信息窗口（备案号、建站天数、版权等）
 # recent_posts_count: 最新文章窗口显示的文章数量
 home_windows:
   - "posts"

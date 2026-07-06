@@ -14,10 +14,17 @@
     return html;
   }
 %>
+<%
+  var _dbIcon = 'fas fa-clapperboard';
+  var _dbPath = (page.path || '').replace(/\/index\.html$/, '').replace(/^\/|\/$/g, '');
+  (theme.dock || []).forEach(function(item){
+    if ((item.page || '').replace(/^\/|\/$/g, '') === _dbPath) _dbIcon = item.icon;
+  });
+%>
 <div class="page-container douban-page">
   <div class="page-body">
     <div class="page-header">
-      <h2><i class="<%- dock_icon() || 'fas fa-clapperboard' %>"></i> <%= page.title || '豆瓣' %></h2>
+      <h2><i class="<%- _dbIcon %>"></i> <%= page.title || '豆瓣' %></h2>
       <p class="archive-subtitle">书 · 影 · 音 的碎片收藏</p>
     </div>
     <div class="page-content">

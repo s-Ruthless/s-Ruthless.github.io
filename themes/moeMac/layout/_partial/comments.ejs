@@ -10,89 +10,116 @@
   var giscusOk = p === 'giscus' && c.giscus && c.giscus.repo;
 %>
 <div class="comments-wrap" id="comments-wrap">
-  <div class="comments-loading" id="comments-loading"><div class="music-loading-spinner"></div><span>评论加载中…</span></div>
-  <div id="comments-mount">
+  <div class="comments-loading" id="comments-loading"><div class="comments-spinner"></div><span>评论加载中…</span></div>
+  <div id="comments-mount" class="comments-mount-giscus">
     <% if (giscusOk) { %>
-    <script src="https://giscus.app/client.js"
-      data-repo="<%= c.giscus.repo %>"
-      data-repo-id="<%= c.giscus.repoId %>"
-      data-category="<%= c.giscus.category %>"
-      data-category-id="<%= c.giscus.categoryId %>"
-      data-mapping="<%= c.giscus.mapping || 'pathname' %>"
-      data-strict="1"
-      data-reactions-enabled="<%= c.giscus.reactionsEnabled !== undefined ? c.giscus.reactionsEnabled : 0 %>"
-      data-emit-metadata="0"
-      data-input-position="<%= c.giscus.inputPosition || 'top' %>"
-      data-theme="<%= c.giscus.theme || 'preferred_color_scheme' %>"
-      data-lang="zh-CN"
-      crossorigin="anonymous"
-      async>
+    <script>
+      /* 动态创建 Giscus 脚本：根据当前 data-theme 设置正确的 Giscus 主题，
+         避免 preferred_color_scheme 跟随浏览器系统偏好而导致夜间模式白屏 */
+      (function(){
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var s = document.createElement('script');
+        s.src = 'https://giscus.app/client.js';
+        s.setAttribute('data-repo', '<%= c.giscus.repo %>');
+        s.setAttribute('data-repo-id', '<%= c.giscus.repoId %>');
+        s.setAttribute('data-category', '<%= c.giscus.category %>');
+        s.setAttribute('data-category-id', '<%= c.giscus.categoryId %>');
+        s.setAttribute('data-mapping', '<%= c.giscus.mapping || 'pathname' %>');
+        s.setAttribute('data-strict', '1');
+        s.setAttribute('data-reactions-enabled', '<%= c.giscus.reactionsEnabled !== undefined ? c.giscus.reactionsEnabled : 0 %>');
+        s.setAttribute('data-emit-metadata', '0');
+        s.setAttribute('data-input-position', '<%= c.giscus.inputPosition || 'top' %>');
+        s.setAttribute('data-theme', dark ? 'noborder_dark' : 'noborder_light');
+        s.setAttribute('data-lang', 'zh-CN');
+        s.setAttribute('data-loading', 'eager');
+        s.setAttribute('crossorigin', 'anonymous');
+        s.async = true;
+        document.getElementById('comments-mount').appendChild(s);
+      })();
     </script>
     <% } %>
   </div>
 </div>
 <script>
-  /* 评论系统加载完成后隐藏 loading */
+  /*
+   * 评论区加载优化 v4：
+   * 1. CSS .comments-mount-giscus{opacity:0} 从第一帧隐藏 iframe，杜绝 Giscus 原生加载动画闪现
+   * 2. data-loading="eager" 立即加载 iframe
+   * 3. 监听 postMessage 的 resizeHeight，等高度稳定 800ms → 评论完全渲染 → 骨架屏淡出 + iframe 淡入
+   * 4. 容器高度由 Giscus 的 resizeHeight 自动撑开，不固定死
+   */
   (function(){
     var loading = document.getElementById('comments-loading');
-    if(!loading) return;
+    var wrap = document.getElementById('comments-wrap');
+    var mount = document.getElementById('comments-mount');
+    if(!loading || !wrap) return;
+
     var hidden = false;
     function hideLoading(){
       if(hidden) return;
       hidden = true;
-      loading.style.display = 'none';
+      /* 骨架屏淡出 */
+      loading.style.opacity = '0';
+      loading.style.transition = 'opacity 0.4s ease';
+      setTimeout(function(){ loading.style.display = 'none'; }, 400);
+      /* iframe 容器淡入 */
+      if(mount){
+        mount.style.opacity = '1';
+        mount.style.transition = 'opacity 0.4s ease';
+      }
     }
 
-    var wrap = document.getElementById('comments-wrap');
-    if(wrap){
-      var mo = new MutationObserver(function(){
-        /* 非Giscus评论系统：检测到容器即隐藏 */
-        if(wrap.querySelector('.gt-container, .tk-comment, .wl-panel')){
-          hideLoading();
-          mo.disconnect();
-          return;
-        }
-        /* Giscus：iframe已插入，但不立即隐藏loading
-           等iframe真正加载完成（去掉giscus-frame--loading类）再隐藏 */
-        var iframe = wrap.querySelector('iframe.giscus-frame');
-        if(iframe && !iframe._watched){
-          iframe._watched = true;
-          /* 方法1：监听iframe load事件 */
-          iframe.addEventListener('load', function(){
-            setTimeout(hideLoading, 200);
-          });
-          /* 方法2：轮询检查loading类是否被移除 */
-          var checkInterval = setInterval(function(){
-            if(!iframe.classList.contains('giscus-frame--loading')){
-              hideLoading();
-              clearInterval(checkInterval);
-            }
-          }, 200);
-          /* 5秒后强制隐藏（防止load事件不触发） */
-          setTimeout(function(){ clearInterval(checkInterval); }, 5000);
-        }
-      });
-      mo.observe(wrap, { childList: true, subtree: true });
-    }
+    /* iframe 容器初始透明由 CSS .comments-mount-giscus{opacity:0} 控制，
+       确保 Giscus 原生加载动画从第一帧就不可见 */
 
-    /* 监听 Giscus iframe 消息（备选方案） */
+    /* ---- 非 Giscus 系统：检测到容器即隐藏 ---- */
+    var mo = new MutationObserver(function(){
+      if(wrap.querySelector('.gt-container, .tk-comment, .wl-panel')){
+        hideLoading();
+        mo.disconnect();
+      }
+    });
+    mo.observe(wrap, { childList: true, subtree: true });
+
+    /* ---- Giscus：监听 postMessage 中的 resizeHeight ----
+       Giscus 渲染评论（包括"暂无评论"提示）时会发送 resizeHeight 消息。
+       高度可能多次变化，等连续 800ms 不再变化 → 评论完全加载完毕。 */
+    var lastHeight = 0;
+    var stableTimer = null;
+    var firstMessageReceived = false;
+
     window.addEventListener('message', function(e){
-      if(e.origin === 'https://giscus.app'){
-        setTimeout(hideLoading, 300);
+      if(e.origin !== 'https://giscus.app') return;
+      var data = e.data;
+      if(!data || typeof data !== 'object' || !data.giscus) return;
+
+      if(data.giscus.resizeHeight){
+        firstMessageReceived = true;
+        var h = data.giscus.resizeHeight;
+        /* 高度发生变化，重置稳定计时器 */
+        if(h !== lastHeight){
+          lastHeight = h;
+          clearTimeout(stableTimer);
+          stableTimer = setTimeout(function(){
+            /* 800ms 内高度没再变化 → 评论完全加载 */
+            hideLoading();
+          }, 800);
+        }
       }
     });
 
-    /* 超时兜底 */
-    setTimeout(hideLoading, 15000);
+    /* 超时兜底：20 秒后强制隐藏 */
+    setTimeout(function(){
+      if(!hidden) hideLoading();
+    }, 20000);
   })();
 </script>
 
 <% if (giscusOk) { %>
 <script>
-  /* 暗黑模式同步给 Giscus（仅当 theme 为 preferred_color_scheme 时生效） */
+  /* 暗黑模式切换同步：用户点击切换按钮后，通过 postMessage 通知 Giscus 切换主题。
+     初始主题已在上方动态创建脚本时正确设置，此处仅处理运行时切换。 */
   (function(){
-    var themeMode = '<%= c.giscus.theme || 'preferred_color_scheme' %>';
-    if(themeMode !== 'preferred_color_scheme') return;
     function syncTheme(){
       var iframe = document.querySelector('iframe.giscus-frame');
       if(!iframe) return;
@@ -103,9 +130,6 @@
     }
     var observer = new MutationObserver(syncTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    var checkInterval = setInterval(function(){
-      if(document.querySelector('iframe.giscus-frame')){ syncTheme(); clearInterval(checkInterval); }
-    }, 500);
   })();
 </script>
 

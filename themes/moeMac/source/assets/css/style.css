@@ -611,7 +611,7 @@ body { background: transparent !important; }
 [data-theme="dark"] .post-toc-toggle,
 [data-theme="dark"] .tag-chip,
 [data-theme="dark"] .not-found-desc,
-[data-theme="dark"] .comments-loading{color:#b0b0b0;}
+[data-theme="dark"] .comments-loading{color:#b0b0b0;background:#1e1e32;}
 [data-theme="dark"] .search-input{color:#f0f0f0;}
 
 /* 暗黑模式：文章/页面卡片 — 确保 page-body 卡片在夜间正确变暗 */

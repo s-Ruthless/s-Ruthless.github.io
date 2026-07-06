@@ -105,6 +105,19 @@
 .chart-col:hover .chart-count{opacity:1;}
 .chart-label{font-size:11px;color:#444;font-weight:500;}
 
+/* 折线图 */
+.chart-line-wrap{padding:8px 0 4px;}
+.chart-line-svg{width:100%;height:auto;display:block;max-height:200px;}
+.chart-point{cursor:pointer;}
+.chart-point circle{transition:r 0.2s ease,stroke-width 0.2s ease;}
+.chart-point:hover circle{r:7;stroke-width:3;}
+.chart-point-count{
+  font-size:12px;font-weight:700;fill:var(--accent-color);
+  opacity:0;transition:opacity 0.2s ease;pointer-events:none;
+}
+.chart-point:hover .chart-point-count{opacity:1;}
+.chart-point-label{font-size:11px;fill:#444;font-weight:500;}
+
 /* 年份折叠 */
 .archive-year-section{margin-bottom:8px;}
 .archive-year-header{
@@ -194,6 +207,10 @@
 [data-theme="dark"] .row-date{background:color-mix(in srgb,var(--accent-color) 15%,transparent);}
 [data-theme="dark"] .row-cat{background:color-mix(in srgb,var(--accent-color) 12%,transparent);}
 [data-theme="dark"] .year-post-count{background:color-mix(in srgb,var(--accent-color) 18%,transparent);}
+
+/* 折线图暗黑模式 */
+[data-theme="dark"] .chart-point-label{fill:#b0b0b0;}
+[data-theme="dark"] .chart-line-svg line[stroke="rgba(0,0,0,0.06)"]{stroke:rgba(255,255,255,0.08);}
 
 /* 确保展开状态的年份内容有足够的高度 */
 .archive-year-header.expanded + .archive-year-content {

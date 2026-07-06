@@ -68,15 +68,33 @@
     }
   </style>
 
+  <!-- 早期主题初始化：在所有 CSS/JS 之前从 localStorage 读取暗黑模式偏好，
+       避免 FOUC（内容闪烁）和 Giscus 加载时主题不匹配 -->
+  <script>
+    (function(){
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
   <!-- 卜算子访客统计 -->
   <script async src="<%= A %>/js/busuanzi.pure.mini.js"></script>
 
+  <!-- Giscus 评论预连接（提前建立 TCP/TLS，减少脚本加载握手耗时） -->
+  <% if (theme.comments && theme.comments.enable && theme.comments.provider === 'giscus' && theme.comments.giscus && theme.comments.giscus.repo) { %>
+  <link rel="preconnect" href="https://giscus.app" crossorigin>
+  <link rel="dns-prefetch" href="https://giscus.app">
+  <% } %>
+
   <!-- 主题 CSS -->
-  <link rel="stylesheet" href="<%= A %>/css/style.css">
-  <link rel="stylesheet" href="<%= A %>/css/home.css">
-  <link rel="stylesheet" href="<%= A %>/css/article.css">
-  <link rel="stylesheet" href="<%= A %>/css/archive.css">
-  <link rel="stylesheet" href="<%= A %>/css/gallery.css">
-  <link rel="stylesheet" href="<%= A %>/css/pages.css">
-  <link rel="stylesheet" href="<%= A %>/css/aplayer.css">
+  <% var V = '?v=20260707'; %>
+  <link rel="stylesheet" href="<%= A %>/css/style.css<%= V %>">
+  <link rel="stylesheet" href="<%= A %>/css/home.css<%= V %>">
+  <link rel="stylesheet" href="<%= A %>/css/article.css<%= V %>">
+  <link rel="stylesheet" href="<%= A %>/css/archive.css<%= V %>">
+  <link rel="stylesheet" href="<%= A %>/css/gallery.css<%= V %>">
+  <link rel="stylesheet" href="<%= A %>/css/pages.css<%= V %>">
+  <link rel="stylesheet" href="<%= A %>/css/aplayer.css<%= V %>">
 </head>

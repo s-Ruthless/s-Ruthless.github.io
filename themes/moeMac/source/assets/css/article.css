@@ -343,24 +343,29 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
 
 /* ====== 评论区 ====== */
 .comments-wrap{
-  margin-top:40px;padding:20px;
-  border-radius:18px;
-  background:var(--card-bg);
-  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
-  border:var(--card-border);
-  box-shadow:var(--card-shadow);
-  overflow:hidden;
+position:relative;
+margin-top:40px;padding:20px;
+border-radius:18px;
+background:var(--card-bg);
+backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+border:var(--card-border);
+box-shadow:var(--card-shadow);
+overflow:hidden;
 }
 .comments-loading{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  padding:40px 20px;color:#999;font-size:13px;
+position:absolute;inset:0;z-index:2;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+padding:40px 20px;color:#999;font-size:13px;
+background:#fff;
+border-radius:18px;
 }
-.comments-loading .music-loading-spinner{
+.comments-loading .comments-spinner{
   width:28px;height:28px;
   border:2.5px solid color-mix(in srgb,var(--accent-color) 15%,transparent);
   border-top-color:var(--accent-color);
   border-radius:50%;
   animation:comments-spin 0.8s linear infinite;
+  will-change:transform;
 }
 @keyframes comments-spin{to{transform:rotate(360deg);}}
 .comments-config-hint{
@@ -374,7 +379,12 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
   font-size:12px;
 }
 
-/* Giscus iframe 容器 */
+/* Giscus iframe 容器 — CSS 直接设 opacity:0，确保第一帧就隐藏 iframe，
+   避免 Giscus 原生加载动画闪现。JS 在评论加载完成后设为 opacity:1 淡入。 */
+.comments-mount-giscus{
+  opacity:0;
+  transition:opacity 0.4s ease;
+}
 .comments-wrap iframe.giscus-frame{
   width:100%!important;min-height:200px;
   border:none;border-radius:0;
@@ -450,3 +460,59 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
 [data-theme="dark"] .article-content table tr:hover td{background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
 [data-theme="dark"] .toc-active{background:color-mix(in srgb,var(--accent-color) 18%,transparent)!important;}
 /* Dark mode: post list item — 统一在 pages.css 中定义 */
+
+/* ====== 分类/标签详情页：DaisyUI 紫色 → 主题色覆盖 ====== */
+/* badge-secondary 用于标签页标题 */
+.badge-secondary{
+  background-color:var(--accent-color)!important;
+  color:#fff!important;
+  border-color:var(--accent-color)!important;
+}
+/* 文章列表卡片 hover 边框色 */
+.page-body .card.hover\:border-primary\/30:hover,
+.page-body .card:hover{
+  border-color:color-mix(in srgb,var(--accent-color) 30%,transparent)!important;
+}
+/* 文章列表卡片 hover 阴影增强 */
+.page-body .card{
+  transition:all 0.2s ease;
+}
+.page-body .card:hover{
+  box-shadow:0 8px 24px color-mix(in srgb,var(--accent-color) 12%,transparent)!important;
+}
+/* 卡片内链接 hover */
+.page-body .card a:hover,
+.page-body .card .ajax-link:hover{
+  color:var(--accent-color)!important;
+}
+/* 日期 badge-ghost → 主题色 */
+.page-body .badge-ghost{
+  color:var(--accent-color)!important;
+  background:color-mix(in srgb,var(--accent-color) 8%,transparent)!important;
+  border:1px solid color-mix(in srgb,var(--accent-color) 15%,transparent)!important;
+}
+/* 分页按钮 hover */
+.page-body .btn-ghost:hover{
+  background:color-mix(in srgb,var(--accent-color) 10%,transparent)!important;
+  color:var(--accent-color)!important;
+}
+/* 页面标题中 badge */
+.page-header .badge{
+  vertical-align:middle;
+}
+/* 暗黑模式适配 */
+[data-theme="dark"] .page-body .card{
+  background:rgba(255,255,255,0.03);
+  border-color:rgba(255,255,255,0.08)!important;
+}
+[data-theme="dark"] .page-body .card:hover{
+  border-color:color-mix(in srgb,var(--accent-color) 35%,transparent)!important;
+  background:color-mix(in srgb,var(--accent-color) 6%,rgba(255,255,255,0.03))!important;
+}
+[data-theme="dark"] .page-body .badge-ghost{
+  background:color-mix(in srgb,var(--accent-color) 12%,transparent)!important;
+  color:var(--accent-color)!important;
+}
+[data-theme="dark"] .page-body .btn-ghost:hover{
+  background:color-mix(in srgb,var(--accent-color) 15%,transparent)!important;
+}

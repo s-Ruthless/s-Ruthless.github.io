@@ -837,6 +837,7 @@
         xhr.open('GET', u, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.onload = function () {
+          try {
           if (xhr.status >= 200 && xhr.status < 400) {
             var doc = new DOMParser().parseFromString(xhr.responseText, 'text/html');
             var nc = doc.getElementById('ajax-container');
@@ -844,9 +845,10 @@
               box.innerHTML = nc.innerHTML;
               /* 关键：innerHTML 不执行 <script>，需手动重建执行
                  必须在 init 调用之前，因为 Gallery.init 等依赖内联脚本设置的变量（如 GALLERY_DATA） */
-              execScripts(box);
+              try { execScripts(box); } catch(e) { console.warn('execScripts error:', e); }
               var t = doc.querySelector('title'); if (t) document.title = t.textContent;
               if (push) history.pushState(null, null, u);
+              try {
               Drag.init(); WallFilter(); self.dockHL();
               DockTip.init();
               loadHitokoto();
@@ -864,8 +866,10 @@
               if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
               // UI 增强效果重新初始化
               if (typeof UIEnhance !== "undefined") UIEnhance.init();
+              } catch(e2) { console.warn('AJAX init error:', e2); }
             }
           }
+          } catch(e3) { console.warn('AJAX load error:', e3); }
           box.classList.remove('fade-out'); box.classList.add('fade-in');
           setTimeout(function () { box.classList.remove('fade-in'); }, 300);
           ProgressBar.done(); self.busy = false;

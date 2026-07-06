@@ -15,11 +15,12 @@
   }
 %>
 <div class="page-container douban-page">
-  <div class="page-header">
-    <h2><i class="fas fa-clapperboard"></i> <%= page.title || '豆瓣' %></h2>
-    <p class="archive-subtitle">书 · 影 · 音 的碎片收藏</p>
-  </div>
   <div class="page-body">
+    <div class="page-header">
+      <h2><i class="fas fa-clapperboard"></i> <%= page.title || '豆瓣' %></h2>
+      <p class="archive-subtitle">书 · 影 · 音 的碎片收藏</p>
+    </div>
+    <div class="page-content">
     <% sections.forEach(function(sec) { var items = db[sec.key] || []; if (items.length === 0) return; %>
     <section class="douban-section">
       <div class="douban-sec-head">
@@ -67,5 +68,6 @@
       <div class="divider my-6"></div>
       <div class="article-content"><%- page.content %></div>
     <% } %>
+    </div>
   </div>
 </div>

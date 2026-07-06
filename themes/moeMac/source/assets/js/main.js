@@ -773,7 +773,7 @@
         html += '<a class="search-item ajax-link" data-href="' + m.url + '">' +
           '<div class="search-item-title">' + hl(m.title) + '</div>' +
           '<div class="search-item-excerpt">' + hl(m.excerpt) + '</div>' +
-          (m.date ? '<div class="search-item-meta"><i class="far fa-calendar"></i> ' + m.date + '</div>' : '') +
+          (m.date ? '<div class="search-item-meta"><i class="fas fa-calendar-days"></i> ' + m.date + '</div>' : '') +
           '</a>';
       });
       box.innerHTML = html;
@@ -874,13 +874,18 @@
     }
   };
 
-  /* ====== 同步 dock-glass 宽度到 dock-bar-inner ====== */
+  /* ====== 同步 dock-glass 宽度到 dock-bar-inner（rAF 批处理优化）====== */
+  var _dockGlassRAF = null;
   function syncDockGlass() {
-    var inner = document.querySelector('.dock-bar-inner');
-    var glass = document.querySelector('.dock-glass');
-    if (inner && glass) {
-      glass.style.width = inner.offsetWidth + 'px';
-    }
+    if (_dockGlassRAF) return; /* 已有排队的帧，跳过 */
+    _dockGlassRAF = requestAnimationFrame(function () {
+      _dockGlassRAF = null;
+      var inner = document.querySelector('.dock-bar-inner');
+      var glass = document.querySelector('.dock-glass');
+      if (inner && glass) {
+        glass.style.width = inner.offsetWidth + 'px';
+      }
+    });
   }
 
   /* ====== 统计数字计数动画 ====== */
@@ -953,12 +958,16 @@
           var header = document.querySelector('#year-' + year + ' .archive-year-header');
           var icon = document.querySelector('#year-' + year + ' .year-toggle-icon');
           if (!content) return;
-          if (content.style.display === 'none') {
-            content.style.display = '';
+          
+          // 更可靠的展开状态检测：检查header是否有expanded类
+          var isExpanded = header && header.classList.contains('expanded');
+          
+          if (!isExpanded) {
+            content.style.maxHeight = '2000px';
             if (icon) icon.style.transform = 'rotate(0deg)';
             if (header) header.classList.add('expanded');
           } else {
-            content.style.display = 'none';
+            content.style.maxHeight = '0';
             if (icon) icon.style.transform = 'rotate(-90deg)';
             if (header) header.classList.remove('expanded');
           }
@@ -969,18 +978,24 @@
         var header = section.querySelector('.archive-year-header');
         if (header && !header._bound) {
           header._bound = true;
-          header.addEventListener('click', function () {
-            var year = section.id.replace('year-', '');
+          header.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var year = header.getAttribute('data-year') || section.id.replace('year-', '');
             window.toggleYear(year);
           });
         }
       });
-      /* 默认折叠所有年份 */
+      /* 默认折叠所有年份（使用新的CSS过渡效果）*/
       sections.forEach(function (section) {
         var yearId = section.id.replace('year-', '');
         var content = document.getElementById('year-content-' + yearId);
-        if (content && content.style.display !== 'none') {
-          window.toggleYear(yearId);
+        var header = section.querySelector('.archive-year-header');
+        var icon = section.querySelector('.year-toggle-icon');
+        if (content) {
+          content.style.maxHeight = '0';
+          if (icon) icon.style.transform = 'rotate(-90deg)';
+          if (header) header.classList.remove('expanded');
         }
       });
     }

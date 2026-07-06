@@ -3,13 +3,14 @@
   var posts = page.posts.sort('date', -1);
 %>
 <div class="page-container">
-  <div class="page-header">
-    <h2><i class="fas fa-folder"></i> 分类 · <span class="badge badge-primary badge-sm"><%= cat %></span></h2>
-  </div>
   <div class="page-body">
+    <div class="page-header">
+      <h2><i class="fas fa-folder"></i> 分类 · <span class="badge badge-primary badge-sm"><%= cat %></span></h2>
+    </div>
+    <div class="page-content">
     <div class="flex flex-col gap-3">
     <% posts.each(function(post) { %>
-      <div class="card card-compact bg-base-100/40 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/30 border border-transparent transition-all duration-200 cursor-pointer ajax-link" data-href="<%- url_for(post.path) %>">
+      <div class="card card-compact backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/30 border border-transparent transition-all duration-200 cursor-pointer ajax-link" data-href="<%- url_for(post.path) %>">
         <div class="card-body p-4 flex-row items-center gap-4">
           <span class="badge badge-ghost badge-sm shrink-0"><%= date(post.date, 'MM-DD') %></span>
           <a class="ajax-link text-sm font-medium" data-href="<%- url_for(post.path) %>"><%= post.title %></a>
@@ -31,5 +32,6 @@
         <% } %>
       </div>
     <% } %>
+    </div>
   </div>
 </div>

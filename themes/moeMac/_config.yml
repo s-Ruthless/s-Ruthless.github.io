@@ -26,7 +26,7 @@ keywords: "博客,生活,技术,随笔"
 twitter: ""
 
 # ====== 主题色 ======
-accent_color: "#a78bfa"
+accent_color: "#c0504d"
 
 # ====== 静态资源 CDN ======
 # 所有静态资源按类型统一放在 source/assets/ 下：
@@ -98,10 +98,6 @@ home_windows:
   - "data"
 recent_posts_count: 5
 
-# ====== 归档页 ======
-# archive_timeline_layout: 时间轴布局方向，可选 center / left / right
-archive_timeline_layout: "center"
-
 # ====== 友链 ======
 friends:
   - { name: "Hexo", url: "https://hexo.io", avatar: "https://hexo.io/favicon.ico", description: "快速、简洁且高效的博客框架" }
@@ -131,16 +127,21 @@ douban:
   music:
     - { name: "山野自愈", cover: "https://p1.music.126.net/img.jpg", rating: 8, date: "2026-06-01", note: "治愈系歌单循环一整天" }
 
+# ====== 壁纸设置 ======
+# wallpaper_path: 自定义壁纸图片路径，为空则使用默认渐变
+# 示例: "/assets/images/my-bg.jpg" 或 "https://example.com/bg.jpg"
+wallpaper_path: "https://img.netbian.com/file/2024/0525/001431sFPe6.jpg"
+
 # ====== 评论系统 ======
 # enable: false 关闭；true 开启
 # provider: waline / twikoo / giscus / gitalk
 # 各 provider 的配置见下方对应字段，按需填写其一
 comments:
-  enable: false
-  provider: "waline"
+  enable: true
+  provider: "gitalk"
   # Waline: https://waline.js.org/
   waline:
-    serverURL: ""           # 例: https://your-waline.vercel.app
+    serverURL: "https://waline-demo.vercel.app"
   # Twikoo: https://twikoo.js.org/
   twikoo:
     envId: ""               # 腾讯云环境ID 或自建地址

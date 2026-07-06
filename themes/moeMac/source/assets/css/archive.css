@@ -1,0 +1,201 @@
+/* ============================================
+   archive.css �?归档/时间轴页专用样式
+   包含：统计看板、柱状图、年份折叠、文章列�?
+   ============================================ */
+
+/* ====== 归档页面容器 ====== */
+.archive-header{margin-bottom:24px;}
+.archive-header h2{font-size:20px;font-weight:600;color:#111;}
+.archive-subtitle{text-align:center;font-size:14px;color:#444;margin-top:4px;}
+.archive-timeline{position:relative;padding-left:24px;}
+.archive-timeline::before{
+  content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,var(--accent-color),#ec4899);border-radius:1px;
+}
+.archive-year{font-size:18px;font-weight:600;color:#111;margin:24px 0 12px;position:relative;}
+.archive-year::before{
+  content:'';position:absolute;left:-20px;top:8px;width:10px;height:10px;
+  border-radius:50%;background:var(--accent-color);border:2px solid #fff;
+  box-shadow:0 0 0 2px rgba(139,92,246,0.3);
+}
+.archive-month{font-size:14px;font-weight:600;color:#444;margin:16px 0 8px;padding-left:8px;}
+.archive-list{list-style:none;padding:0;margin:0;}
+.archive-list li{
+  display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:10px;
+  transition:background 0.2s ease;cursor:pointer;
+}
+.archive-list li:hover{background:rgba(167,139,250,0.08);}
+.archive-list .arc-date{font-size:12px;color:#444;flex-shrink:0;width:50px;}
+.archive-list .arc-title{font-size:13px;color:#111;}
+
+/* ====== 统计看板 ====== */
+.archive-stats{margin-bottom:32px;}
+
+/* 三宫格数字卡�?*/
+.stat-hero-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.stat-hero-card{
+  display:flex;align-items:center;gap:16px;padding:20px 24px;border-radius:var(--radius-xl);
+  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  background:var(--card-bg);border:var(--card-border);box-shadow:var(--card-shadow);
+  position:relative;overflow:hidden;
+  transition:transform var(--duration-slow) ease,box-shadow var(--duration-slow) ease;
+}
+.stat-hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat-hero-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.1);}
+.stat-hero-posts{background:var(--card-bg);}
+.stat-hero-posts::before{background:linear-gradient(90deg,#ff6b6b,#ffa36b);}
+.stat-hero-cats{background:var(--card-bg);}
+.stat-hero-cats::before{background:linear-gradient(90deg,#6b9eff,#6bd4ff);}
+.stat-hero-tags{background:var(--card-bg);}
+.stat-hero-tags::before{background:linear-gradient(90deg,#a06bff,#ff6bd4);}
+.stat-hero-icon{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  background:rgba(255,255,255,0.6);box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.stat-hero-posts .stat-hero-icon{color:#ff6b6b;}
+.stat-hero-cats .stat-hero-icon{color:#6b9eff;}
+.stat-hero-tags .stat-hero-icon{color:#a06bff;}
+.stat-hero-body{display:flex;flex-direction:column;}
+.stat-hero-num{
+  font-size:28px;font-weight:800;line-height:1.1;
+  background:linear-gradient(135deg,var(--accent-color),#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-hero-label{font-size:12px;color:#444;margin-top:2px;}
+
+/* 详情�?*/
+.stat-detail-row{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;}
+.stat-chart-full{
+  padding:24px;border-radius:var(--radius-xl);
+  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  background:var(--card-bg);border:var(--card-border);
+  box-shadow:var(--card-shadow);margin-top:8px;
+}
+.chart-bars-full{display:flex;align-items:flex-end;gap:20px;justify-content:center;min-height:120px;padding:20px 0;}
+.stat-card{
+  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  background:var(--card-bg);border:var(--card-border);
+  border-radius:16px;padding:20px;box-shadow:var(--card-shadow);
+}
+.stat-title{font-size:14px;font-weight:600;color:#111;margin-bottom:14px;}
+.stat-title i{color:var(--accent-color);margin-right:6px;}
+.stat-title-tags{margin-top:18px;}
+
+/* 柱状�?*/
+.chart-bars{display:flex;align-items:flex-end;gap:14px;height:130px;padding-top:14px;}
+.chart-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;}
+.chart-bar-wrap{width:100%;height:100px;display:flex;align-items:flex-end;}
+.chart-bar{
+  width:100%;border-radius:8px 8px 4px 4px;
+  background:linear-gradient(180deg,#c084fc,var(--accent-color));
+  min-height:8px;position:relative;
+  transition:height 0.5s cubic-bezier(0.4,0,0.2,1),background 0.25s ease;cursor:pointer;
+}
+.chart-bar::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:40%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.25),transparent);border-radius:8px 8px 0 0;
+}
+.chart-bar:hover{background:linear-gradient(180deg,#d8b4fe,#7c3aed);filter:brightness(1.08);}
+.chart-count{
+  position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  font-size:11px;font-weight:700;color:#7c3aed;white-space:nowrap;
+  opacity:0;transition:opacity 0.2s ease;
+}
+.chart-col:hover .chart-count{opacity:1;}
+.chart-label{font-size:11px;color:#444;font-weight:500;}
+
+/* 年份折叠 */
+.archive-year-section{margin-bottom:8px;}
+.archive-year-header{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;padding:14px 18px;
+  background:rgba(167,139,250,0.06);border-radius:12px;
+  transition:all 0.2s ease;border:1px solid transparent;user-select:none;
+}
+.archive-year-header:hover{background:rgba(167,139,250,0.12);border-color:rgba(167,139,250,0.2);}
+.archive-year-header.expanded{background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3);}
+.archive-year-label{display:flex;align-items:center;gap:10px;}
+.year-label-text{font-size:18px;font-weight:700;color:#111;}
+.year-post-count{
+  font-size:12px;font-weight:500;color:var(--accent-color);padding:2px 8px;border-radius:6px;
+  background:rgba(167,139,250,0.12);
+}
+.year-toggle-icon{transition:transform 0.3s ease;color:var(--accent-color);font-size:14px;font-weight:bold;}
+.archive-year-content{
+  padding:4px 8px 8px 8px;
+  overflow:hidden;
+  max-height: 0;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.archive-row{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;
+  cursor:pointer;transition:all 0.2s ease;
+}
+.archive-row:hover{background:rgba(139,92,246,0.06);}
+.row-date{
+  font-size:12px;font-weight:500;color:var(--accent-color);
+  padding:3px 10px;border-radius:8px;background:rgba(167,139,250,0.1);flex-shrink:0;
+}
+.row-title{
+  font-size:14px;font-weight:500;color:#111;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color 0.2s ease;
+}
+.archive-row:hover .row-title{color:#7c3aed;}
+.row-cat{
+  font-size:11px;color:var(--accent-color);padding:3px 10px;border-radius:8px;
+  background:rgba(139,92,246,0.08);flex-shrink:0;
+}
+.archive-empty{text-align:center;padding:40px;color:#444;font-size:14px;}
+
+/* ====== 响应�?====== */
+@media (max-width:1024px) and (min-width:601px){
+  .stat-hero-row{grid-template-columns:repeat(2,1fr);}
+  .stat-hero-card:nth-child(3){grid-column:span 2;}
+  .chart-bars-full{gap:16px;}
+}
+@media (max-width:600px){
+  .stat-hero-row{grid-template-columns:1fr;gap:10px;}
+  .stat-detail-row{grid-template-columns:1fr;}
+  .chart-bars{height:90px;gap:8px;}
+  .chart-bar-wrap{height:60px;}
+  .chart-bars-full{gap:10px;min-height:90px;padding:12px 0;}
+  .archive-row{padding:10px 12px;gap:8px;}
+  .row-cat{display:none;}
+  .stat-chart-full{padding:16px;}
+  .archive-year-header{padding:10px 14px;}
+  .year-label-text{font-size:16px;}
+}
+
+/* ====== 归档页暗黑模�?====== */
+[data-theme="dark"] .archive-year,
+[data-theme="dark"] .archive-header h2,
+[data-theme="dark"] .year-label-text,
+[data-theme="dark"] .archive-year-label,
+[data-theme="dark"] .row-title{color:#ffffff;}
+
+[data-theme="dark"] .archive-month,
+[data-theme="dark"] .archive-subtitle,
+[data-theme="dark"] .stat-title{color:#e0e0e0;}
+
+[data-theme="dark"] .archive-list .arc-date,
+[data-theme="dark"] .stat-hero-label,
+[data-theme="dark"] .chart-label,
+[data-theme="dark"] .archive-empty{color:#b0b0b0;}
+
+[data-theme="dark"] .stat-hero-icon{background:rgba(255,255,255,0.12);}
+[data-theme="dark"] .stat-hero-posts{background:var(--card-bg);}
+[data-theme="dark"] .stat-hero-cats{background:var(--card-bg);}
+[data-theme="dark"] .stat-hero-tags{background:var(--card-bg);}
+[data-theme="dark"] .archive-year-header{background:rgba(167,139,250,0.1);}
+[data-theme="dark"] .archive-year-header:hover{background:rgba(167,139,250,0.15);}
+[data-theme="dark"] .archive-year-header.expanded{background:rgba(167,139,250,0.12);border-color:rgba(167,139,250,0.25);}
+[data-theme="dark"] .row-date{background:rgba(167,139,250,0.15);}
+[data-theme="dark"] .row-cat{background:rgba(139,92,246,0.12);}
+[data-theme="dark"] .year-post-count{background:rgba(167,139,250,0.18);}
+
+/* 确保展开状态的年份内容有足够的高度 */
+.archive-year-header.expanded + .archive-year-content {
+  max-height: 2000px; /* 足够大的值以容纳内容 */
+}

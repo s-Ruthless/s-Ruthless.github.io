@@ -1,13 +1,14 @@
 <div class="page-container">
-  <div class="page-header">
-    <h2><i class="fas fa-link"></i> <%= page.title || '友链' %></h2>
-  </div>
   <div class="page-body">
+    <div class="page-header">
+      <h2><i class="fas fa-link"></i> <%= page.title || '友链' %></h2>
+    </div>
+    <div class="page-content">
     <% var friends = theme.friends || []; %>
     <% if (friends.length > 0) { %>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <% friends.forEach(function(f) { %>
-          <a href="<%= f.url %>" target="_blank" rel="noopener" class="friend-card card card-side bg-base-100/40 backdrop-blur-sm shadow-sm hover:shadow-lg hover:border-primary/30 border border-transparent transition-all duration-200">
+          <a href="<%= f.url %>" target="_blank" rel="noopener" class="friend-card card card-side backdrop-blur-sm shadow-sm hover:shadow-lg hover:border-primary/30 border border-transparent transition-all duration-200">
             <figure class="px-4 py-4">
               <img src="<%= f.avatar %>" alt="<%= f.name %>" class="w-12 h-12 rounded-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(f.name) %>&background=random'">
             </figure>
@@ -20,5 +21,6 @@
       </div>
     <% } %>
     <div class="article-content"><%- page.content %></div>
+    </div>
   </div>
 </div>

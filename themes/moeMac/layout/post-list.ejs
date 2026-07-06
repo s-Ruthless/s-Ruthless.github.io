@@ -3,14 +3,14 @@
 %>
 
 <div class="page-container">
-  <div class="post-window">
-    <div class="win-head">
-      <div class="win-name">文章列表</div>
+  <div class="page-body">
+    <div class="page-header">
+      <h2><i class="fas fa-newspaper"></i> 文章列表</h2>
     </div>
-    <div class="win-body">
+    <div class="page-content">
       <div class="flex flex-col gap-3">
       <% posts.each(function(post) { %>
-        <div class="post-list-item card card-compact bg-base-100/40 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/30 border border-transparent transition-all duration-200 cursor-pointer ajax-link" data-href="<%- url_for(post.path) %>">
+        <div class="post-list-item card card-compact backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/30 border border-transparent transition-all duration-200 cursor-pointer ajax-link" data-href="<%- url_for(post.path) %>">
           <div class="card-body p-4">
             <h3 class="card-title text-sm ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></h3>
             <div class="flex items-center gap-2 text-xs opacity-50">

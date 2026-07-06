@@ -7,6 +7,7 @@
   var ogTitle = page.title ? page.title + ' | ' + config.title : config.title;
   var ogUrl = (config.url ? config.url.replace(/\/$/,'') : '') + url_for(page.path);
   var ogImage = page.cover || theme.og_image || theme.avatar_url || '';
+  var accent = theme.accent_color || '#a78bfa';
   var favicon = theme.favicon || ('data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">' + (theme.favicon_emoji || '🌿') + '</text></svg>'));
 %>
 <!DOCTYPE html>
@@ -18,7 +19,7 @@
   <meta name="description" content="<%= pageDesc %>">
   <% if (config.keywords || theme.keywords) { %><meta name="keywords" content="<%= config.keywords || theme.keywords %>"><% } %>
   <meta name="author" content="<%= config.author || theme.author || '' %>">
-  <meta name="theme-color" content="#a78bfa">
+  <meta name="theme-color" content="<%= accent %>">
 
   <!-- favicon -->
   <link rel="icon" href="<%= favicon %>">
@@ -41,7 +42,7 @@
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
   <!-- 第三方库 CSS -->
-  <link rel="stylesheet" href="<%= A %>/css/all.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/icons.css">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= A %>/css/full.min.css">
 
@@ -53,18 +54,29 @@
     }
   </script>
 
+  <!-- 鸿蒙OS字体（分片加载，非阻塞） -->
+  <link rel="stylesheet" href="<%= A %>/fonts/harmonyos/Regular.css">
+  <link rel="stylesheet" href="<%= A %>/fonts/harmonyos/Medium.css">
+  <link rel="stylesheet" href="<%= A %>/fonts/harmonyos/Bold.css">
+
+  <!-- 主题色注入 -->
+  <style>
+    :root{
+      --accent-color:<%= accent %>;
+      --accent-soft:<%= accent %>;
+      --accent-medium:<%= accent %>;
+      --accent-strong:<%= accent %>;
+      --accent-gradient:linear-gradient(135deg,<%= accent %>,#06b6d4);
+    }
+  </style>
+
   <!-- 主题 CSS -->
   <link rel="stylesheet" href="<%= A %>/css/fonts.css">
   <link rel="stylesheet" href="<%= A %>/css/style.css">
   <link rel="stylesheet" href="<%= A %>/css/home.css">
-  <link rel="stylesheet" href="<%= A %>/css/dock.css">
+  <link rel="stylesheet" href="<%= A %>/css/article.css">
+  <link rel="stylesheet" href="<%= A %>/css/archive.css">
+  <link rel="stylesheet" href="<%= A %>/css/gallery.css">
   <link rel="stylesheet" href="<%= A %>/css/pages.css">
   <link rel="stylesheet" href="<%= A %>/css/aplayer.css">
-  <link rel="stylesheet" href="<%= A %>/css/timeline.css">
-<link rel="stylesheet" href="<%= A %>/css/gallery.css">
-  <link rel="stylesheet" href="<%= A %>/css/postlist.css">
-  <link rel="stylesheet" href="<%= A %>/css/hover.css">
-  <link rel="stylesheet" href="<%= A %>/css/highlight.css">
-  <link rel="stylesheet" href="<%= A %>/css/search.css">
-  <link rel="stylesheet" href="<%= A %>/css/ui-enhance.css">
 </head>

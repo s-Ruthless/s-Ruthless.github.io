@@ -19,54 +19,55 @@
 <% } %>
 
 <div class="page-container">
-  <div class="page-header">
-    <h2><%= page.title %></h2>
-  </div>
   <div class="page-body">
-    <div class="article-header">
-      <div class="flex items-center gap-2 text-xs opacity-50 flex-wrap">
-        <i class="fas fa-calendar-days"></i>
-        <span><%= date(page.date, 'YYYY-MM-DD HH:mm') %></span>
-        <% if (page.updated && String(page.updated) !== String(page.date)) { %>
-          <span>·</span>
-          <i class="fas fa-pen-to-square"></i>
-          <span><%= date(page.updated, 'YYYY-MM-DD HH:mm') %></span>
-        <% } %>
-        <% if (page.categories && page.categories.length > 0) { %>
-          <span>·</span>
-          <i class="fas fa-folder"></i>
-          <% page.categories.forEach(function(cat, i) { %>
-            <a class="ajax-link hover:text-primary" data-href="<%- url_for(cat.path) %>"><%= cat.name %></a><%= i < page.categories.length - 1 ? ', ' : '' %>
-          <% }); %>
+    <div class="page-header">
+      <h2><%= page.title %></h2>
+    </div>
+    <div class="page-content">
+      <div class="article-header">
+        <div class="flex items-center gap-2 text-xs opacity-50 flex-wrap">
+          <i class="fas fa-calendar-days"></i>
+          <span><%= date(page.date, 'YYYY-MM-DD HH:mm') %></span>
+          <% if (page.updated && String(page.updated) !== String(page.date)) { %>
+            <span>·</span>
+            <i class="fas fa-pen-to-square"></i>
+            <span><%= date(page.updated, 'YYYY-MM-DD HH:mm') %></span>
+          <% } %>
+          <% if (page.categories && page.categories.length > 0) { %>
+            <span>·</span>
+            <i class="fas fa-folder"></i>
+            <% page.categories.forEach(function(cat, i) { %>
+              <a class="ajax-link hover:text-primary" data-href="<%- url_for(cat.path) %>"><%= cat.name %></a><%= i < page.categories.length - 1 ? ', ' : '' %>
+            <% }); %>
+          <% } %>
+        </div>
+        <% if (page.tags && page.tags.length > 0) { %>
+          <div class="flex gap-2 flex-wrap mt-3">
+            <% page.tags.forEach(function(tag) { %>
+              <a class="badge badge-outline badge-primary badge-sm ajax-link" data-href="<%- url_for(tag.path) %>">#<%= tag.name %></a>
+            <% }); %>
+          </div>
         <% } %>
       </div>
-      <% if (page.tags && page.tags.length > 0) { %>
-        <div class="flex gap-2 flex-wrap mt-3">
-          <% page.tags.forEach(function(tag) { %>
-            <a class="badge badge-outline badge-primary badge-sm ajax-link" data-href="<%- url_for(tag.path) %>">#<%= tag.name %></a>
-          <% }); %>
-        </div>
-      <% } %>
+      <div class="article-content prose prose-sm max-w-none" id="post-content">
+        <%- page.content %>
+      </div>
+      <div class="divider my-6"></div>
+      <div class="flex justify-between gap-4">
+        <% if (page.prev) { %>
+          <a class="btn btn-ghost btn-sm gap-1 ajax-link" data-href="<%- url_for(page.prev.path) %>">
+            <i class="fas fa-chevron-left"></i>
+            <span class="truncate max-w-[200px]"><%= page.prev.title %></span>
+          </a>
+        <% } else { %><div></div><% } %>
+        <% if (page.next) { %>
+          <a class="btn btn-ghost btn-sm gap-1 ajax-link" data-href="<%- url_for(page.next.path) %>">
+            <span class="truncate max-w-[200px]"><%= page.next.title %></span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        <% } %>
+      </div>
+      <%- partial('_partial/comments') %>
     </div>
-    <div class="divider my-4"></div>
-    <div class="article-content prose prose-sm max-w-none" id="post-content">
-      <%- page.content %>
-    </div>
-    <div class="divider my-6"></div>
-    <div class="flex justify-between gap-4">
-      <% if (page.prev) { %>
-        <a class="btn btn-ghost btn-sm gap-1 ajax-link" data-href="<%- url_for(page.prev.path) %>">
-          <i class="fas fa-chevron-left"></i>
-          <span class="truncate max-w-[200px]"><%= page.prev.title %></span>
-        </a>
-      <% } else { %><div></div><% } %>
-      <% if (page.next) { %>
-        <a class="btn btn-ghost btn-sm gap-1 ajax-link" data-href="<%- url_for(page.next.path) %>">
-          <span class="truncate max-w-[200px]"><%= page.next.title %></span>
-          <i class="fas fa-chevron-right"></i>
-        </a>
-      <% } %>
-    </div>
-    <%- partial('_partial/comments') %>
   </div>
 </div>

@@ -1,0 +1,21 @@
+<%
+// 壁纸配置 — 始终使用壁纸模式
+// 有壁纸 → 显示壁纸图片；无壁纸 → 显示浅白色默认背景
+var wallpaperPath = theme.wallpaper_path || '';
+var backgroundStyle = '';
+if (wallpaperPath) {
+  backgroundStyle = 'background-image: url(' + wallpaperPath + ');';
+} else {
+  // 无壁纸时使用浅白色渐变背景
+  backgroundStyle = 'background: linear-gradient(135deg, #f8fafc, #e2e8f0, #f1f5f9);';
+}
+%>
+
+<!-- body 背景透明，让壁纸层可见 -->
+<style>body{background:transparent!important;}</style>
+
+<!-- 壁纸容器 -->
+<div class="wallpaper-bg">
+  <div class="wallpaper-img" style="<%= backgroundStyle %>"></div>
+  <div class="wallpaper-overlay"></div>
+</div>

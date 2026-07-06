@@ -1,6 +1,4 @@
-/* SF Pro Text — 本地自托管字体
-   src 使用相对路径（./fonts/），css 与 fonts 同在 assets/ 下，
-   这样无论本地还是 CDN 都能正确加载 */
+/* SF Pro Text — 本地自托管字体（备选） */
 @font-face{
   font-family:'SF Pro Text';
   font-weight:400;

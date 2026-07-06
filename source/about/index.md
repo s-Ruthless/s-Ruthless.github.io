@@ -7,7 +7,7 @@ comment: true
 
 ## 关于这个博客
 
-这是一个记录生活、分享技术的个人博客。在这里你可以看到我的日常碎碎念和技术笔记。
+这是一个记录生活、分享技术的个人博客。
 
 ## 关于我
 
@@ -19,6 +19,6 @@ comment: true
 ## 联系方式
 
 - GitHub: [你的 GitHub](https://github.com)
-- Email: example@email.com
+- Email: your@email.com
 
 欢迎留言交流！

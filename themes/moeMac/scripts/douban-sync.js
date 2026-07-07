@@ -421,8 +421,8 @@ hexo.extend.filter.register('before_generate', async function () {
   if (!cfg.auto_sync) return;
   if (!cfg.user_id) return;
 
-  // 检查距上次同步的时间间隔
-  var intervalHours = cfg.sync_interval_hours || 24;
+  // 检查距上次同步的时间间隔（0 = 每次都同步，默认 24h）
+  var intervalHours = (cfg.sync_interval_hours != null) ? cfg.sync_interval_hours : 24;
   var dataPath = path.join(hexo.base_dir, 'source/_data/douban.json');
 
   if (fs.existsSync(dataPath)) {

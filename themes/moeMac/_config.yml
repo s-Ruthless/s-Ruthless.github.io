@@ -144,7 +144,7 @@ douban:
   # --- 方式 A：自动抓取 ---
   user_id: ""                # 豆瓣 ID（douban.com/people/xxx/ 中的 xxx），留空则不抓取
   auto_sync: false           # true: hexo g 时自动抓取（距上次超过 sync_interval_hours 才执行，不用手动跑命令）
-  sync_interval_hours: 24    # 自动同步间隔（小时）
+  sync_interval_hours: 24    # 自动同步间隔（小时），0 = 每次 hexo g 都同步
   cookie: ""                 # 可选，登录 cookie（访问受限页面时需要）
 
   # --- 方式 B：手动配置（回退数据） ---

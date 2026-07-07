@@ -136,7 +136,6 @@ post:
 # 下方 books/movies/music 为手动配置，当未抓取数据时作为回退使用
 # 每项含 name/cover/rating(1-10)/date/note，rating 为 10 分制自动换算成 5 星
 douban:
-  user_id: "sjl511"
   cookie: ""
   books:
     - { name: "被讨厌的勇气", cover: "https://img1.doubanio.com/view/subject/l/public/s29492583.jpg", rating: 9, date: "2026-06-15", note: "自我启发的心理学，读完豁然开朗" }

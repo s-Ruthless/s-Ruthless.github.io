@@ -63,7 +63,7 @@
   display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;
   transition:all 0.25s cubic-bezier(0.4,0,0.2,1);cursor:pointer;font-size:13px;color:#111;font-weight:500;
 }
-.cat-box .cat-item:hover{background:color-mix(in srgb,var(--accent-color) 10%,transparent);transform:translateX(4px);}
+.cat-box .cat-item:hover{background:color-mix(in srgb,var(--accent-color) 8%,transparent);transform:translateX(4px);}
 .cat-box .cat-item i{color:var(--accent-color);font-size:12px;}
 .cat-box .cat-item span{flex:1;}
 .cat-box .cat-item em{font-style:normal;font-size:11px;color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:1px 7px;border-radius:8px;}
@@ -109,14 +109,14 @@
 .data-item:nth-child(5){grid-column:span 1;}
 
 /* ====== 网站信息窗口 → 居中列表 ====== */
-.info-list{display:flex;flex-direction:column;gap:0;}
+.info-list{display:flex;flex-direction:column;gap:0;width:100%;}
 .info-item{
   display:flex;align-items:center;justify-content:center;gap:8px;
   padding:7px 4px;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px;
   transition:all 0.2s ease;text-align:center;
 }
 .info-item:last-child{border-bottom:none;}
-.info-item:hover{background:color-mix(in srgb,var(--accent-color) 4%,transparent);border-radius:8px;}
+.info-item:hover{background:color-mix(in srgb,var(--accent-color) 8%,transparent);border-radius:8px;}
 .info-item i{color:var(--accent-color);font-size:12px;width:14px;text-align:center;flex-shrink:0;}
 .info-item span{color:#444;}
 .info-item em{font-style:normal;color:#111;font-weight:600;}

@@ -7,7 +7,7 @@
 /* ====== 文章墙 ====== */
 .wall-header{margin-bottom:20px;}
 .wall-header h2{font-size:20px;font-weight:600;color:#111;margin-bottom:12px;}
-.wall-filter{display:flex;flex-wrap:wrap;gap:8px;}
+.wall-filter{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px;}
 .filter-btn{
   padding:6px 14px;border-radius:10px;border:none;cursor:pointer;
   font-size:12px;background:rgba(255,255,255,0.5);color:#444;
@@ -141,6 +141,7 @@ border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
 .not-found-title{font-size:22px;font-weight:600;color:#111;margin-bottom:10px;}
 .not-found-desc{font-size:14px;color:#444;line-height:1.8;margin-bottom:24px;}
 .not-found-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.not-found-actions .btn{display:inline-flex;align-items:center;gap:6px;}
 
 /* ====== 其他页面暗黑模式 ====== */
 [data-theme="dark"] .about-name,

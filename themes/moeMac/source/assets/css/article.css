@@ -11,22 +11,52 @@
   box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,0.5);
   overflow:hidden;
 }
+/* 文章列表 / 分类 / 标签列表通用容器 */
+.list-container{display:flex;flex-direction:column;gap:12px;}
 
-/* 通用卡片背景（替代 DaisyUI 的 bg-base-100/40） */
-.card.card-compact{
-  background:var(--card-bg);
+/* 通用列表卡片 */
+.list-card{
   backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
-  border-radius:14px;
-  box-shadow:var(--card-shadow);
+  background:var(--card-bg);border:var(--card-border);border-radius:14px;
+  box-shadow:var(--card-shadow);transition:all 0.2s ease;cursor:pointer;
+  border:1px solid transparent;
 }
+.list-card:hover{
+  box-shadow:0 8px 24px color-mix(in srgb,var(--accent-color) 12%,transparent);
+  border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
+}
+.list-card-body{padding:16px;}
+.list-card-body.row{display:flex;flex-direction:row;align-items:center;gap:16px;}
+.list-card-title{font-size:14px;font-weight:500;color:#111;}
+.list-card-title:hover{color:var(--accent-color);}
+.list-card .badge-ghost{flex-shrink:0;}
+
+/* 空状态提示 */
+.list-empty{text-align:center;padding:40px 10px;color:#999;font-size:14px;}
+
+/* 分页 */
+.list-pagination{display:flex;justify-content:center;gap:8px;margin-top:24px;}
+.list-pagination .page-btn{
+  padding:6px 16px;border-radius:10px;font-size:13px;color:#666;
+  background:color-mix(in srgb,var(--accent-color) 8%,transparent);
+  transition:all 0.2s ease;cursor:pointer;border:none;
+}
+.list-pagination .page-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);}
+.list-pagination .page-info{padding:6px 16px;font-size:13px;color:#999;}
 
 /* ====== 文章列表�?====== */
 .post-list-item{
-  padding:14px 20px;border-bottom:1px solid rgba(0,0,0,0.04);
-  transition:background 0.2s ease;
+  padding:16px 20px;
+  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  background:var(--card-bg);border:var(--card-border);border-radius:14px;
+  box-shadow:var(--card-shadow);
+  transition:all 0.2s ease;cursor:pointer;
 }
-.post-list-item:last-child{border-bottom:none;}
-.post-list-item:hover{background:color-mix(in srgb,var(--accent-color) 6%,transparent);}
+.post-list-item:hover{
+  background:color-mix(in srgb,var(--accent-color) 4%,var(--card-bg));
+  box-shadow:0 8px 24px color-mix(in srgb,var(--accent-color) 12%,transparent);
+  border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
+}
 .post-list-item h3{font-size:15px;font-weight:600;color:#111;margin-bottom:4px;cursor:pointer;}
 .post-list-item h3:hover{color:var(--accent-color);}
 .post-list-item .post-meta{font-size:12px;color:#444;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
@@ -151,8 +181,11 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
   padding:16px 24px;border-top:1px solid rgba(0,0,0,0.05);
 }
 .nav-prev,.nav-next{
-  display:flex;align-items:center;gap:6px;font-size:13px;color:#444;
+  display:flex;align-items:center;gap:6px;font-size:13px;color:#444;font-weight:600;
   max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.nav-prev span,.nav-next span{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .nav-prev:hover,.nav-next:hover{color:var(--accent-color);}
 .nav-next{margin-left:auto;}
@@ -444,7 +477,14 @@ border-radius:18px;
 [data-theme="dark"] .article-content pre code{color:#e0e0e0;}
 [data-theme="dark"] .article-header{border-bottom-color:rgba(255,255,255,0.1);}
 [data-theme="dark"] .article-nav{border-top-color:rgba(255,255,255,0.1);}
-[data-theme="dark"] .post-list-item{border-bottom-color:rgba(255,255,255,0.08);}
+[data-theme="dark"] .post-list-item{
+  background:rgba(255,255,255,0.03);
+  border-color:rgba(255,255,255,0.08)!important;
+}
+[data-theme="dark"] .post-list-item:hover{
+  border-color:color-mix(in srgb,var(--accent-color) 35%,transparent)!important;
+  background:color-mix(in srgb,var(--accent-color) 6%,rgba(255,255,255,0.03))!important;
+}
 [data-theme="dark"] .pagination{border-top-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .comments-wrap{
   background:var(--card-bg);
@@ -460,6 +500,20 @@ border-radius:18px;
 [data-theme="dark"] .article-content table tr:hover td{background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
 [data-theme="dark"] .toc-active{background:color-mix(in srgb,var(--accent-color) 18%,transparent)!important;}
 /* Dark mode: post list item — 统一在 pages.css 中定义 */
+
+/* ====== 列表卡片暗黑模式 ====== */
+[data-theme="dark"] .list-card{
+  background:rgba(255,255,255,0.03);
+  border-color:rgba(255,255,255,0.08)!important;
+}
+[data-theme="dark"] .list-card:hover{
+  border-color:color-mix(in srgb,var(--accent-color) 35%,transparent)!important;
+  background:color-mix(in srgb,var(--accent-color) 6%,rgba(255,255,255,0.03))!important;
+}
+[data-theme="dark"] .list-card-title{color:#fff;}
+[data-theme="dark"] .list-empty{color:#888;}
+[data-theme="dark"] .list-pagination .page-btn{color:#ccc;}
+[data-theme="dark"] .list-pagination .page-info{color:#888;}
 
 /* ====== 分类/标签详情页：DaisyUI 紫色 → 主题色覆盖 ====== */
 /* badge-secondary 用于标签页标题 */

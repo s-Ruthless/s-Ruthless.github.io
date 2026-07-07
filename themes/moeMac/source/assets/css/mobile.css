@@ -657,11 +657,7 @@ html.is-mobile .not-found-desc{
 
 /* ====== 文章列表页（post-list） ====== */
 html.is-mobile .post-list-item{
-  padding:8px 10px!important;
-}
-/* 覆盖 card-body p-4 的内边距 */
-html.is-mobile .post-list-item .card-body{
-  padding:8px 10px!important;
+  padding:10px 12px!important;
 }
 html.is-mobile .post-list-item h3{
   font-size:13px;margin-bottom:2px;

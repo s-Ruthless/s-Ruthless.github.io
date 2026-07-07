@@ -14,7 +14,7 @@
       <h2><i class="<%- _icon %>"></i> 全部文章 · <span class="badge badge-primary badge-sm"><%= site.posts.length %></span> 篇</h2>
     </div>
     <div class="page-content">
-    <div class="flex flex-wrap gap-2 justify-center mb-6">
+    <div class="wall-filter">
       <button class="filter-btn btn btn-xs btn-primary" data-cat="all">全部</button>
       <% cats.sort('name').each(function(cat) { %>
         <button class="filter-btn btn btn-xs btn-ghost" data-cat="<%= cat.name %>"><%= cat.name %> <span class="badge badge-xs"><%= cat.posts.length %></span></button>
@@ -37,12 +37,12 @@
           <% if (catName) { %>
             <span class="card-cat badge badge-xs"><%= catName %></span>
           <% } %>
-          <span class="card-date text-xs opacity-40"><%= date(post.date, 'YYYY-MM-DD') %></span>
+          <span class="card-date"><%= date(post.date, 'YYYY-MM-DD') %></span>
         </div>
         <h3 class="card-title"><%= post.title %></h3>
         <p class="card-summary"><%= summary %><%= fullText.length > maxLen ? '...' : '' %></p>
         <% if (showTags && post.tags && post.tags.length > 0) { %>
-          <div class="card-tags flex gap-1 flex-wrap mt-2">
+          <div class="card-tags">
             <% post.tags.forEach(function(tag) { %>
               <span class="badge badge-ghost badge-xs">#<%= tag.name %></span>
             <% }); %>
@@ -53,7 +53,7 @@
     <% }); %>
 
     <% if (site.posts.length === 0) { %>
-      <div class="text-center py-10 opacity-50" style="column-span:all;">还没有文章哦，快去写一篇吧～</div>
+      <div class="list-empty" style="column-span:all;">还没有文章哦，快去写一篇吧～</div>
     <% } %>
     </div>
     </div>

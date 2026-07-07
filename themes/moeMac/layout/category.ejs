@@ -8,27 +8,27 @@
       <h2><i class="fas fa-folder"></i> 分类 · <span class="badge badge-primary badge-sm"><%= cat %></span></h2>
     </div>
     <div class="page-content">
-    <div class="flex flex-col gap-3">
+    <div class="list-container">
     <% posts.each(function(post) { %>
-      <div class="card card-compact backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/30 border border-transparent transition-all duration-200 cursor-pointer ajax-link" data-href="<%- url_for(post.path) %>">
-        <div class="card-body p-4 flex-row items-center gap-4">
-          <span class="badge badge-ghost badge-sm shrink-0"><%= date(post.date, 'MM-DD') %></span>
-          <a class="ajax-link text-sm font-medium" data-href="<%- url_for(post.path) %>"><%= post.title %></a>
+      <div class="list-card ajax-link" data-href="<%- url_for(post.path) %>">
+        <div class="list-card-body row">
+          <span class="badge badge-ghost badge-sm"><%= date(post.date, 'MM-DD') %></span>
+          <a class="list-card-title ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></a>
         </div>
       </div>
     <% }); %>
     </div>
     <% if (posts.length === 0) { %>
-      <div class="text-center py-10 opacity-50">该分类下还没有文章～</div>
+      <div class="list-empty">该分类下还没有文章～</div>
     <% } %>
     <% if (typeof page.total !== 'undefined' && page.total > 1) { %>
-      <div class="join flex justify-center mt-6">
+      <div class="list-pagination">
         <% if (page.prev) { %>
-          <a class="join-item btn btn-sm btn-ghost ajax-link" data-href="<%- url_for(page.prev_link) %>"><i class="fas fa-chevron-left"></i> 上一页</a>
+          <a class="page-btn ajax-link" data-href="<%- url_for(page.prev_link) %>"><i class="fas fa-chevron-left"></i> 上一页</a>
         <% } %>
-        <span class="join-item btn btn-sm btn-ghost no-animation"><%= page.current %> / <%= page.total %></span>
+        <span class="page-info"><%= page.current %> / <%= page.total %></span>
         <% if (page.next) { %>
-          <a class="join-item btn btn-sm btn-ghost ajax-link" data-href="<%- url_for(page.next_link) %>">下一页 <i class="fas fa-chevron-right"></i></a>
+          <a class="page-btn ajax-link" data-href="<%- url_for(page.next_link) %>">下一页 <i class="fas fa-chevron-right"></i></a>
         <% } %>
       </div>
     <% } %>

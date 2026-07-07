@@ -157,16 +157,15 @@ html.is-mobile .data-item:nth-child(5){ grid-column:span 1; }
 /* ====== 网站信息 ====== */
 html.is-mobile .info-list{ gap:0; }
 html.is-mobile .info-item{
-  padding:7px 0;font-size:12px;gap:8px;
-  justify-content:center;text-align:center;
+  padding:7px 0;font-size:12px;
+  text-align:center;
   border-bottom:1px solid rgba(0,0,0,0.04);
 }
 html.is-mobile .info-item:last-child{ border-bottom:none; }
 html.is-mobile .info-item i{ font-size:12px;width:14px; }
 html.is-mobile .info-item-days{ display:none; }
 html.is-mobile .window-info .win-body{
-  display:flex;flex-direction:column;
-  justify-content:center;align-items:stretch!important;
+  display:block!important;
   padding:16px 20px;
 }
 html.is-mobile[data-theme="dark"] .info-item{ border-bottom-color:rgba(255,255,255,0.06); }

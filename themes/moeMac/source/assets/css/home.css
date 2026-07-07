@@ -109,23 +109,21 @@
 .data-item:nth-child(5){grid-column:span 1;}
 
 /* ====== 网站信息窗口 → 居中列表 ====== */
-.info-list{display:flex;flex-direction:column;gap:0;width:100%!important;margin:0 auto;}
+.info-list{display:block;width:100%;}
 .info-item{
-  display:flex;align-items:center;justify-content:center;gap:8px;
+  display:block;text-align:center;
   padding:7px 4px;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px;
-  transition:all 0.2s ease;text-align:center;
-  width:100%;
+  transition:all 0.2s ease;
 }
 .info-item:last-child{border-bottom:none;}
 .info-item:hover{background:color-mix(in srgb,var(--accent-color) 8%,transparent);border-radius:8px;}
-.info-item i{color:var(--accent-color);font-size:12px;width:14px;text-align:center;flex-shrink:0;}
+.info-item i{color:var(--accent-color);font-size:12px;width:14px;text-align:center;margin-right:6px;}
 .info-item span{color:#444;}
 .info-item em{font-style:normal;color:#111;font-weight:600;}
 .info-item a{color:var(--accent-color);text-decoration:none;font-weight:500;}
 .info-item a:hover{text-decoration:underline;}
 .window-info .win-body{
-  display:flex!important;flex-direction:column;justify-content:center;align-items:stretch!important;
-  padding:14px 16px!important;
+  display:block!important;padding:14px 16px!important;
 }
 
 /* ====== 音乐窗口 ====== */

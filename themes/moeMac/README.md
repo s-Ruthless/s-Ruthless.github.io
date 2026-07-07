@@ -418,7 +418,7 @@ themes/moeMac/
         │   ├── aplayer.css  # 音乐播放器样式
         │   ├── gallery.css  # 相册样式
         │   ├── icons.css    # 图标样式
-        │   ├── full.min.css # DaisyUI 完整样式
+        │   ├── components.css # 轻量组件库（badge/btn/divider）
         │   ├── APlayer.min.css
         │   ├── gitalk.css
         │   └── waline.css

@@ -1,0 +1,110 @@
+/* ============================================
+   components.css — 替代 DaisyUI 的轻量组件库
+   仅实现主题实际使用的组件：badge / btn / divider
+   ============================================ */
+
+/* ====== color-scheme（暗黑模式系统适配） ====== */
+:root{color-scheme:light;}
+[data-theme="dark"]{color-scheme:dark;}
+
+/* ====== Badge 徽章 ====== */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:500;line-height:1;
+  padding:4px 10px;border-radius:999px;
+  border:1px solid transparent;white-space:nowrap;vertical-align:middle;
+}
+.badge-xs{font-size:10px;padding:2px 6px;border-radius:6px;}
+.badge-sm{font-size:11px;padding:3px 8px;border-radius:8px;}
+
+/* Badge 变体 */
+.badge-primary{
+  background:var(--accent-color);color:#fff;
+  border-color:var(--accent-color);
+}
+.badge-secondary{
+  background:var(--accent-color);color:#fff;
+  border-color:var(--accent-color);
+}
+.badge-ghost{
+  background:color-mix(in srgb,var(--accent-color) 8%,transparent);
+  color:var(--accent-color);
+  border-color:color-mix(in srgb,var(--accent-color) 15%,transparent);
+}
+.badge-outline{
+  background:transparent;
+  border:1px solid rgba(0,0,0,0.15);
+  color:#555;
+}
+.badge-outline.badge-primary{
+  background:color-mix(in srgb,var(--accent-color) 8%,transparent)!important;
+  color:var(--accent-color)!important;
+  border:1px solid color-mix(in srgb,var(--accent-color) 30%,transparent)!important;
+}
+.badge-outline.badge-primary:hover{
+  background:color-mix(in srgb,var(--accent-color) 15%,transparent)!important;
+  border-color:var(--accent-color)!important;
+}
+
+/* ====== Button 按钮 ====== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  font-size:14px;font-weight:500;line-height:1;
+  padding:10px 20px;border-radius:10px;
+  border:1px solid transparent;cursor:pointer;
+  transition:all 0.2s ease;user-select:none;
+  text-decoration:none;white-space:nowrap;vertical-align:middle;
+}
+.btn-sm{font-size:13px;padding:6px 14px;border-radius:8px;}
+.btn-xs{font-size:11px;padding:4px 10px;border-radius:6px;}
+
+/* Button 变体 */
+.btn-primary{
+  background:var(--accent-color);color:#fff;
+  border-color:var(--accent-color);
+}
+.btn-primary:hover{
+  background:color-mix(in srgb,var(--accent-color) 85%,#000);
+  border-color:color-mix(in srgb,var(--accent-color) 85%,#000);
+}
+.btn-ghost{
+  background:transparent;color:#555;
+  border-color:transparent;
+}
+.btn-ghost:hover{
+  background:color-mix(in srgb,var(--accent-color) 10%,transparent);
+  color:var(--accent-color);
+}
+
+/* ====== Divider 分割线 ====== */
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:24px 0;font-size:13px;color:#999;
+}
+.divider::before,.divider::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,0.1),transparent);
+}
+
+/* ====== 暗黑模式 ====== */
+[data-theme="dark"] .badge-ghost{
+  background:color-mix(in srgb,var(--accent-color) 12%,transparent);
+  color:var(--accent-color);
+  border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
+}
+[data-theme="dark"] .badge-outline{
+  border-color:rgba(255,255,255,0.2);
+  color:#ccc;
+}
+[data-theme="dark"] .btn-ghost{color:#ccc;}
+[data-theme="dark"] .btn-ghost:hover{
+  background:color-mix(in srgb,var(--accent-color) 15%,transparent);
+  color:var(--accent-color);
+}
+[data-theme="dark"] .divider{
+  color:#888;
+}
+[data-theme="dark"] .divider::before,
+[data-theme="dark"] .divider::after{
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+}

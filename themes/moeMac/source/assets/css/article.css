@@ -338,22 +338,7 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
 }
 @keyframes toc-pop{0%{transform:scale(0.8);opacity:0;}100%{transform:scale(1);opacity:1;}}
 
-/* ====== Badge 主题色覆盖（DaisyUI badge-primary / badge-outline） ====== */
-.badge-primary{
-  background-color:var(--accent-color)!important;
-  color:#fff!important;
-  border-color:var(--accent-color)!important;
-}
-.badge-outline.badge-primary{
-  background:color-mix(in srgb,var(--accent-color) 8%,transparent)!important;
-  color:var(--accent-color)!important;
-  border:1px solid color-mix(in srgb,var(--accent-color) 30%,transparent)!important;
-}
-.badge-outline.badge-primary:hover{
-  background:color-mix(in srgb,var(--accent-color) 15%,transparent)!important;
-  border-color:var(--accent-color)!important;
-}
-/* 文章详情页标签 hover */
+/* ====== 文章详情页标签 hover ====== */
 .article-header .badge-outline.badge-primary{
   transition:all 0.2s ease;cursor:pointer;
 }
@@ -361,14 +346,10 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
   background:var(--accent-color)!important;
   color:#fff!important;
 }
-/* 文章列表卡片标签 */
+/* 文章墙卡片标签 */
 .wall-card .card-cat{
   color:var(--accent-color)!important;
   background:color-mix(in srgb,var(--accent-color) 10%,transparent)!important;
-}
-.wall-card .badge-ghost{
-  color:var(--accent-color)!important;
-  background:color-mix(in srgb,var(--accent-color) 8%,transparent)!important;
 }
 .wall-card:hover .card-cat{
   background:color-mix(in srgb,var(--accent-color) 18%,transparent)!important;
@@ -515,60 +496,9 @@ border-radius:18px;
 [data-theme="dark"] .list-pagination .page-btn{color:#ccc;}
 [data-theme="dark"] .list-pagination .page-info{color:#888;}
 
-/* ====== 分类/标签详情页：DaisyUI 紫色 → 主题色覆盖 ====== */
-/* badge-secondary 用于标签页标题 */
-.badge-secondary{
-  background-color:var(--accent-color)!important;
-  color:#fff!important;
-  border-color:var(--accent-color)!important;
-}
-/* 文章列表卡片 hover 边框色 */
-.page-body .card.hover\:border-primary\/30:hover,
-.page-body .card:hover{
-  border-color:color-mix(in srgb,var(--accent-color) 30%,transparent)!important;
-}
-/* 文章列表卡片 hover 阴影增强 */
-.page-body .card{
-  transition:all 0.2s ease;
-}
-.page-body .card:hover{
-  box-shadow:0 8px 24px color-mix(in srgb,var(--accent-color) 12%,transparent)!important;
-}
-/* 卡片内链接 hover */
-.page-body .card a:hover,
-.page-body .card .ajax-link:hover{
-  color:var(--accent-color)!important;
-}
-/* 日期 badge-ghost → 主题色 */
-.page-body .badge-ghost{
-  color:var(--accent-color)!important;
-  background:color-mix(in srgb,var(--accent-color) 8%,transparent)!important;
-  border:1px solid color-mix(in srgb,var(--accent-color) 15%,transparent)!important;
-}
-/* 分页按钮 hover */
-.page-body .btn-ghost:hover{
-  background:color-mix(in srgb,var(--accent-color) 10%,transparent)!important;
-  color:var(--accent-color)!important;
-}
-/* 页面标题中 badge */
+/* ====== 分类/标签详情页：页面标题中 badge ====== */
 .page-header .badge{
   vertical-align:middle;
-}
-/* 暗黑模式适配 */
-[data-theme="dark"] .page-body .card{
-  background:rgba(255,255,255,0.03);
-  border-color:rgba(255,255,255,0.08)!important;
-}
-[data-theme="dark"] .page-body .card:hover{
-  border-color:color-mix(in srgb,var(--accent-color) 35%,transparent)!important;
-  background:color-mix(in srgb,var(--accent-color) 6%,rgba(255,255,255,0.03))!important;
-}
-[data-theme="dark"] .page-body .badge-ghost{
-  background:color-mix(in srgb,var(--accent-color) 12%,transparent)!important;
-  color:var(--accent-color)!important;
-}
-[data-theme="dark"] .page-body .btn-ghost:hover{
-  background:color-mix(in srgb,var(--accent-color) 15%,transparent)!important;
 }
 
 /* ====== 文章版权声明 ====== */

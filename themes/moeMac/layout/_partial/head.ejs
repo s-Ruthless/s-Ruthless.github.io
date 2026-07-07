@@ -41,10 +41,11 @@
   <% if (ogImage) { %><meta name="twitter:image" content="<%= ogImage %>"><% } %>
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
-  <!-- 第三方库 CSS -->
+  <!-- 第三方库 CSS + 组件库 -->
+  <% var V = '?v=20260708c'; %>
   <link rel="stylesheet" href="<%= A %>/css/icons.css">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="<%= A %>/css/full.min.css">
+  <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>">
 
   <!-- 主题色注入 -->
   <style>
@@ -83,7 +84,6 @@
   <% } %>
 
   <!-- 主题 CSS -->
-  <% var V = '?v=20260708b'; %>
   <link rel="stylesheet" href="<%= A %>/css/style.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/home.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/article.css<%= V %>">

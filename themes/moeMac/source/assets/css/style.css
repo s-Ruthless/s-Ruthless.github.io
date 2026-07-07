@@ -636,9 +636,6 @@ body { background: transparent !important; }
 }
 [data-theme="dark"] .page-header h2{color:#ffffff;}
 [data-theme="dark"] .article-header{border-bottom-color:rgba(255,255,255,0.1)!important;}
-[data-theme="dark"] .divider{
-  border-top-color:rgba(255,255,255,0.1)!important;
-}
 /* 暗黑模式：文章正文段落、列表等文字颜色 */
 [data-theme="dark"] .article-content{color:#e8e8e8;}
 [data-theme="dark"] .article-content p,
@@ -649,4 +646,3 @@ body { background: transparent !important; }
 [data-theme="dark"] .article-content table th{color:#d0d0d0;background:color-mix(in srgb,var(--accent-color) 10%,transparent);}
 [data-theme="dark"] .article-content table td{border-bottom-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content a{color:var(--accent-color);}
-[data-theme="dark"] .btn-ghost{color:#d0d0d0;}

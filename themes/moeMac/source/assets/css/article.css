@@ -516,3 +516,45 @@ border-radius:18px;
 [data-theme="dark"] .page-body .btn-ghost:hover{
   background:color-mix(in srgb,var(--accent-color) 15%,transparent)!important;
 }
+
+/* ====== 文章版权声明 ====== */
+.post-copyright{
+  margin:24px 0 0;
+  border-radius:14px;
+  background:color-mix(in srgb,var(--accent-color) 5%,transparent);
+  border:1px solid color-mix(in srgb,var(--accent-color) 15%,transparent);
+  overflow:hidden;
+}
+.post-copyright-title{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 16px;
+  font-size:13px;font-weight:600;color:var(--accent-color);
+  background:color-mix(in srgb,var(--accent-color) 8%,transparent);
+  border-bottom:1px solid color-mix(in srgb,var(--accent-color) 12%,transparent);
+}
+.post-copyright-title i{font-size:14px;}
+.post-copyright-body{
+  padding:12px 16px;font-size:13px;line-height:1.8;color:#444;
+}
+.post-copyright-body p{margin:4px 0;}
+.post-copyright-body strong{color:#111;}
+.post-copyright-link{
+  color:var(--accent-color);text-decoration:none;
+  word-break:break-all;border-bottom:1px dashed color-mix(in srgb,var(--accent-color) 40%,transparent);
+  transition:all 0.2s ease;
+}
+.post-copyright-link:hover{
+  border-bottom-style:solid;border-bottom-color:var(--accent-color);
+}
+
+/* 暗黑模式 */
+[data-theme="dark"] .post-copyright{
+  background:color-mix(in srgb,var(--accent-color) 8%,transparent);
+  border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
+}
+[data-theme="dark"] .post-copyright-title{
+  background:color-mix(in srgb,var(--accent-color) 12%,transparent);
+  border-bottom-color:color-mix(in srgb,var(--accent-color) 18%,transparent);
+}
+[data-theme="dark"] .post-copyright-body{color:#c0c0c0;}
+[data-theme="dark"] .post-copyright-body strong{color:#fff;}

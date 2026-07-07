@@ -124,9 +124,11 @@ friends:
 # ====== 文章页 ======
 # show_toc: 显示文章目录
 # show_date: 显示发布日期
+# copyright: 显示版权声明（单篇文章可在 front-matter 中写 copyright: false 关闭）
 post:
   show_toc: true
   show_date: true
+  copyright: true
 
 # ====== 豆瓣书影音 ======
 # 两种方式二选一：

@@ -40,6 +40,21 @@
               <a class="ajax-link hover:text-primary" data-href="<%- url_for(cat.path) %>"><%= cat.name %></a><%= i < page.categories.length - 1 ? ', ' : '' %>
             <% }); %>
           <% } %>
+          <%
+            /* 计算字数：去除 HTML 标签后统计字符数（中文按字、英文按词）*/
+            var rawText = (page.content || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+            var cnChars = (rawText.match(/[\u4e00-\u9fa5]/g) || []).length;
+            var enWords = (rawText.replace(/[\u4e00-\u9fa5]/g, ' ').match(/\b\w+\b/g) || []).length;
+            var wordCount = cnChars + enWords;
+            /* 预估阅读时间：中文 300 字/分钟，英文 200 词/分钟 */
+            var readMin = Math.max(1, Math.ceil(cnChars / 300 + enWords / 200));
+          %>
+          <span>·</span>
+          <i class="fas fa-pen-fancy"></i>
+          <span><%= wordCount %> 字</span>
+          <span>·</span>
+          <i class="fas fa-clock"></i>
+          <span>约 <%= readMin %> 分钟</span>
         </div>
         <% if (page.tags && page.tags.length > 0) { %>
           <div class="flex gap-2 flex-wrap mt-3">
@@ -52,6 +67,23 @@
       <div class="article-content prose prose-sm max-w-none" id="post-content">
         <%- page.content %>
       </div>
+      <%
+        /* 版权声明：post.copyright === false 可对单篇文章关闭 */
+        var showCopyright = theme.post && theme.post.copyright !== false && page.copyright !== false;
+      %>
+      <% if (showCopyright) { %>
+      <div class="post-copyright">
+        <div class="post-copyright-title">
+          <i class="fas fa-shield-halved"></i>
+          <span>版权声明</span>
+        </div>
+        <div class="post-copyright-body">
+          <p>本文作者：<strong><%= theme.author || config.author || '佚名' %></strong></p>
+          <p>本文链接：<a class="post-copyright-link" href="<%- url_for(page.path) %>" data-href="<%- url_for(page.path) %>"><%= (config.url || '').replace(/\/$/, '') + url_for(page.path) %></a></p>
+          <p>转载请注明出处。商业转载请联系作者授权，非商业转载请注明来源。</p>
+        </div>
+      </div>
+      <% } %>
       <div class="divider my-6"></div>
       <div class="flex justify-between gap-4">
         <% if (page.prev) { %>

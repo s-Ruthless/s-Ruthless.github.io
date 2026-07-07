@@ -621,7 +621,7 @@ body { background: transparent !important; }
 [data-theme="dark"] .post-toc-toggle,
 [data-theme="dark"] .tag-chip,
 [data-theme="dark"] .not-found-desc,
-[data-theme="dark"] .comments-loading{color:#b0b0b0;background:#1e1e32;}
+[data-theme="dark"] .comments-loading{color:#c8c8c8;background:#1e1e32;}
 [data-theme="dark"] .search-input{color:#f0f0f0;}
 
 /* 暗黑模式：文章/页面卡片 — 确保 page-body 卡片在夜间正确变暗 */
@@ -644,7 +644,7 @@ body { background: transparent !important; }
 [data-theme="dark"] .article-content p,
 [data-theme="dark"] .article-content li{color:#e0e0e0;}
 [data-theme="dark"] .article-content blockquote{color:#c8c8c8;background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
-[data-theme="dark"] .article-content pre{background:rgba(0,0,0,0.4);}
+[data-theme="dark"] .article-content pre{background:rgba(0,0,0,0.45);}
 [data-theme="dark"] .article-content pre code{color:#e0e0e0;}
 [data-theme="dark"] .article-content table th{color:#d0d0d0;background:color-mix(in srgb,var(--accent-color) 10%,transparent);}
 [data-theme="dark"] .article-content table td{border-bottom-color:rgba(255,255,255,0.08);}

@@ -435,12 +435,12 @@ border-radius:18px;
 [data-theme="dark"] .post-meta,
 [data-theme="dark"] .post-excerpt,
 [data-theme="dark"] .card-summary,
-[data-theme="dark"] .search-item-excerpt{color:#c8c8c8;}
+[data-theme="dark"] .search-item-excerpt{color:#d8d8d8;}
 
-[data-theme="dark"] .post-list-item .post-meta{color:#b0b0b0;}
+[data-theme="dark"] .post-list-item .post-meta{color:#c8c8c8;}
 
-[data-theme="dark"] .article-content blockquote{background:color-mix(in srgb,var(--accent-color) 10%,transparent);color:#d0d0d0;}
-[data-theme="dark"] .article-content pre{background:rgba(0,0,0,0.35);}
+[data-theme="dark"] .article-content blockquote{background:color-mix(in srgb,var(--accent-color) 10%,transparent);color:#d8d8d8;}
+[data-theme="dark"] .article-content pre{background:rgba(0,0,0,0.5);}
 [data-theme="dark"] .article-content pre code{color:#e0e0e0;}
 [data-theme="dark"] .article-header{border-bottom-color:rgba(255,255,255,0.1);}
 [data-theme="dark"] .article-nav{border-top-color:rgba(255,255,255,0.1);}
@@ -556,5 +556,60 @@ border-radius:18px;
   background:color-mix(in srgb,var(--accent-color) 12%,transparent);
   border-bottom-color:color-mix(in srgb,var(--accent-color) 18%,transparent);
 }
-[data-theme="dark"] .post-copyright-body{color:#c0c0c0;}
+[data-theme="dark"] .post-copyright-body{color:#d0d0d0;}
 [data-theme="dark"] .post-copyright-body strong{color:#fff;}
+
+/* ====== 暗黑模式：代码高亮块 ====== */
+[data-theme="dark"] .article-content figure.highlight{
+  background:rgba(20,20,35,0.6);
+  border-color:rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .article-content figure.highlight::before{
+  background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));
+  border-bottom-color:rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .article-content figure.highlight .gutter{
+  background:rgba(255,255,255,0.04);
+  border-right-color:rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.4);}
+[data-theme="dark"] .article-content figure.highlight .code pre{color:#e0e0e0;}
+/* token 暗黑模式配色 */
+[data-theme="dark"] .article-content .highlight .keyword,
+[data-theme="dark"] .article-content .highlight .selector,
+[data-theme="dark"] .article-content .highlight .built_in{color:#c084fc;}
+[data-theme="dark"] .article-content .highlight .string,
+[data-theme="dark"] .article-content .highlight .attr,
+[data-theme="dark"] .article-content .highlight .symbol{color:#f472b6;}
+[data-theme="dark"] .article-content .highlight .number,
+[data-theme="dark"] .article-content .highlight .literal{color:#fbbf24;}
+[data-theme="dark"] .article-content .highlight .comment,
+[data-theme="dark"] .article-content .highlight .quote{color:#8b949e;}
+[data-theme="dark"] .article-content .highlight .function .title,
+[data-theme="dark"] .article-content .highlight .title,
+[data-theme="dark"] .article-content .highlight .section{color:#60a5fa;}
+[data-theme="dark"] .article-content .highlight .params{color:#d0d0e0;}
+[data-theme="dark"] .article-content .highlight .meta,
+[data-theme="dark"] .article-content .highlight .tag{color:#22d3ee;}
+[data-theme="dark"] .article-content .highlight .name{color:#c084fc;}
+[data-theme="dark"] .article-content .highlight .attribute{color:#f472b6;}
+[data-theme="dark"] .article-content .highlight .regexp{color:#fbbf24;}
+[data-theme="dark"] .article-content .highlight .variable,
+[data-theme="dark"] .article-content .highlight .template-variable{color:#f472b6;}
+[data-theme="dark"] .article-content .highlight .type,
+[data-theme="dark"] .article-content .highlight .class .title{color:#34d399;}
+[data-theme="dark"] .article-content .highlight .bullet,
+[data-theme="dark"] .article-content .highlight .link{color:#c084fc;}
+[data-theme="dark"] .article-content .highlight .emphasis{font-style:italic;}
+[data-theme="dark"] .article-content .highlight .strong{font-weight:700;}
+/* 行内 code 暗黑模式 */
+[data-theme="dark"] .article-content code:not(pre code){
+  background:color-mix(in srgb,var(--accent-color) 18%,rgba(255,255,255,0.08));
+  color:var(--accent-soft);
+}
+/* 复制按钮暗黑模式 */
+[data-theme="dark"] .code-copy-btn{
+  background:rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.7);
+}
+[data-theme="dark"] .code-copy-btn:hover{color:var(--accent-color);}

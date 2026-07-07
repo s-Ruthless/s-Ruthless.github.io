@@ -168,15 +168,15 @@
 [data-theme="dark"] .cat-box .cat-item span,
 [data-theme="dark"] .data-item span:first-child,
 [data-theme="dark"] .data-label,
-[data-theme="dark"] .info-item span{color:#a0a0a0;}
+[data-theme="dark"] .info-item span{color:#d0d0d0;}
 
 [data-theme="dark"] .hero-hitokoto,
-[data-theme="dark"] .hero-hitokoto-from{color:#c8c8c8;}
+[data-theme="dark"] .hero-hitokoto-from{color:#d8d8d8;}
 
 [data-theme="dark"] .post-item .post-date,
 [data-theme="dark"] .art-item span,
 [data-theme="dark"] .cat-count,
-[data-theme="dark"] .cat-box .cat-item em{color:#b0b0b0;}
+[data-theme="dark"] .cat-box .cat-item em{color:#c8c8c8;}
 
 [data-theme="dark"] .hero-hitokoto{background:color-mix(in srgb,var(--accent-color) 10%,transparent);}
 [data-theme="dark"] .hero-ava{background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 20%,transparent),color-mix(in srgb,var(--accent-color) 15%,transparent));}

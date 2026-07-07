@@ -62,7 +62,11 @@
 [data-theme="dark"] .aplayer .aplayer-author{color:#e0e0e0!important;}
 [data-theme="dark"] .aplayer .aplayer-time{color:rgba(255,255,255,0.8)!important;}
 [data-theme="dark"] .aplayer .aplayer-icon{color:rgba(255,255,255,0.9)!important;}
+[data-theme="dark"] .aplayer .aplayer-icon svg{fill:rgba(255,255,255,0.9)!important;}
+[data-theme="dark"] .aplayer .aplayer-icon svg path{fill:rgba(255,255,255,0.9)!important;}
 [data-theme="dark"] .aplayer .aplayer-icon:hover{color:var(--accent-soft)!important;}
+[data-theme="dark"] .aplayer .aplayer-icon:hover svg{fill:var(--accent-soft)!important;}
+[data-theme="dark"] .aplayer .aplayer-icon:hover svg path{fill:var(--accent-soft)!important;}
 [data-theme="dark"] .aplayer .aplayer-list ol li{color:#e8e8e8!important;}
 [data-theme="dark"] .aplayer .aplayer-list ol li:hover{background:rgba(255,255,255,0.1)!important;}
 [data-theme="dark"] .aplayer .aplayer-list ol li.aplayer-list-light{background:color-mix(in srgb,var(--accent-color) 25%,transparent)!important;color:#ffffff!important;font-weight:600;}

@@ -195,7 +195,7 @@
 [data-theme="dark"] .archive-list .arc-date,
 [data-theme="dark"] .stat-hero-label,
 [data-theme="dark"] .chart-label,
-[data-theme="dark"] .archive-empty{color:#b0b0b0;}
+[data-theme="dark"] .archive-empty{color:#c8c8c8;}
 
 [data-theme="dark"] .stat-hero-icon{background:rgba(255,255,255,0.12);}
 [data-theme="dark"] .stat-hero-posts{background:var(--card-bg);}
@@ -209,7 +209,7 @@
 [data-theme="dark"] .year-post-count{background:color-mix(in srgb,var(--accent-color) 18%,transparent);}
 
 /* 折线图暗黑模式 */
-[data-theme="dark"] .chart-point-label{fill:#b0b0b0;}
+[data-theme="dark"] .chart-point-label{fill:#c8c8c8;}
 [data-theme="dark"] .chart-line-svg line[stroke="rgba(0,0,0,0.06)"]{stroke:rgba(255,255,255,0.08);}
 
 /* 确保展开状态的年份内容有足够的高度 */

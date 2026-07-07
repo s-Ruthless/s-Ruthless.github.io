@@ -160,7 +160,7 @@ border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
 
 [data-theme="dark"] .card-summary,
 [data-theme="dark"] .douban-score,
-[data-theme="dark"] .not-found-desc{color:#c8c8c8;}
+[data-theme="dark"] .not-found-desc{color:#d8d8d8;}
 
 [data-theme="dark"] .card-date,
 [data-theme="dark"] .card-tag,
@@ -168,9 +168,9 @@ border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
 [data-theme="dark"] .douban-date,
 [data-theme="dark"] .douban-empty,
 [data-theme="dark"] .douban-empty p,
-[data-theme="dark"] .douban-empty span{color:#b0b0b0;}
+[data-theme="dark"] .douban-empty span{color:#c8c8c8;}
 
-[data-theme="dark"] .card-tag{background:rgba(255,255,255,0.1);color:#b0b0b0;}
+[data-theme="dark"] .card-tag{background:rgba(255,255,255,0.1);color:#c8c8c8;}
 [data-theme="dark"] .douban-card{background:var(--card-bg);border-color:rgba(255,255,255,0.14);}
 [data-theme="dark"] .douban-stars .star-off{color:rgba(255,255,255,0.2);}
 [data-theme="dark"] .gallery-item{background:rgba(50,50,60,0.4);}

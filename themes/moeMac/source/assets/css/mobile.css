@@ -166,7 +166,7 @@ html.is-mobile .info-item i{ font-size:12px;width:14px; }
 html.is-mobile .info-item-days{ display:none; }
 html.is-mobile .window-info .win-body{
   display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
+  justify-content:center;align-items:stretch!important;
   padding:16px 20px;
 }
 html.is-mobile[data-theme="dark"] .info-item{ border-bottom-color:rgba(255,255,255,0.06); }

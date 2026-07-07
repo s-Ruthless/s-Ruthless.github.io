@@ -26,12 +26,21 @@ git clone https://gitee.com/s-Ruthless/s-ruthless.git themes/moeMac
 
 ### 2. 安装依赖
 
-主题依赖以下 Hexo 插件（需在站点根目录 `package.json` 中声明）：
+在**站点根目录**执行以下命令，一次性安装所有必需的 Hexo 插件：
+
+```bash
+npm install hexo hexo-server hexo-renderer-ejs hexo-renderer-marked hexo-renderer-stylus hexo-generator-archive hexo-generator-category hexo-generator-tag hexo-generator-index hexo-generator-searchdb
+```
+
+如果已经有部分插件，也可以按需安装。以下是完整依赖说明：
 
 | 插件 | 用途 | 必须 |
 |---|---|---|
+| `hexo` | Hexo 核心 | ✅ |
+| `hexo-server` | 本地预览服务器 | ✅ |
 | `hexo-renderer-ejs` | EJS 模板渲染 | ✅ |
 | `hexo-renderer-marked` | Markdown 渲染 | ✅ |
+| `hexo-renderer-stylus` | Stylus 渲染 | ✅ |
 | `hexo-generator-archive` | 归档页生成 | ✅ |
 | `hexo-generator-category` | 分类页生成 | ✅ |
 | `hexo-generator-tag` | 标签页生成 | ✅ |
@@ -40,31 +49,6 @@ git clone https://gitee.com/s-Ruthless/s-ruthless.git themes/moeMac
 
 > **豆瓣抓取**不需要额外插件——主题自带 `scripts/douban-sync.js` 脚本，使用 Node.js 原生模块。
 > **音乐播放器**不需要额外插件——前端 JS 加载 APlayer + Meting。
-
-在站点根目录 `package.json` 中确保有以下依赖：
-
-```json
-{
-  "dependencies": {
-    "hexo": "^8.0.0",
-    "hexo-generator-archive": "^2.0.0",
-    "hexo-generator-category": "^2.0.0",
-    "hexo-generator-index": "^4.0.0",
-    "hexo-generator-searchdb": "^1.5.0",
-    "hexo-generator-tag": "^2.0.0",
-    "hexo-renderer-ejs": "^2.0.0",
-    "hexo-renderer-marked": "^7.0.0",
-    "hexo-renderer-stylus": "^3.0.1",
-    "hexo-server": "^3.0.0"
-  }
-}
-```
-
-然后执行：
-
-```bash
-npm install
-```
 
 ### 3. 启用主题
 

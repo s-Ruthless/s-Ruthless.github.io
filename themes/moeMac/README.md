@@ -26,6 +26,21 @@ git clone https://gitee.com/s-Ruthless/s-ruthless.git themes/moeMac
 
 ### 2. 安装依赖
 
+主题依赖以下 Hexo 插件（需在站点根目录 `package.json` 中声明）：
+
+| 插件 | 用途 | 必须 |
+|---|---|---|
+| `hexo-renderer-ejs` | EJS 模板渲染 | ✅ |
+| `hexo-renderer-marked` | Markdown 渲染 | ✅ |
+| `hexo-generator-archive` | 归档页生成 | ✅ |
+| `hexo-generator-category` | 分类页生成 | ✅ |
+| `hexo-generator-tag` | 标签页生成 | ✅ |
+| `hexo-generator-index` | 首页分页 | ✅ |
+| `hexo-generator-searchdb` | 站内搜索索引 | ⚡ 启用搜索时需要 |
+
+> **豆瓣抓取**不需要额外插件——主题自带 `scripts/douban-sync.js` 脚本，使用 Node.js 原生模块。
+> **音乐播放器**不需要额外插件——前端 JS 加载 APlayer + Meting。
+
 在站点根目录 `package.json` 中确保有以下依赖：
 
 ```json
@@ -220,14 +235,26 @@ douban:
     - { name: "电影名", cover: "海报URL", rating: 8, date: "2026-01-01", note: "观后感" }
 ```
 
-### 方式二：自动抓取
+### 方式二：自动抓取（内置脚本，无需安装插件）
+
+主题自带豆瓣抓取脚本（`scripts/douban-sync.js`），使用 Node.js 原生模块，无需安装任何额外 npm 包。
 
 ```yaml
 douban:
   user_id: "你的豆瓣ID"  # douban.com/people/xxx/ 中的 xxx
+  cookie: ""             # 可选，登录后的 cookie，用于访问受限页面
 ```
 
-然后运行 `npx hexo douban`（需安装 hexo-douban 插件）。
+然后运行：
+
+```bash
+npx hexo douban              # 抓取全部（书 + 影 + 音）
+npx hexo douban --books      # 只抓书
+npx hexo douban --movies     # 只抓电影
+npx hexo douban --music      # 只抓音乐
+```
+
+脚本会自动抓取豆瓣收藏并下载封面图到 `source/images/douban/`，数据保存到 `source/_data/douban.json`。
 
 ## 站点配置
 

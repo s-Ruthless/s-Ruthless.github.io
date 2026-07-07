@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "macOS 风格 Hexo 主题 — Dock 导航 + 浮动窗口 + 毛玻璃质感",
   "main": "README.md",
-  "scripts": {
-    "douban": "hexo douban"
-  },
   "keywords": ["hexo", "theme", "macos", "dock", "giscus"],
   "license": "MIT",
   "dependencies": {},
@@ -18,7 +15,9 @@
     "hexo-generator-category": "^2.0.0",
     "hexo-generator-tag": "^2.0.0",
     "hexo-generator-index": "^4.0.0",
-    "hexo-generator-searchdb": "^1.5.0",
     "hexo-server": "^3.0.0"
+  },
+  "optionalDependencies": {
+    "hexo-generator-searchdb": "^1.5.0"
   }
 }

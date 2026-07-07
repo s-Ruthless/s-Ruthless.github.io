@@ -1,17 +1,17 @@
 # moeMac 主题配置
 
 # ====== 基本信息 ======
-blog_name: "我的博客"
-blog_description: "随心记录生活碎片，收纳日常热爱"
-author: "你的名字"
+blog_name: "山野自愈 · 人间理想"
+blog_description: "随心记录生活碎片，收纳日常热爱<br>一隅小窗，藏尽平凡美好"
+author: "屿"
 
 # ====== 头像 ======
 # avatar_type: "image" 显示图片头像，"text" 显示文字头像
 # avatar_url: 图片地址，支持网络URL或本地路径（如 /images/avatar.png）
 # avatar_text: 文字头像显示的文字（仅 avatar_type 为 text 时生效）
-avatar_type: "text"
-avatar_url: ""
-avatar_text: "我"
+avatar_type: "image"
+avatar_url: "https://q1.qlogo.cn/g?b=qq&nk=2502393029&s=100"
+avatar_text: "屿"
 
 # ====== SEO / 站点元信息 ======
 # favicon: 自定义 favicon 路径，留空则使用 favicon_emoji 的 emoji 图标
@@ -68,9 +68,9 @@ sentences:
 # platform: 音乐平台（netease / tencent / kugou / xiami / baidu）
 # playlist_id: 歌单ID
 # show_desktop_lyrics: 是否在 dock 栏上方显示桌面歌词
-meting_api: "https://api.injahow.cn/meting/"
+meting_api: "https://api.moeyao.cn/meting/"
 platform: "netease"
-playlist_id: ""
+playlist_id: "18117638485"
 show_desktop_lyrics: true
 
 # ====== Dock 导航栏 ======
@@ -111,14 +111,15 @@ recent_posts_count: 5
 # start_date: 建站日期（用于计算建站天数，格式 YYYY-MM-DD）
 # copyright: 版权声明文字
 site_info:
-  icp: ""
-  psbc: ""
+  icp: "备icp124341245"
+  psbc: "网备11515"
   start_date: "2023-01-01"
-  copyright: ""
+  copyright: "@2026"
 
 # ====== 友链 ======
 friends:
   - { name: "Hexo", url: "https://hexo.io", avatar: "https://hexo.io/favicon.ico", description: "快速、简洁且高效的博客框架" }
+  - { name: "Theme Landscape", url: "https://github.com/hexojs/hexo-theme-landscape", avatar: "https://github.githubassets.com/favicons/favicon.svg", description: "Hexo 默认主题" }
 
 # ====== 文章页 ======
 # show_toc: 显示文章目录
@@ -135,16 +136,19 @@ post:
 # 下方 books/movies/music 为手动配置，当未抓取数据时作为回退使用
 # 每项含 name/cover/rating(1-10)/date/note，rating 为 10 分制自动换算成 5 星
 douban:
-  user_id: ""
+  user_id: "sjl511"
   cookie: ""
-  books: []
-  movies: []
-  music: []
+  books:
+    - { name: "被讨厌的勇气", cover: "https://img1.doubanio.com/view/subject/l/public/s29492583.jpg", rating: 9, date: "2026-06-15", note: "自我启发的心理学，读完豁然开朗" }
+  movies:
+    - { name: "你好，李焕英", cover: "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2626524982.jpg", rating: 9, date: "2026-05-01", note: "笑着笑着就哭了" }
+  music:
+    - { name: "山野自愈", cover: "https://p1.music.126.net/img.jpg", rating: 8, date: "2026-06-01", note: "治愈系歌单循环一整天" }
 
 # ====== 壁纸设置 ======
 # wallpaper_path: 自定义壁纸图片路径，为空则使用默认渐变
 # 示例: "/assets/images/my-bg.jpg" 或 "https://example.com/bg.jpg"
-wallpaper_path: ""
+wallpaper_path: "https://img.netbian.com/file/2024/0525/001431sFPe6.jpg"
 
 # ====== 评论系统 ======
 # enable: false 关闭；true 开启
@@ -155,7 +159,7 @@ wallpaper_path: ""
 #   文章（post）：默认显示评论，写 comment: false 可关闭
 #   自定义页面（page）：默认不显示，写 comment: true 可开启
 comments:
-  enable: false
+  enable: true
   provider: "giscus"
   # Waline: https://waline.js.org/
   waline:
@@ -168,12 +172,13 @@ comments:
   # reactionsEnabled: 1 开启表情反应 / 0 关闭
   # 主题会根据站点暗黑模式自动切换 noborder_dark / noborder_light，无需手动配置
   giscus:
-    repo: ""                         # owner/repo，如 yourname/comments
-    repoId: ""                        # 在 https://giscus.app 获取
+    repo: "s-Ruthless/moeMac-comments"                # owner/repo
+    repoId: "R_kgDOTPRTtA"
     category: "Announcements"
-    categoryId: ""                    # 在 https://giscus.app 获取
+    categoryId: "DIC_kwDOTPRTtM4DAnxQ"
     mapping: "pathname"
     inputPosition: "top"
+    theme: "preferred_color_scheme"
     reactionsEnabled: 0
   # Gitalk: https://github.com/gitalk/gitalk
   gitalk:

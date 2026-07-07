@@ -26,29 +26,37 @@ git clone https://gitee.com/s-Ruthless/s-ruthless.git themes/moeMac
 
 ### 2. 安装依赖
 
-在**站点根目录**执行以下命令，一次性安装所有必需的 Hexo 插件：
+`hexo init` 初始化站点时会**自动安装**以下 9 个插件：
+
+| 插件 | 用途 | 来源 |
+|---|---|---|
+| `hexo` | Hexo 核心 | hexo init 自带 |
+| `hexo-server` | 本地预览服务器 | hexo init 自带 |
+| `hexo-renderer-ejs` | EJS 模板渲染 | hexo init 自带 |
+| `hexo-renderer-marked` | Markdown 渲染 | hexo init 自带 |
+| `hexo-renderer-stylus` | Stylus 渲染 | hexo init 自带 |
+| `hexo-generator-archive` | 归档页生成 | hexo init 自带 |
+| `hexo-generator-category` | 分类页生成 | hexo init 自带 |
+| `hexo-generator-tag` | 标签页生成 | hexo init 自带 |
+| `hexo-generator-index` | 首页分页 | hexo init 自带 |
+
+安装主题后，**只需手动安装 1 个插件**（搜索功能用）：
 
 ```bash
-npm install hexo hexo-server hexo-renderer-ejs hexo-renderer-marked hexo-renderer-stylus hexo-generator-archive hexo-generator-category hexo-generator-tag hexo-generator-index hexo-generator-searchdb
+npm install hexo-generator-searchdb
 ```
 
-如果已经有部分插件，也可以按需安装。以下是完整依赖说明：
+> 如果不需要站内搜索，可以跳过此步，在主题 `_config.yml` 中设置 `search: false` 即可。
 
-| 插件 | 用途 | 必须 |
+#### 不需要额外安装的功能
+
+| 功能 | 实现方式 | 需要插件？ |
 |---|---|---|
-| `hexo` | Hexo 核心 | ✅ |
-| `hexo-server` | 本地预览服务器 | ✅ |
-| `hexo-renderer-ejs` | EJS 模板渲染 | ✅ |
-| `hexo-renderer-marked` | Markdown 渲染 | ✅ |
-| `hexo-renderer-stylus` | Stylus 渲染 | ✅ |
-| `hexo-generator-archive` | 归档页生成 | ✅ |
-| `hexo-generator-category` | 分类页生成 | ✅ |
-| `hexo-generator-tag` | 标签页生成 | ✅ |
-| `hexo-generator-index` | 首页分页 | ✅ |
-| `hexo-generator-searchdb` | 站内搜索索引 | ⚡ 启用搜索时需要 |
-
-> **豆瓣抓取**不需要额外插件——主题自带 `scripts/douban-sync.js` 脚本，使用 Node.js 原生模块。
-> **音乐播放器**不需要额外插件——前端 JS 加载 APlayer + Meting。
+| 豆瓣书影音 | 主题自带 `scripts/douban-sync.js`，使用 Node.js 内置模块（`fs`/`https`/`http`） | ❌ 不需要 |
+| 音乐播放器 | 前端 JS 动态加载 APlayer + Meting | ❌ 不需要 |
+| 评论系统 | Giscus/Waline/Twikoo 均为前端加载 | ❌ 不需要 |
+| 暗黑模式 | CSS + localStorage | ❌ 不需要 |
+| AJAX 导航 | 前端 JS | ❌ 不需要 |
 
 ### 3. 启用主题
 

@@ -162,7 +162,7 @@ html.is-mobile .info-item{
   border-bottom:1px solid rgba(0,0,0,0.04);
 }
 html.is-mobile .info-item:last-child{ border-bottom:none; }
-html.is-mobile .info-item i{ font-size:12px;width:14px; }
+html.is-mobile .info-item i{ font-size:12px;width:14px;left:4px; }
 html.is-mobile .info-item-days{ display:none; }
 html.is-mobile .window-info .win-body{
   display:block!important;

@@ -111,13 +111,16 @@
 /* ====== 网站信息窗口 → 居中列表 ====== */
 .info-list{display:block;width:100%;}
 .info-item{
-  display:block;text-align:center;
+  position:relative;display:block;text-align:center;
   padding:7px 4px;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px;
   transition:all 0.2s ease;
 }
 .info-item:last-child{border-bottom:none;}
 .info-item:hover{background:color-mix(in srgb,var(--accent-color) 8%,transparent);border-radius:8px;}
-.info-item i{color:var(--accent-color);font-size:12px;width:14px;text-align:center;margin-right:6px;}
+.info-item i{
+  position:absolute;left:8px;top:50%;transform:translateY(-50%);
+  color:var(--accent-color);font-size:12px;width:14px;text-align:center;
+}
 .info-item span{color:#444;}
 .info-item em{font-style:normal;color:#111;font-weight:600;}
 .info-item a{color:var(--accent-color);text-decoration:none;font-weight:500;}

@@ -233,17 +233,30 @@ douban:
 
 ```yaml
 douban:
-  user_id: "你的豆瓣ID"  # douban.com/people/xxx/ 中的 xxx
-  cookie: ""             # 可选，登录后的 cookie，用于访问受限页面
+  user_id: "你的豆瓣ID"       # douban.com/people/xxx/ 中的 xxx
+  auto_sync: false            # true 开启自动同步（见下方说明）
+  sync_interval_hours: 24     # 自动同步间隔（小时）
+  cookie: ""                  # 可选，登录后的 cookie，用于访问受限页面
 ```
 
-然后运行：
+**手动同步**（随时运行）：
 
 ```bash
 npx hexo douban              # 抓取全部（书 + 影 + 音）
 npx hexo douban --books      # 只抓书
 npx hexo douban --movies     # 只抓电影
 npx hexo douban --music      # 只抓音乐
+```
+
+**自动同步**（`auto_sync: true` 时生效）：
+
+开启后，每次 `hexo generate` / `hexo server` 会自动检查 `source/_data/douban.json` 中记录的上次同步时间，**距上次同步超过 `sync_interval_hours` 才触发**，不会每次 build 都等待。
+
+```yaml
+douban:
+  user_id: "your-id"
+  auto_sync: true
+  sync_interval_hours: 24    # 每天最多同步一次
 ```
 
 脚本会自动抓取豆瓣收藏并下载封面图到 `source/images/douban/`，数据保存到 `source/_data/douban.json`。

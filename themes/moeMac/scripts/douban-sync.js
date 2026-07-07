@@ -301,17 +301,14 @@ async function fetchCategory(baseUrl, userId, type, cookie, baseDir) {
   return allItems;
 }
 
-hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_data/douban.json', {
-  options: [
-    { name: '--books', desc: '只抓取书籍' },
-    { name: '--movies', desc: '只抓取电影' },
-    { name: '--music', desc: '只抓取音乐' },
-    { name: '--force', desc: '强制重新抓取（忽略缓存）' }
-  ]
-}, async function (args) {
-  /* 必须先 load 才能拿到 theme.config */
-  await this.load();
-  var cfg = this.theme.config.douban || {};
+/**
+ * 核心同步逻辑（console 命令和 before_generate filter 共用）
+ * @param {object} hexo  - Hexo 实例
+ * @param {object} opts  - { books, movies, music } 布尔值，全 false/空 则抓取全部
+ */
+async function runSync(hexo, opts) {
+  opts = opts || {};
+  var cfg = hexo.theme.config.douban || {};
   var userId = cfg.user_id || '';
 
   if (!userId) {
@@ -324,16 +321,16 @@ hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_d
   }
 
   var cookie = cfg.cookie || '';
-  var fetchBooks = args.books || (!args.books && !args.movies && !args.music);
-  var fetchMovies = args.movies || (!args.books && !args.movies && !args.music);
-  var fetchMusic = args.music || (!args.books && !args.movies && !args.music);
+  var fetchBooks = opts.books || (!opts.books && !opts.movies && !opts.music);
+  var fetchMovies = opts.movies || (!opts.books && !opts.movies && !opts.music);
+  var fetchMusic = opts.music || (!opts.books && !opts.movies && !opts.music);
 
   console.log('\n🔄 开始同步豆瓣收藏 [用户: ' + userId + ']\n');
 
   var result = {};
 
   // 读取已有数据（作为回退）
-  var dataPath = path.join(this.base_dir, 'source/_data/douban.json');
+  var dataPath = path.join(hexo.base_dir, 'source/_data/douban.json');
   var existing = {};
   if (fs.existsSync(dataPath)) {
     try { existing = JSON.parse(fs.readFileSync(dataPath, 'utf-8')); } catch (e) {}
@@ -342,7 +339,7 @@ hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_d
   if (fetchBooks) {
     console.log('📚 抓取书籍...');
     try {
-      result.books = await fetchCategory('https://book.douban.com', userId, 'books', cookie, this.base_dir);
+      result.books = await fetchCategory('https://book.douban.com', userId, 'books', cookie, hexo.base_dir);
     } catch (e) {
       console.error('  ✗ 书籍抓取失败: ' + e.message);
       result.books = existing.books || [];
@@ -355,7 +352,7 @@ hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_d
   if (fetchMovies) {
     console.log('🎬 抓取电影...');
     try {
-      result.movies = await fetchCategory('https://movie.douban.com', userId, 'movies', cookie, this.base_dir);
+      result.movies = await fetchCategory('https://movie.douban.com', userId, 'movies', cookie, hexo.base_dir);
     } catch (e) {
       console.error('  ✗ 电影抓取失败: ' + e.message);
       result.movies = existing.movies || [];
@@ -368,7 +365,7 @@ hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_d
   if (fetchMusic) {
     console.log('🎵 抓取音乐...');
     try {
-      result.music = await fetchCategory('https://music.douban.com', userId, 'music', cookie, this.base_dir);
+      result.music = await fetchCategory('https://music.douban.com', userId, 'music', cookie, hexo.base_dir);
     } catch (e) {
       console.error('  ✗ 音乐抓取失败: ' + e.message);
       result.music = existing.music || [];
@@ -379,7 +376,7 @@ hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_d
   }
 
   // 保存
-  var dataDir = path.join(this.base_dir, 'source/_data');
+  var dataDir = path.join(hexo.base_dir, 'source/_data');
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
   result._meta = {
@@ -399,5 +396,54 @@ hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_d
   console.log('   🎬 电影: ' + result._meta.total.movies + ' 条');
   console.log('   🎵 音乐: ' + result._meta.total.music + ' 条');
   console.log('   📁 保存至: source/_data/douban.json\n');
+}
+
+/* ========== 手动命令：npx hexo douban ========== */
+hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_data/douban.json', {
+  options: [
+    { name: '--books', desc: '只抓取书籍' },
+    { name: '--movies', desc: '只抓取电影' },
+    { name: '--music', desc: '只抓取音乐' },
+    { name: '--force', desc: '强制重新抓取（忽略缓存）' }
+  ]
+}, async function (args) {
+  /* 必须先 load 才能拿到 theme.config */
+  await this.load();
+  await runSync(this, { books: args.books, movies: args.movies, music: args.music });
   console.log('   运行 hexo clean && hexo generate 重新生成页面');
+});
+
+/* ========== 自动同步：hexo generate 时触发（智能跳过） ========== */
+hexo.extend.filter.register('before_generate', async function () {
+  var cfg = hexo.theme.config.douban || {};
+
+  // 未开启自动同步，或未配置 user_id，直接跳过
+  if (!cfg.auto_sync) return;
+  if (!cfg.user_id) return;
+
+  // 检查距上次同步的时间间隔
+  var intervalHours = cfg.sync_interval_hours || 24;
+  var dataPath = path.join(hexo.base_dir, 'source/_data/douban.json');
+
+  if (fs.existsSync(dataPath)) {
+    try {
+      var data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+      if (data._meta && data._meta.synced_at) {
+        var lastSync = new Date(data._meta.synced_at);
+        var elapsedHours = (Date.now() - lastSync.getTime()) / 3600000;
+        if (elapsedHours < intervalHours) {
+          hexo.log.debug('豆瓣数据上次同步于 ' + lastSync.toISOString() +
+            '（不足 ' + intervalHours + 'h），跳过自动同步');
+          return;
+        }
+      }
+    } catch (e) { /* 文件损坏，继续同步 */ }
+  }
+
+  hexo.log.info('🔄 自动同步豆瓣数据（距上次已超过 ' + intervalHours + ' 小时）...');
+  try {
+    await runSync(hexo, {});
+  } catch (e) {
+    hexo.log.error('豆瓣自动同步失败: ' + e.message);
+  }
 });

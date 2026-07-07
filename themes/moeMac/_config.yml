@@ -131,11 +131,16 @@ post:
 # ====== 豆瓣书影音 ======
 # user_id: 豆瓣用户 ID（个人主页 URL 中的 ID，如 douban.com/people/xxx/ 中的 xxx）
 #   填写后运行 npx hexo douban 自动抓取书影音收藏，保存到 source/_data/douban.json
+# auto_sync: true 时，hexo generate 会自动检查并同步（距上次超过 sync_interval_hours 才执行）
+# sync_interval_hours: 自动同步间隔（小时），默认 24
 # cookie: 可选，登录后的 cookie（用于访问受限页面，留空则匿名访问）
 #
 # 下方 books/movies/music 为手动配置，当未抓取数据时作为回退使用
 # 每项含 name/cover/rating(1-10)/date/note，rating 为 10 分制自动换算成 5 星
 douban:
+  user_id: ""
+  auto_sync: false           # 开启后 hexo generate 自动同步（智能跳过）
+  sync_interval_hours: 24    # 距上次同步超过此时数才触发
   cookie: ""
   books:
     - { name: "被讨厌的勇气", cover: "https://img1.doubanio.com/view/subject/l/public/s29492583.jpg", rating: 9, date: "2026-06-15", note: "自我启发的心理学，读完豁然开朗" }

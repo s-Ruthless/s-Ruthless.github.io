@@ -348,6 +348,15 @@ html.is-mobile .article-header{
 html.is-mobile .article-header h1{
   font-size:19px;line-height:1.4;
 }
+/* 文章元信息（发布时间/分类/字数等）— 移动端缩小 */
+html.is-mobile .article-header .flex.items-center{
+  font-size:11px!important;
+  gap:4px!important;
+  opacity:0.7!important;
+}
+html.is-mobile .article-header .flex.items-center i{
+  font-size:10px;
+}
 html.is-mobile .article-body{
   padding:0 16px 16px;
 }

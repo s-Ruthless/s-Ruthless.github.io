@@ -123,8 +123,8 @@
 .info-item a{color:var(--accent-color);text-decoration:none;font-weight:500;}
 .info-item a:hover{text-decoration:underline;}
 .window-info .win-body{
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
-  padding:14px 16px;
+display:flex;flex-direction:column;justify-content:center;align-items:stretch;
+padding:14px 16px;
 }
 
 /* ====== 音乐窗口 ====== */

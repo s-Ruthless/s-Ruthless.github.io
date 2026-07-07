@@ -4,6 +4,16 @@
 (function () {
   'use strict';
 
+  /* ====== 移动端检测 ====== */
+  var MOBILE_BP = 768;
+  function isMobile() {
+    return window.innerWidth <= MOBILE_BP;
+  }
+  /* 尽早同步 is-mobile class（与 head.ejs 早期脚本配合） */
+  function syncMobileClass() {
+    document.documentElement.classList.toggle('is-mobile', isMobile());
+  }
+
   /* ====== Progress Bar ====== */
   var ProgressBar = {
     el: null,
@@ -354,12 +364,56 @@
     }
   };
 
+  /* ====== 移动端首页：纵向滚动卡片流 ====== */
+  var MobileHome = {
+    /* 重置所有窗口的内联样式，让 CSS 接管布局 */
+    init: function () {
+      if (!isMobile()) return;
+      var container = document.getElementById('ajax-container');
+      if (!container) return;
+      container.querySelectorAll('.app-window').forEach(function (el) {
+        el.setAttribute('data-pos', '1');
+        el.style.visibility = 'visible';
+        el.style.left = '';
+        el.style.top = '';
+        el.style.transform = '';
+        el.style.opacity = '';
+        el.style.zIndex = '';
+        el.style.pointerEvents = '';
+        el.style.transition = '';
+        el.style.width = '';
+        el.style.height = '';
+        el.style.minHeight = '';
+        el.style.maxHeight = '';
+      });
+    },
+
+    /* 导航时清理（样式会被新内容覆盖，但保险起见重置） */
+    destroy: function () {
+      var container = document.getElementById('ajax-container');
+      if (!container) return;
+      container.querySelectorAll('.app-window').forEach(function (el) {
+        el.style.transition = '';
+        el.style.transform = '';
+        el.style.opacity = '';
+        el.style.zIndex = '';
+        el.style.pointerEvents = '';
+        el.style.visibility = '';
+      });
+    }
+  };
+
   /* ====== Window Drag ====== */
   var Drag = {
     winW: 0, winH: 0, maxZ: 10, gap: 30, minDist: 60, centerDist: 120, dockH: 80,
     init: function () {
       this.winW = window.innerWidth; this.winH = window.innerHeight;
       var self = this;
+      /* 移动端：纵向滚动卡片流，无需拖拽布局 */
+      if (isMobile()) {
+        MobileHome.init();
+        return;
+      }
       document.querySelectorAll('.app-window:not([data-pos])').forEach(function (el) {
         if (el.style.left && el.style.left.indexOf('%') !== -1) {
           var rect = el.getBoundingClientRect();
@@ -831,6 +885,7 @@
       if (this.busy) return; this.busy = true;
       var self = this, box = this.box;
       MusicPlayer.moveFromBody();
+      MobileHome.destroy();
       ProgressBar.start(); box.classList.add('fade-out');
       setTimeout(function () {
         var xhr = new XMLHttpRequest();
@@ -894,6 +949,12 @@
   /* ====== 桌面模式切换（首页禁止滚动） ====== */
   var DesktopMode = {
     check: function () {
+      /* 移动端：不锁定滚动，移除 is-desktop 标记 */
+      if (isMobile()) {
+        document.documentElement.classList.remove('is-desktop');
+        document.body.classList.remove('is-desktop');
+        return;
+      }
       var hasDesktop = !!document.querySelector('.drag-win');
       document.documentElement.classList.toggle('is-desktop', hasDesktop);
       document.body.classList.toggle('is-desktop', hasDesktop);
@@ -1138,6 +1199,7 @@
 
   /* ====== Init ====== */
   document.addEventListener('DOMContentLoaded', function () {
+    syncMobileClass(); /* 确保移动端 class 与当前视口一致 */
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
     DockTip.init(); /* dock tooltip — 不依赖 GSAP */
       loadHitokoto(); MusicPlayer.init();
@@ -1154,5 +1216,19 @@
     if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
     // UI 增强效果（粒子拖尾只初始化一次，其余每次 AJAX 都重新初始化）
     if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }
+
+    /* ====== 响应式断点监听：跨越 768px 时刷新页面 ====== */
+    var _prevMobile = isMobile();
+    var _resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(_resizeTimer);
+      _resizeTimer = setTimeout(function () {
+        var _nowMobile = isMobile();
+        if (_nowMobile !== _prevMobile) {
+          _prevMobile = _nowMobile;
+          location.reload();
+        }
+      }, 300);
+    });
   });
 })();

@@ -7,10 +7,15 @@
 (function () {
   'use strict';
 
+  /* 移动端检测 */
+  var _isMobile = window.innerWidth <= 768;
+
   var UIEnhance = {
 
     /* ====== 1. 动态网格背景 — 缓慢漂浮的渐变色块 ====== */
     meshGradient: function () {
+      /* 移动端跳过 — 减少动画负担 */
+      if (_isMobile) return;
       var mesh = document.querySelector('.mesh-bg');
       if (!mesh) {
         mesh = document.createElement('div');
@@ -45,6 +50,8 @@
 
     /* ====== 2. 光标粒子拖尾 — Canvas 火花 ====== */
     sparkles: function () {
+      /* 移动端跳过 — Canvas 动画消耗性能 */
+      if (_isMobile) return;
       var canvas = document.getElementById('sparkle-canvas');
       if (!canvas) {
         canvas = document.createElement('canvas');
@@ -134,6 +141,8 @@
 
     /* ====== 3. 3D 卡片倾斜 — 鼠标跟随的 perspective tilt ====== */
     tiltCards: function () {
+      /* 移动端无 mousemove，跳过 */
+      if (_isMobile) return;
       var selectors = '.wall-card, .friend-card, .post-list-item, .douban-card';
       document.querySelectorAll(selectors).forEach(function (card) {
         if (card.dataset.tiltInit) return;
@@ -295,6 +304,8 @@
 
     /* ====== 7. Dock 放大镜效果 — 鼠标附近的图标逐渐放大 ====== */
     dockMagnify: function () {
+      /* 移动端无 mousemove，跳过 */
+      if (_isMobile) return;
       var dockInner = document.querySelector('.dock-bar-inner');
       if (!dockInner) return;
 
@@ -334,6 +345,8 @@
 
     /* ====== 8. 磁吸按钮 — 鼠标靠近时按钮被吸引 ====== */
     magneticButtons: function () {
+      /* 移动端无 mousemove，跳过 */
+      if (_isMobile) return;
       /* 注意：不包含 .back-top-btn — 它有 CSS :hover transform，
          GSAP inline transform 会与 CSS 冲突导致抖动 */
       var selectors = '.win-traffic-btn, .page-btn';

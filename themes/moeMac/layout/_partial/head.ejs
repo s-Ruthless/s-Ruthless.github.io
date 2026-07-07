@@ -76,6 +76,11 @@
       if (saved === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
+      /* 移动端检测：尽早设置 is-mobile class，避免桌面布局闪烁 */
+      var isMobile = window.matchMedia('(max-width: 768px)').matches || window.innerWidth <= 768;
+      if (isMobile) {
+        document.documentElement.classList.add('is-mobile');
+      }
     })();
   </script>
 
@@ -89,12 +94,13 @@
   <% } %>
 
   <!-- 主题 CSS -->
-  <% var V = '?v=20260708'; %>
+  <% var V = '?v=20260722'; %>
   <link rel="stylesheet" href="<%= A %>/css/style.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/home.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/article.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/archive.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/gallery.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/pages.css<%= V %>">
+  <link rel="stylesheet" href="<%= A %>/css/mobile.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/aplayer.css<%= V %>">
 </head>

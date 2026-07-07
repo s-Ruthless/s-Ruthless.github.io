@@ -11,7 +11,7 @@
     <button class="win-traffic-btn win-btn-pin" data-tip="置顶" aria-label="置顶"><svg viewBox="0 0 12 12" fill="#fff"><path d="M6 1L4 3v3L2.5 7.5V9h3V11h1V9h3V7.5L8 6V3L6 1z"/></svg></button>
   </div>
   <div class="win-head drag-bar">
-    <div class="win-name">我的主页</div>
+    <div class="win-name"><i class="fas fa-house win-head-icon"></i>我的主页</div>
   </div>
   <div class="win-body">
     <div class="hero-ava" id="hero-avatar">
@@ -44,7 +44,7 @@
     <button class="win-traffic-btn win-btn-pin" data-tip="置顶" aria-label="置顶"><svg viewBox="0 0 12 12" fill="#fff"><path d="M6 1L4 3v3L2.5 7.5V9h3V11h1V9h3V7.5L8 6V3L6 1z"/></svg></button>
   </div>
   <div class="win-head drag-bar">
-    <div class="win-name"><%= winTitleMap[w] || w %></div>
+    <div class="win-name"><i class="<%= winIconMap[w] || 'fas fa-window-maximize' %> win-head-icon"></i><%= winTitleMap[w] || w %></div>
   </div>
   <div class="win-body">
     <% if (w === 'posts') { %>

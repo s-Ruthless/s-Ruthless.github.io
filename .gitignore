@@ -8,3 +8,10 @@ public/
 _multiconfig.yml
 # temp scripts
 _fix*.js
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+# workbuddy
+.workbuddy/

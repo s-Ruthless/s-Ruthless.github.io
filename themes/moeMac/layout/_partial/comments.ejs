@@ -282,7 +282,49 @@
         + '.cwd-btn-primary{background:' + accent + '!important;'
           + 'border-color:' + accent + '!important;}'
         + '.cwd-btn-primary:hover{filter:brightness(1.1);}'
-        + '.cwd-comment-avatar{border-radius:50%!important;}';
+        + '.cwd-comment-avatar{border-radius:50%!important;}'
+        /* ====== 表单输入框：内联标签 + 美化 ====== */
+        + '.cwd-form-row .cwd-form-field{position:relative!important}'
+        + '.cwd-form-row .cwd-form-field input::placeholder{color:transparent!important}'
+        + '.cwd-form-row .cwd-form-field input{'
+          + 'padding-left:68px!important;'
+          + 'height:42px;'
+          + 'border-radius:10px!important;'
+          + 'font-size:14px;'
+          + 'transition:border-color .2s,box-shadow .2s;}'
+        /* 内联标签文字 — 通过 :has(input[type]) 区分三个字段 */
+        + '.cwd-form-row .cwd-form-field:has(input[type="text"])::before,'
+        + '.cwd-form-row .cwd-form-field:has(input[type="email"])::before,'
+        + '.cwd-form-row .cwd-form-field:has(input[type="url"])::before{'
+          + 'position:absolute;left:12px;top:50%;transform:translateY(-50%);'
+          + 'font-size:13px;font-weight:500;color:var(--cwd-text-secondary);'
+          + 'pointer-events:none;z-index:1;white-space:nowrap;}'
+        + '.cwd-form-row .cwd-form-field:has(input[type="text"])::before{content:"昵称"}'
+        + '.cwd-form-row .cwd-form-field:has(input[type="email"])::before{content:"邮箱"}'
+        + '.cwd-form-row .cwd-form-field:has(input[type="url"])::before{content:"网址"}'
+        /* 必填项红色星号 */
+        + '.cwd-form-row .cwd-form-field:has(input[type="text"])::after,'
+        + '.cwd-form-row .cwd-form-field:has(input[type="email"])::after{'
+          + 'content:"*";position:absolute;left:42px;top:50%;transform:translateY(-50%);'
+          + 'color:#e53e3e;font-size:14px;pointer-events:none;z-index:1;}'
+        /* 评论输入框美化 */
+        + '.cwd-form-textarea{'
+          + 'border-radius:10px!important;'
+          + 'padding:14px 16px!important;'
+          + 'min-height:120px!important;'
+          + 'resize:vertical;'
+          + 'line-height:1.6!important;'
+          + 'font-size:14px;'
+          + 'transition:border-color .2s,box-shadow .2s;}'
+        /* 焦点状态使用主题色 */
+        + '.cwd-form-field input:focus,.cwd-form-field textarea:focus{'
+          + 'border-color:' + accent + '!important;'
+          + 'box-shadow:0 0 0 3px ' + accent + '26!important;}'
+        /* 表单标题 */
+        + '.cwd-form-title{font-size:15px!important;font-weight:600!important}'
+        + '.cwd-form-label{font-size:13px!important;font-weight:500!important}'
+        /* 按钮圆角 */
+        + '.cwd-btn-secondary{border-radius:8px!important}';
       var old = shadow.querySelector('#cwd-theme-override');
       if(old) old.remove();
       shadow.appendChild(style);

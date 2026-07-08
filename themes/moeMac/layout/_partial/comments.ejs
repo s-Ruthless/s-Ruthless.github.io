@@ -43,8 +43,8 @@
          暗黑模式使用 custom-dark.css，浅色模式使用 custom-light.css。
          Giscus iframe 是 HTTPS，自定义 CSS 也必须 HTTPS。
          - 生产环境（HTTPS）：从当前站点同源加载 CSS
-         - 本地开发（HTTP）：从生产站点 HTTPS 地址加载 CSS，本地也能预览自定义样式
-         - 生产 URL 未配置或非 HTTPS：回退到内置 noborder 主题 */
+         - 本地开发（HTTP）：从生产站点 HTTPS 地址加载 CSS
+         - CSS 不存在或未部署：fetch 预检失败，回退到内置 noborder 主题 */
       (function(){
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         var origin = window.location.origin;
@@ -52,28 +52,46 @@
         /* HTTPS → 同源；HTTP（localhost）→ 生产 HTTPS 地址 */
         var baseUrl = origin.indexOf('https://') === 0 ? origin
                     : (prodUrl.indexOf('https://') === 0 ? prodUrl : '');
-        var lightTheme = baseUrl ? baseUrl + '/giscus/custom-light.css' : 'noborder_light';
-        var darkTheme = baseUrl ? baseUrl + '/giscus/custom-dark.css' : 'noborder_dark';
-        var s = document.createElement('script');
-        s.src = 'https://giscus.app/client.js';
-        s.setAttribute('data-repo', '<%= c.giscus.repo %>');
-        s.setAttribute('data-repo-id', '<%= c.giscus.repoId %>');
-        s.setAttribute('data-category', '<%= c.giscus.category %>');
-        s.setAttribute('data-category-id', '<%= c.giscus.categoryId %>');
-        s.setAttribute('data-mapping', '<%= c.giscus.mapping || 'pathname' %>');
-        s.setAttribute('data-strict', '1');
-        s.setAttribute('data-reactions-enabled', '<%= c.giscus.reactionsEnabled !== undefined ? c.giscus.reactionsEnabled : 0 %>');
-        s.setAttribute('data-emit-metadata', '0');
-        s.setAttribute('data-input-position', '<%= c.giscus.inputPosition || 'top' %>');
-        s.setAttribute('data-theme', dark ? darkTheme : lightTheme);
-        s.setAttribute('data-lang', 'zh-CN');
-        s.setAttribute('data-loading', 'eager');
-        s.setAttribute('crossorigin', 'anonymous');
-        s.async = true;
-        s.onerror = function(){
-          if(window.__commentsShowError) window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试');
-        };
-        document.getElementById('comments-mount').appendChild(s);
+        var lightUrl = baseUrl ? baseUrl + '/giscus/custom-light.css' : '';
+        var darkUrl = baseUrl ? baseUrl + '/giscus/custom-dark.css' : '';
+
+        function createGiscus(theme){
+          var s = document.createElement('script');
+          s.src = 'https://giscus.app/client.js';
+          s.setAttribute('data-repo', '<%= c.giscus.repo %>');
+          s.setAttribute('data-repo-id', '<%= c.giscus.repoId %>');
+          s.setAttribute('data-category', '<%= c.giscus.category %>');
+          s.setAttribute('data-category-id', '<%= c.giscus.categoryId %>');
+          s.setAttribute('data-mapping', '<%= c.giscus.mapping || 'pathname' %>');
+          s.setAttribute('data-strict', '1');
+          s.setAttribute('data-reactions-enabled', '<%= c.giscus.reactionsEnabled !== undefined ? c.giscus.reactionsEnabled : 0 %>');
+          s.setAttribute('data-emit-metadata', '0');
+          s.setAttribute('data-input-position', '<%= c.giscus.inputPosition || 'top' %>');
+          s.setAttribute('data-theme', theme);
+          s.setAttribute('data-lang', 'zh-CN');
+          s.setAttribute('data-loading', 'eager');
+          s.setAttribute('crossorigin', 'anonymous');
+          s.async = true;
+          s.onerror = function(){
+            if(window.__commentsShowError) window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试');
+          };
+          document.getElementById('comments-mount').appendChild(s);
+        }
+
+        var customUrl = dark ? darkUrl : lightUrl;
+        /* 无自定义 URL → 直接用内置主题 */
+        if(!customUrl){
+          createGiscus(dark ? 'noborder_dark' : 'noborder_light');
+          return;
+        }
+        /* 预检 CSS 是否存在（首次部署前可能 404） */
+        fetch(customUrl, {method:'HEAD', mode:'cors'})
+          .then(function(res){
+            createGiscus(res.ok ? customUrl : (dark ? 'noborder_dark' : 'noborder_light'));
+          })
+          .catch(function(){
+            createGiscus(dark ? 'noborder_dark' : 'noborder_light');
+          });
       })();
     </script>
     <% } %>
@@ -202,22 +220,33 @@
 <script>
   /* 暗黑模式切换同步：用户点击切换按钮后，通过 postMessage 通知 Giscus 切换主题。
      初始主题已在上方动态创建脚本时正确设置，此处仅处理运行时切换。
-     切换时传入自定义 CSS 文件 URL，保持与初始加载一致。
-     本地开发（HTTP）从生产 HTTPS 地址加载 CSS。 */
+     缓存预检结果，避免每次切换都 fetch。 */
   (function(){
     var origin = window.location.origin;
     var prodUrl = '<%= (config.url || "").replace(/\/$/, "") %>';
     var baseUrl = origin.indexOf('https://') === 0 ? origin
                 : (prodUrl.indexOf('https://') === 0 ? prodUrl : '');
-    var lightTheme = baseUrl ? baseUrl + '/giscus/custom-light.css' : 'noborder_light';
-    var darkTheme = baseUrl ? baseUrl + '/giscus/custom-dark.css' : 'noborder_dark';
+    var lightUrl = baseUrl ? baseUrl + '/giscus/custom-light.css' : 'noborder_light';
+    var darkUrl = baseUrl ? baseUrl + '/giscus/custom-dark.css' : 'noborder_dark';
+    /* 预检 CSS 是否存在，缓存结果供切换时使用 */
+    var cssChecked = false, cssAvailable = false;
+    function checkCss(cb){
+      if(!baseUrl){ cb(false); return; }
+      if(cssChecked){ cb(cssAvailable); return; }
+      fetch(lightUrl, {method:'HEAD', mode:'cors'})
+        .then(function(res){ cssChecked = true; cssAvailable = res.ok; cb(cssAvailable); })
+        .catch(function(){ cssChecked = true; cssAvailable = false; cb(false); });
+    }
     function syncTheme(){
       var iframe = document.querySelector('iframe.giscus-frame');
       if(!iframe) return;
       var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      iframe.contentWindow.postMessage({
-        giscus: { setConfig: { theme: dark ? darkTheme : lightTheme } }
-      }, 'https://giscus.app');
+      checkCss(function(ok){
+        var t = ok ? (dark ? darkUrl : lightUrl) : (dark ? 'noborder_dark' : 'noborder_light');
+        iframe.contentWindow.postMessage({
+          giscus: { setConfig: { theme: t } }
+        }, 'https://giscus.app');
+      });
     }
     var observer = new MutationObserver(syncTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });

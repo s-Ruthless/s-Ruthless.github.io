@@ -1,149 +1,17 @@
-/* ============================================
-   Giscus 自定义主题 — 浅色
-   匹配 moeMac 主题浅色模式
-   accent: #c0504d
-   Giscus 默认绿色 #2da44e 需要被 :root 级变量覆盖
-   ============================================ */
+/* Giscus 自定义主题 — 浅色
+   仅覆盖主按钮颜色为主题色，其余保持 Giscus 默认 */
 
-/* 必须在 :root 上定义，覆盖 Giscus 默认变量 */
 :root {
   --color-primary: #c0504d !important;
   --color-primary-hover: #a8423f !important;
-  --color-primary-alpha: rgba(192, 80, 77, 0.1) !important;
-  --color-bg-primary: #ffffff !important;
-  --color-bg-secondary: #f8f8f8 !important;
-  --color-bg-tertiary: #f0f0f0 !important;
-  --color-fg-primary: #1f1f1f !important;
-  --color-fg-secondary: #555555 !important;
-  --color-fg-tertiary: #888888 !important;
-  --color-border-primary: #e5e5e5 !important;
-  --color-border-secondary: #dddddd !important;
-  --color-neutral: #888888 !important;
-  --color-neutral-alpha: rgba(136, 136, 136, 0.2) !important;
-  --color-accent: #c0504d !important;
-  --color-accent-emphasis: #c0504d !important;
-  --color-accent-fg: #ffffff !important;
-  --color-accent-contrast: #ffffff !important;
-  --color-success-fg: #c0504d !important;
-  --font-family-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif !important;
-  --font-family-monospace: "SF Mono", "Fira Code", "Cascadia Code", monospace !important;
 }
 
-/* ===== 强制覆盖所有按钮 ===== */
-main button.btn-primary,
-main button[type="submit"].btn-primary,
 main .btn-primary {
   background-color: #c0504d !important;
   border-color: #c0504d !important;
-  color: #fff !important;
-  border-radius: 8px !important;
 }
 
-main button.btn-primary:hover,
-main button[type="submit"].btn-primary:hover,
 main .btn-primary:hover {
   background-color: #a8423f !important;
   border-color: #a8423f !important;
-}
-
-main button.btn {
-  border-radius: 8px !important;
-}
-
-main button.btn:hover {
-  background-color: #f0f0f0 !important;
-}
-
-/* ===== 输入框边框 ===== */
-main textarea.form-control,
-main input.form-control {
-  border-radius: 12px !important;
-  border-color: #e5e5e5 !important;
-}
-
-main textarea.form-control:focus,
-main input.form-control:focus {
-  border-color: #c0504d !important;
-  box-shadow: 0 0 0 3px rgba(192, 80, 77, 0.1) !important;
-}
-
-/* ===== 链接 ===== */
-main a {
-  color: #c0504d !important;
-}
-
-main a:hover {
-  color: #a8423f !important;
-}
-
-/* ===== 排序标签 ===== */
-main .tabnav-tab {
-  border-radius: 8px 8px 0 0 !important;
-  color: #555 !important;
-}
-
-main .tabnav-tab[aria-selected="true"],
-main .tabnav-tab.selected {
-  color: #c0504d !important;
-  border-color: #c0504d !important;
-}
-
-/* ===== 圆角统一 ===== */
-main .comment {
-  border-radius: 12px !important;
-}
-
-main .avatar {
-  border-radius: 50% !important;
-}
-
-main .form-controls {
-  border-radius: 12px !important;
-}
-
-/* ===== 字体 ===== */
-main .markdown-body {
-  font-family: var(--font-family-sans) !important;
-  font-size: 14px !important;
-  line-height: 1.7 !important;
-}
-
-main .markdown-body pre,
-main .markdown-body code {
-  font-family: var(--font-family-monospace) !important;
-}
-
-main .markdown-body pre {
-  border-radius: 10px !important;
-}
-
-main .markdown-body code {
-  border-radius: 4px !important;
-}
-
-/* ===== 反应按钮 ===== */
-main .reaction-button {
-  border-radius: 8px !important;
-}
-
-main .reaction-button:hover {
-  background-color: rgba(192, 80, 77, 0.1) !important;
-}
-
-/* ===== 加载动画 ===== */
-main .spinner {
-  border-color: #c0504d transparent transparent !important;
-}
-
-/* ===== 分页 ===== */
-main .pagination .btn {
-  border-radius: 8px !important;
-}
-
-/* ===== 通用覆盖：任何带绿色背景/边框的元素 ===== */
-main [style*="2da44e"],
-main [style*="#2da44e"],
-main [style*="rgb(45, 164, 78)"] {
-  background-color: #c0504d !important;
-  border-color: #c0504d !important;
 }

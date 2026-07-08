@@ -84,7 +84,7 @@
       "rating": 6.2,
       "date": "2026-07-08",
       "note": "",
-      "info": "悬疑 / 犯罪"
+      "info": "犯罪 / 悬疑"
     },
     {
       "name": "独行月球",
@@ -129,7 +129,7 @@
       "cover_local": "/images/douban/movie/p2881817779.jpg",
       "id": "35422807",
       "link": "https://movie.douban.com/subject/35422807/",
-      "rating": 0,
+      "rating": 7.4,
       "date": "2022-01-16",
       "note": "",
       "info": "剧情 / 喜剧 / 悬疑"
@@ -141,7 +141,7 @@
       "cover_local": "/images/douban/movie/p2681329386.jpg",
       "id": "25845392",
       "link": "https://movie.douban.com/subject/25845392/",
-      "rating": 0,
+      "rating": 7.4,
       "date": "2022-01-16",
       "note": "",
       "info": "剧情 / 历史 / 战争"
@@ -153,7 +153,7 @@
       "cover_local": "/images/douban/movie/p2545472803.jpg",
       "id": "26266893",
       "link": "https://movie.douban.com/subject/26266893/",
-      "rating": 0,
+      "rating": 7.9,
       "date": "2022-01-16",
       "note": "",
       "info": "科幻 / 冒险 / 灾难"
@@ -165,7 +165,7 @@
       "cover_local": "/images/douban/movie/p2550755859.jpg",
       "id": "26100958",
       "link": "https://movie.douban.com/subject/26100958/",
-      "rating": 0,
+      "rating": 8.5,
       "date": "2022-01-16",
       "note": "",
       "info": "剧情 / 动作 / 科幻 / 奇幻 / 冒险"
@@ -210,7 +210,7 @@
   "music": [],
   "_meta": {
     "user_id": "sjl511",
-    "synced_at": "2026-07-08T09:31:23.043Z",
+    "synced_at": "2026-07-08T09:39:47.111Z",
     "total": {
       "books": 6,
       "movies": 11,

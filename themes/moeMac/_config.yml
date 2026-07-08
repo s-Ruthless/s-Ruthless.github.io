@@ -183,7 +183,7 @@ wallpaper_path: "/assets/img/background.webp"
 #   自定义页面（page）：默认不显示，写 comment: true 可开启
 comments:
   enable: true
-  provider: "giscus"
+  provider: "cwd"
   # Waline: https://waline.js.org/
   waline:
     serverURL: "https://waline-demo.vercel.app"
@@ -222,7 +222,7 @@ comments:
   # siteId: 站点标识，用于多站点数据隔离（推荐配置）
   # lang: 评论组件语言，auto 自动检测浏览器语言
   cwd:
-    apiBaseUrl: "https://cwd-api.2502393029.workers.dev"
+    apiBaseUrl: "https://cwd.moeao.cn/"
     siteId: "blog"
     lang: "auto"
 

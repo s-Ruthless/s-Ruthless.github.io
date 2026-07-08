@@ -40,20 +40,19 @@
     <script>
       /* 动态创建 Giscus 脚本：使用自定义主题 CSS 文件定制评论框内部样式。
          data-theme 支持传入 CSS 文件 URL，Giscus 会在 iframe 内加载该 CSS。
-         暗黑模式使用 custom-dark.css，浅色模式使用 custom-light.css。
          Giscus iframe 是 HTTPS，自定义 CSS 也必须 HTTPS。
          - 生产环境（HTTPS）：从当前站点同源加载 CSS
-         - 本地开发（HTTP）：从生产站点 HTTPS 地址加载 CSS
+         - 本地开发（HTTP）：从 jsdelivr CDN 加载 CSS（国内可访问）
          - CSS 不存在或未部署：fetch 预检失败，回退到内置 noborder 主题 */
       (function(){
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         var origin = window.location.origin;
-        var prodUrl = '<%= (config.url || "").replace(/\/$/, "") %>';
-        /* HTTPS → 同源；HTTP（localhost）→ 生产 HTTPS 地址 */
-        var baseUrl = origin.indexOf('https://') === 0 ? origin
-                    : (prodUrl.indexOf('https://') === 0 ? prodUrl : '');
-        var lightUrl = baseUrl ? baseUrl + '/assets/css/custom-light.css' : '';
-        var darkUrl = baseUrl ? baseUrl + '/assets/css/custom-dark.css' : '';
+        /* jsdelivr CDN 直接从 GitHub 仓库拉取，国内可访问 */
+        var cdnBase = 'https://cdn.jsdelivr.net/gh/s-Ruthless/s-Ruthless.github.io@master/themes/moeMac/source/assets/css';
+        /* HTTPS → 同源；HTTP（localhost）→ jsdelivr CDN */
+        var isHttps = origin.indexOf('https://') === 0;
+        var lightUrl = isHttps ? origin + '/assets/css/custom-light.css' : cdnBase + '/custom-light.css';
+        var darkUrl = isHttps ? origin + '/assets/css/custom-dark.css' : cdnBase + '/custom-dark.css';
 
         function createGiscus(theme){
           var s = document.createElement('script');
@@ -79,11 +78,6 @@
         }
 
         var customUrl = dark ? darkUrl : lightUrl;
-        /* 无自定义 URL → 直接用内置主题 */
-        if(!customUrl){
-          createGiscus(dark ? 'noborder_dark' : 'noborder_light');
-          return;
-        }
         /* 预检 CSS 是否存在（首次部署前可能 404） */
         fetch(customUrl, {method:'HEAD', mode:'cors'})
           .then(function(res){
@@ -223,15 +217,13 @@
      缓存预检结果，避免每次切换都 fetch。 */
   (function(){
     var origin = window.location.origin;
-    var prodUrl = '<%= (config.url || "").replace(/\/$/, "") %>';
-    var baseUrl = origin.indexOf('https://') === 0 ? origin
-                : (prodUrl.indexOf('https://') === 0 ? prodUrl : '');
-    var lightUrl = baseUrl ? baseUrl + '/assets/css/custom-light.css' : 'noborder_light';
-    var darkUrl = baseUrl ? baseUrl + '/assets/css/custom-dark.css' : 'noborder_dark';
+    var cdnBase = 'https://cdn.jsdelivr.net/gh/s-Ruthless/s-Ruthless.github.io@master/themes/moeMac/source/assets/css';
+    var isHttps = origin.indexOf('https://') === 0;
+    var lightUrl = isHttps ? origin + '/assets/css/custom-light.css' : cdnBase + '/custom-light.css';
+    var darkUrl = isHttps ? origin + '/assets/css/custom-dark.css' : cdnBase + '/custom-dark.css';
     /* 预检 CSS 是否存在，缓存结果供切换时使用 */
     var cssChecked = false, cssAvailable = false;
     function checkCss(cb){
-      if(!baseUrl){ cb(false); return; }
       if(cssChecked){ cb(cssAvailable); return; }
       fetch(lightUrl, {method:'HEAD', mode:'cors'})
         .then(function(res){ cssChecked = true; cssAvailable = res.ok; cb(cssAvailable); })

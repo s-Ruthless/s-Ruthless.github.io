@@ -13,7 +13,7 @@
 
     killAll: function () {
       if (this._master) { this._master.kill(); this._master = null; }
-      var sels = '.post-list-item,.timeline-item,.timeline-dot,.article-header,.article-content,.article-nav,.page-header,.dock-bar,.win-traffic-btn,.dock-item-inner';
+      var sels = '.post-list-item,.wall-card,.archive-row,.archive-year-header,.article-header,.article-content,.article-nav,.page-header,.dock-bar,.win-traffic-btn,.dock-item-inner';
       /* 移动端不清理 .app-window 的 transform（由 MobileSlider 控制） */
       if (!document.documentElement.classList.contains('is-mobile')) {
         sels = '.app-window,' + sels;
@@ -69,68 +69,68 @@
       });
     },
 
-    /** 文章列表卡片依次滑入 — 带 ScrollTrigger 滚动触发 */
+    /** 列表卡片依次滑入 — 文章列表 / 归档行用 ScrollTrigger，文章墙用随机延迟淡入 */
     postListCards: function () {
-      var cards = document.querySelectorAll('.post-list-item');
-      if (!cards.length) return;
+      /* 文章墙卡片：column-count 布局下 DOM 顺序 = 视觉列顺序，
+         任何按 DOM 顺序的 stagger 都会变成"一列一列"出现。
+         改为随机延迟淡入，打乱列顺序，视觉效果更自然。 */
+      var wallCards = document.querySelectorAll('.wall-card');
+      if (wallCards.length) {
+        wallCards.forEach(function (card) {
+          gsap.fromTo(card,
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.4, delay: Math.random() * 0.3, ease: 'power2.out',
+              clearProps: 'transform' }
+          );
+        });
+      }
+
+      /* 文章列表 / 归档行：正常流布局，ScrollTrigger 批量入场没问题 */
+      var listCards = document.querySelectorAll('.post-list-item, .archive-row');
+      if (!listCards.length) return;
       if (typeof ScrollTrigger !== 'undefined') {
-        /* ScrollTrigger 批量入场：滚动到视口时淡入 */
-        ScrollTrigger.batch(cards, {
+        ScrollTrigger.batch(listCards, {
           start: 'top 90%',
           onEnter: function (batch) {
             gsap.fromTo(batch,
               { y: 30, opacity: 0 },
-              { y: 0, opacity: 1, duration: 0.4, stagger: 0.06, ease: 'power2.out' }
+              { y: 0, opacity: 1, duration: 0.4, stagger: 0.06, ease: 'power2.out',
+                clearProps: 'transform' }
             );
           }
         });
       } else {
         var tl = gsap.timeline();
-        cards.forEach(function (card, i) {
+        listCards.forEach(function (card, i) {
           tl.fromTo(card,
             { x: -20, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.35, ease: 'power2.out' },
+            { x: 0, opacity: 1, duration: 0.35, ease: 'power2.out',
+              clearProps: 'transform' },
             i * 0.06
           );
         });
       }
     },
 
-    /** 归档时间线逐项淡入 — 带 ScrollTrigger */
-    timelineItems: function () {
-      var items = document.querySelectorAll('.timeline-item');
-      if (!items.length) return;
+    /** 归档年份标题渐入 */
+    archiveHeaders: function () {
+      var headers = document.querySelectorAll('.archive-year-header');
+      if (!headers.length) return;
       if (typeof ScrollTrigger !== 'undefined') {
-        ScrollTrigger.batch(items, {
-          start: 'top 88%',
+        ScrollTrigger.batch(headers, {
+          start: 'top 92%',
           onEnter: function (batch) {
             gsap.fromTo(batch,
               { opacity: 0, x: -18 },
-              { opacity: 1, x: 0, duration: 0.4, stagger: 0.05, ease: 'power2.out' }
+              { opacity: 1, x: 0, duration: 0.35, stagger: 0.05, ease: 'power2.out' }
             );
           }
         });
-        document.querySelectorAll('.timeline-dot').forEach(function (dot, i) {
-          gsap.fromTo(dot,
-            { scale: 0, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.25, delay: i * 0.05, ease: 'back.out(2)',
-              scrollTrigger: { trigger: dot, start: 'top 90%' } }
-          );
-        });
       } else {
-        var tl = gsap.timeline();
-        items.forEach(function (item, i) {
-          tl.fromTo(item,
+        headers.forEach(function (h, i) {
+          gsap.fromTo(h,
             { opacity: 0, x: -18 },
-            { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' },
-            i * 0.04
-          );
-        });
-        document.querySelectorAll('.timeline-dot').forEach(function (dot, i) {
-          tl.fromTo(dot,
-            { scale: 0, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(2)' },
-            i * 0.04
+            { opacity: 1, x: 0, duration: 0.35, delay: i * 0.05, ease: 'power2.out' }
           );
         });
       }
@@ -153,17 +153,9 @@
       gsap.fromTo(h, { y: -15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: 'power2.out' });
     },
 
-    /** 友链 hover — GSAP 弹性 + 3D 倾斜 */
-    friendCards: function () {
-      document.querySelectorAll('.friend-card').forEach(function (card) {
-        card.onmouseenter = function () {
-          gsap.to(card, { y: -6, scale: 1.03, duration: 0.2, ease: 'back.out(2)' });
-        };
-        card.onmouseleave = function () {
-          gsap.to(card, { y: 0, scale: 1, duration: 0.2, ease: 'power2.out' });
-        };
-      });
-    },
+    /* friendCards 已移除 — 目标选择器 .friend-card 不存在（实际类名为 .link-card），
+       且 .link-card 已有 CSS :hover transform，GSAP inline transform 会与之冲突导致抖动。
+       友链 hover 效果完全由 CSS 控制（pages.css .link-card:hover）。 */
 
     /** 文章内图片淡入 — ScrollTrigger */
     articleImages: function () {
@@ -177,13 +169,8 @@
       });
     },
 
-    /** 分页按钮 hover */
-    paginationBtns: function () {
-      document.querySelectorAll('.page-btn,.filter-btn').forEach(function (el) {
-        el.onmouseenter = function () { gsap.to(el, { scale: 1.05, duration: 0.15 }); };
-        el.onmouseleave = function () { gsap.to(el, { scale: 1, duration: 0.15 }); };
-      });
-    },
+    /* paginationBtns 已移除 — GSAP inline scale 与 CSS :hover translateZ(0) 冲突，
+       导致分页按钮 hover 时字体抖动。hover 效果完全由 CSS 控制。 */
 
     /** 运行全部动画 */
     run: function () {
@@ -194,20 +181,17 @@
       this.dockItems();
       this.trafficButtons();
       this.postListCards();
-      this.timelineItems();
+      this.archiveHeaders();
       this.postPage();
       this.pageHeader();
-      this.friendCards();
-      this.paginationBtns();
       this.articleImages();
-      /* UI 增强效果（在 GSAP 动画之后初始化，确保 GSAP 可用） */
+      /* UI 增强效果（在 GSAP 动画之后初始化，确保 GSAP 可用）
+         已移除：tiltCards / dockMagnify / magneticButtons — 它们用 GSAP inline transform
+         覆盖 CSS :hover transform，导致 dock 图标、按钮 hover 时字体抖动。 */
       if (typeof UIEnhance !== 'undefined') {
-        UIEnhance.tiltCards();
         UIEnhance.motionNumbers();
         UIEnhance.rippleEffect();
         UIEnhance.clipReveal();
-        UIEnhance.dockMagnify();
-        UIEnhance.magneticButtons();
         UIEnhance.glassShine();
         UIEnhance.heroEffects();
       }

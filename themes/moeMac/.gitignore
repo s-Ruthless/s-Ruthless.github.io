@@ -2,5 +2,6 @@
 Thumbs.db
 *.log
 node_modules/
+.workbuddy/
 # twikoo SDK — 包含腾讯云 SDK 代码会触发 GitHub 密钥检测，改用 CDN 加载
 source/assets/js/twikoo.all.min.js

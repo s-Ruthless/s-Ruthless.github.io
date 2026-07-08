@@ -16,15 +16,32 @@
 
 /* 通用列表卡片 */
 .list-card{
-  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  position:relative;
   background:var(--card-bg);border:var(--card-border);border-radius:14px;
-  box-shadow:var(--card-shadow);transition:all 0.2s ease;cursor:pointer;
-  border:1px solid transparent;
+  box-shadow:var(--card-shadow);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1),box-shadow 0.3s ease,border-color 0.3s ease,background 0.3s ease;cursor:pointer;
+  border:1px solid transparent;overflow:hidden;
+  transform:translateZ(0);will-change:transform;
+  isolation:isolate;
+}
+.list-card::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  z-index:-1;pointer-events:none;
+}
+.list-card::before{
+  content:'';position:absolute;left:0;top:50%;width:3px;height:0;
+  background:linear-gradient(180deg,var(--accent-color),#ec4899);
+  border-radius:0 3px 3px 0;z-index:1;
+  transition:height 0.3s cubic-bezier(0.4,0,0.2,1),top 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 .list-card:hover{
-  box-shadow:0 8px 24px color-mix(in srgb,var(--accent-color) 12%,transparent);
+  transform:scale(1.02) translateZ(0);
+  box-shadow:0 12px 36px color-mix(in srgb,var(--accent-color) 12%,transparent),0 4px 12px rgba(0,0,0,0.06);
   border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
+  background:color-mix(in srgb,var(--accent-color) 3%,var(--card-bg));
 }
+.list-card:hover::before{height:60%;top:20%;}
 .list-card-body{padding:16px;}
 .list-card-body.row{display:flex;flex-direction:row;align-items:center;gap:16px;}
 .list-card-title{font-size:14px;font-weight:500;color:#111;}
@@ -37,26 +54,42 @@
 /* 分页 */
 .list-pagination{display:flex;justify-content:center;gap:8px;margin-top:24px;}
 .list-pagination .page-btn{
-  padding:6px 16px;border-radius:10px;font-size:13px;color:#666;
-  background:color-mix(in srgb,var(--accent-color) 8%,transparent);
-  transition:all 0.2s ease;cursor:pointer;border:none;
+padding:6px 16px;border-radius:10px;font-size:13px;color:#666;
+background:color-mix(in srgb,var(--accent-color) 8%,transparent);
+transition:background 0.2s ease,color 0.2s ease;cursor:pointer;border:none;
+transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
 .list-pagination .page-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);}
 .list-pagination .page-info{padding:6px 16px;font-size:13px;color:#999;}
 
 /* ====== 文章列表�?====== */
 .post-list-item{
-  padding:16px 20px;
-  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  position:relative;padding:16px 20px 16px 22px;
   background:var(--card-bg);border:var(--card-border);border-radius:14px;
-  box-shadow:var(--card-shadow);
-  transition:all 0.2s ease;cursor:pointer;
+  box-shadow:var(--card-shadow);overflow:hidden;
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1),box-shadow 0.3s ease,border-color 0.3s ease,background 0.3s ease;cursor:pointer;
+  transform:translateZ(0);will-change:transform;
+  isolation:isolate;
+}
+.post-list-item::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  z-index:-1;pointer-events:none;
+}
+.post-list-item::before{
+  content:'';position:absolute;left:0;top:50%;width:3px;height:0;
+  background:linear-gradient(180deg,var(--accent-color),#ec4899);
+  border-radius:0 3px 3px 0;z-index:1;
+  transition:height 0.3s cubic-bezier(0.4,0,0.2,1),top 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 .post-list-item:hover{
-  background:color-mix(in srgb,var(--accent-color) 4%,var(--card-bg));
-  box-shadow:0 8px 24px color-mix(in srgb,var(--accent-color) 12%,transparent);
-  border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
+transform:translateY(-4px) scale(1.02) translateZ(0);
+background:color-mix(in srgb,var(--accent-color) 4%,var(--card-bg));
+box-shadow:0 16px 40px color-mix(in srgb,var(--accent-color) 12%,transparent),0 4px 12px rgba(0,0,0,0.06);
+border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
 }
+.post-list-item:hover::before{height:60%;top:20%;}
+.post-list-item:hover h3{color:var(--accent-color);}
 .post-list-item h3{font-size:15px;font-weight:600;color:#111;margin-bottom:4px;cursor:pointer;}
 .post-list-item h3:hover{color:var(--accent-color);}
 .post-list-item .post-meta{font-size:12px;color:#444;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
@@ -70,10 +103,11 @@
   display:inline-flex;align-items:center;gap:3px;
   padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;
   color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 10%,transparent);
-  transition:all 0.18s ease;cursor:pointer;text-decoration:none;
+  transition:background 0.18s ease,color 0.18s ease,transform 0.18s ease;cursor:pointer;text-decoration:none;
+  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
 .post-list-tag i{font-size:9px;opacity:0.6;}
-.post-list-tag:hover{background:color-mix(in srgb,var(--accent-color) 20%,transparent);color:var(--accent-color);transform:translateY(-1px);}
+.post-list-tag:hover{background:color-mix(in srgb,var(--accent-color) 20%,transparent);color:var(--accent-color);transform:translateY(-1px) translateZ(0);}
 
 /* ====== 分页 ====== */
 .pagination{
@@ -81,8 +115,9 @@
   padding:16px 20px;border-top:1px solid rgba(0,0,0,0.04);
 }
 .page-btn{
-  padding:6px 14px;border-radius:10px;font-size:13px;color:#444;
-  background:color-mix(in srgb,var(--accent-color) 8%,transparent);transition:all 0.2s ease;cursor:pointer;
+padding:6px 14px;border-radius:10px;font-size:13px;color:#444;
+background:color-mix(in srgb,var(--accent-color) 8%,transparent);transition:background 0.2s ease,color 0.2s ease;cursor:pointer;
+transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
 .page-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);}
 .page-info{font-size:13px;color:#444;}
@@ -272,10 +307,11 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
   background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   color:#888;font-size:12px;padding:0;
   display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:all 0.2s ease;
+  opacity:0;transition:opacity 0.2s ease,background 0.2s ease,color 0.2s ease,transform 0.2s ease;
+  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
 .article-content figure.highlight:hover .code-copy-btn{opacity:1;}
-.code-copy-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);transform:scale(1.08);}
+.code-copy-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);transform:scale(1.08) translateZ(0);}
 .code-copy-btn.copied{background:rgba(34,197,94,0.18);color:#16a34a;}
 .article-content > pre{position:relative;}
 .article-content > pre .code-copy-btn{opacity:0.6;}
@@ -302,7 +338,7 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
 .post-toc-toggle{
   background:none;border:none;cursor:pointer;color:#999;font-size:11px;
   width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s ease;
+  transition:background 0.2s ease,color 0.2s ease;
 }
 .post-toc-toggle:hover{background:color-mix(in srgb,var(--accent-color) 12%,transparent);color:var(--accent-color);}
 .post-toc-wrap.collapsed .post-toc-toggle i{transform:rotate(180deg);}
@@ -313,7 +349,7 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
 .post-toc-list a{
   display:block;padding:5px 12px;border-radius:8px;font-size:12.5px;line-height:1.5;
   color:#444;text-decoration:none;cursor:pointer;
-  border-left:2px solid transparent;transition:all 0.2s ease;
+  border-left:2px solid transparent;transition:color 0.2s ease,background 0.2s ease,border-color 0.2s ease;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .post-toc-list a:hover{color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
@@ -327,9 +363,10 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
   background:rgba(255,255,255,0.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   color:var(--accent-color);font-size:16px;cursor:pointer;
   box-shadow:0 4px 16px rgba(0,0,0,0.1);
-  display:flex;align-items:center;justify-content:center;transition:all 0.25s ease;
+  display:flex;align-items:center;justify-content:center;transition:transform 0.25s ease,box-shadow 0.25s ease;
+  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
-.post-toc-fab:hover{transform:translateY(-3px);box-shadow:0 8px 24px color-mix(in srgb,var(--accent-color) 25%,transparent);}
+.post-toc-fab:hover{transform:translateY(-3px) translateZ(0);box-shadow:0 8px 24px color-mix(in srgb,var(--accent-color) 25%,transparent);}
 @media(max-width:1200px){.post-toc-wrap{display:none;}.post-toc-fab{display:flex!important;}}
 @media(min-width:1201px){.post-toc-fab{display:none!important;}}
 .post-toc-wrap.fab-open{
@@ -340,7 +377,7 @@ border-bottom:1px solid color-mix(in srgb,var(--accent-color) 10%,transparent);p
 
 /* ====== 文章详情页标签 hover ====== */
 .article-header .badge-outline.badge-primary{
-  transition:all 0.2s ease;cursor:pointer;
+  transition:background 0.2s ease,color 0.2s ease,border-color 0.2s ease;cursor:pointer;
 }
 .article-header .badge-outline.badge-primary:hover{
   background:var(--accent-color)!important;
@@ -435,8 +472,6 @@ border-radius:18px;
 [data-theme="dark"] .post-toc-head,
 [data-theme="dark"] .post-list-item h3 a{color:#ffffff;}
 
-/* 夜间模式文章卡片 — 统一在 pages.css 中定义 */
-
 [data-theme="dark"] .nav-prev,
 [data-theme="dark"] .nav-next,
 [data-theme="dark"] .filter-btn,
@@ -480,8 +515,6 @@ border-radius:18px;
 [data-theme="dark"] .article-content table td{border-bottom-color:rgba(255,255,255,0.1);}
 [data-theme="dark"] .article-content table tr:hover td{background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
 [data-theme="dark"] .toc-active{background:color-mix(in srgb,var(--accent-color) 18%,transparent)!important;}
-/* Dark mode: post list item — 统一在 pages.css 中定义 */
-
 /* ====== 列表卡片暗黑模式 ====== */
 [data-theme="dark"] .list-card{
   background:rgba(255,255,255,0.03);
@@ -525,7 +558,7 @@ border-radius:18px;
 .post-copyright-link{
   color:var(--accent-color);text-decoration:none;
   word-break:break-all;border-bottom:1px dashed color-mix(in srgb,var(--accent-color) 40%,transparent);
-  transition:all 0.2s ease;
+  transition:border-color 0.2s ease;
 }
 .post-copyright-link:hover{
   border-bottom-style:solid;border-bottom-color:var(--accent-color);

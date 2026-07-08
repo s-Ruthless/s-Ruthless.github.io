@@ -139,63 +139,10 @@
       animate();
     },
 
-    /* ====== 3. 3D 卡片倾斜 — 鼠标跟随的 perspective tilt ====== */
-    tiltCards: function () {
-      /* 移动端无 mousemove，跳过 */
-      if (_isMobile) return;
-      var selectors = '.wall-card, .friend-card, .post-list-item, .douban-card';
-      document.querySelectorAll(selectors).forEach(function (card) {
-        if (card.dataset.tiltInit) return;
-        card.dataset.tiltInit = '1';
-        card.classList.add('tilt-card');
-
-        /* 添加光泽层 */
-        var shine = document.createElement('div');
-        shine.className = 'tilt-shine';
-        card.style.position = card.style.position || 'relative';
-        card.appendChild(shine);
-
-        var rect = null;
-        card.addEventListener('mouseenter', function () {
-          rect = card.getBoundingClientRect();
-        });
-        card.addEventListener('mousemove', function (e) {
-          if (!rect) rect = card.getBoundingClientRect();
-          var cx = rect.left + rect.width / 2;
-          var cy = rect.top + rect.height / 2;
-          var dx = (e.clientX - cx) / (rect.width / 2);
-          var dy = (e.clientY - cy) / (rect.height / 2);
-          var maxTilt = 8; /* 最大倾斜角度 */
-          var rx = -dy * maxTilt;
-          var ry = dx * maxTilt;
-          if (typeof gsap !== 'undefined') {
-            gsap.to(card, {
-              rotateX: rx, rotateY: ry,
-              duration: 0.2, ease: 'power2.out',
-              transformPerspective: 600
-            });
-          } else {
-            card.style.transform = 'perspective(600px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
-          }
-          /* 光泽跟随 */
-          var mx = ((e.clientX - rect.left) / rect.width) * 100;
-          var my = ((e.clientY - rect.top) / rect.height) * 100;
-          shine.style.setProperty('--mx', mx + '%');
-          shine.style.setProperty('--my', my + '%');
-        });
-        card.addEventListener('mouseleave', function () {
-          if (typeof gsap !== 'undefined') {
-            gsap.to(card, {
-              rotateX: 0, rotateY: 0,
-              duration: 0.4, ease: 'power3.out'
-            });
-          } else {
-            card.style.transform = '';
-          }
-          rect = null;
-        });
-      });
-    },
+    /* ====== 3. 3D 卡片倾斜 — 已移除 ======
+       原因：目标选择器 .friend-card 不存在（实际类名为 .link-card），
+       且 GSAP inline rotateX/rotateY 会覆盖 CSS :hover transform 导致冲突。
+       卡片 hover 效果完全由 CSS 控制。 */
 
     /* ====== 4. 数字滚动动画 — 滚动到视口时从 0 滚到目标值 ====== */
     motionNumbers: function () {
@@ -302,76 +249,15 @@
       });
     },
 
-    /* ====== 7. Dock 放大镜效果 — 鼠标附近的图标逐渐放大 ====== */
-    dockMagnify: function () {
-      /* 移动端无 mousemove，跳过 */
-      if (_isMobile) return;
-      var dockInner = document.querySelector('.dock-bar-inner');
-      if (!dockInner) return;
+    /* ====== 7. Dock 放大镜效果 — 已移除 ======
+       原因：GSAP inline scale/y 与 CSS :hover transform: translateY(-8px) scale(1.25) translateZ(0)
+       冲突，导致 dock 图标 hover 时字体抖动、图标跳跃。
+       Dock hover 效果完全由 CSS :hover 控制（style.css .dock-item:hover .dock-item-inner）。 */
 
-      var items = dockInner.querySelectorAll('.dock-item, .dock-minimized-item');
-      items.forEach(function (item) {
-        if (item.dataset.magnifyInit) return;
-        item.dataset.magnifyInit = '1';
-        item.classList.add('dock-magnify');
-
-        var inner = item.querySelector('.dock-item-inner');
-        if (!inner) return;
-
-        item.addEventListener('mousemove', function (e) {
-          var rect = item.getBoundingClientRect();
-          var cx = rect.left + rect.width / 2;
-          var dist = Math.abs(e.clientX - cx);
-          var maxDist = 80;
-          if (dist < maxDist) {
-            var scale = 1 + (1 - dist / maxDist) * 0.25;
-            var lift = (1 - dist / maxDist) * 6;
-            if (typeof gsap !== 'undefined') {
-              gsap.to(inner, { scale: scale, y: -lift, duration: 0.15, ease: 'power2.out' });
-            }
-          }
-        });
-
-        /* mouseleave 重置 — 防止 inline transform 残留 */
-        item.addEventListener('mouseleave', function () {
-          if (typeof gsap !== 'undefined') {
-            gsap.to(inner, { scale: 1, y: 0, duration: 0.2, ease: 'power2.out' });
-          } else {
-            inner.style.transform = '';
-          }
-        });
-      });
-    },
-
-    /* ====== 8. 磁吸按钮 — 鼠标靠近时按钮被吸引 ====== */
-    magneticButtons: function () {
-      /* 移动端无 mousemove，跳过 */
-      if (_isMobile) return;
-      /* 注意：不包含 .back-top-btn — 它有 CSS :hover transform，
-         GSAP inline transform 会与 CSS 冲突导致抖动 */
-      var selectors = '.win-traffic-btn, .page-btn';
-      document.querySelectorAll(selectors).forEach(function (btn) {
-        if (btn.dataset.magneticInit) return;
-        btn.dataset.magneticInit = '1';
-        btn.classList.add('magnetic-btn');
-
-        btn.addEventListener('mousemove', function (e) {
-          var rect = btn.getBoundingClientRect();
-          var cx = rect.left + rect.width / 2;
-          var cy = rect.top + rect.height / 2;
-          var dx = (e.clientX - cx) * 0.3;
-          var dy = (e.clientY - cy) * 0.3;
-          if (typeof gsap !== 'undefined') {
-            gsap.to(btn, { x: dx, y: dy, duration: 0.2, ease: 'power2.out' });
-          }
-        });
-        btn.addEventListener('mouseleave', function () {
-          if (typeof gsap !== 'undefined') {
-            gsap.to(btn, { x: 0, y: 0, duration: 0.3, ease: 'elastic.out(1, 0.4)' });
-          }
-        });
-      });
-    },
+    /* ====== 8. 磁吸按钮 — 已移除 ======
+       原因：GSAP inline x/y 与 CSS :hover transform: translateZ(0) 冲突，
+       导致 .win-traffic-btn 和 .page-btn hover 时字体抖动。
+       按钮 hover 效果完全由 CSS 控制。 */
 
     /* ====== 9. 窗口玻璃光泽扫光 ====== */
     glassShine: function () {
@@ -383,13 +269,11 @@
       });
     },
 
-    /* ====== 10. Hero 头像浮动 + 文字渐变闪烁 ====== */
+    /* ====== 10. Hero 头像文字渐变闪烁 ====== */
     heroEffects: function () {
-      var ava = document.querySelector('.hero-ava');
-      if (ava && !ava.dataset.floatInit) {
-        ava.dataset.floatInit = '1';
-        ava.classList.add('float-anim');
-      }
+      /* 注意：不再添加 float-anim 到 .hero-ava —
+         animation 的 transform 会覆盖 CSS :hover 的 transform: scale(1.08) translateZ(0)，
+         导致 hover 缩放失效。浮动效果由 CSS animation 控制会与 hover 冲突。 */
       var name = document.querySelector('.hero-text h2');
       if (name && !name.dataset.shimmerInit) {
         name.dataset.shimmerInit = '1';
@@ -405,12 +289,9 @@
       this.meshGradient();
       this.glassShine();
       this.heroEffects();
-      this.tiltCards();
       this.motionNumbers();
       this.rippleEffect();
       this.clipReveal();
-      this.dockMagnify();
-      this.magneticButtons();
     },
 
     /* 仅初始化一次的效果（页面加载时） */

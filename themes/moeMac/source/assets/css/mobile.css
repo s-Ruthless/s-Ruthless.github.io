@@ -615,6 +615,12 @@ html.is-mobile .douban-original-name{
 html.is-mobile .douban-note{
   font-size:11px;
 }
+html.is-mobile .douban-meta{
+  font-size:10px;
+}
+html.is-mobile .douban-link{
+  font-size:10px;
+}
 
 /* ====== 相册页 ====== */
 html.is-mobile .gallery-masonry{

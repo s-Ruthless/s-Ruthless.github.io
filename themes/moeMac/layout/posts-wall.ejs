@@ -15,9 +15,9 @@
     </div>
     <div class="page-content">
     <div class="wall-filter">
-      <button class="filter-btn btn btn-xs btn-primary" data-cat="all">全部</button>
+      <button class="filter-btn active" data-cat="all">全部</button>
       <% cats.sort('name').each(function(cat) { %>
-        <button class="filter-btn btn btn-xs btn-ghost" data-cat="<%= cat.name %>"><%= cat.name %> <span class="badge badge-xs"><%= cat.posts.length %></span></button>
+        <button class="filter-btn" data-cat="<%= cat.name %>"><%= cat.name %> <span class="badge badge-xs"><%= cat.posts.length %></span></button>
       <% }); %>
     </div>
     <div class="wall-grid" id="posts-wall-grid">

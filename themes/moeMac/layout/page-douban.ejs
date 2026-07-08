@@ -47,13 +47,12 @@
             </div>
             <div class="douban-info">
               <h4 class="douban-name"><%= it.name %></h4>
-              <% if (it.original_name) { %><p class="douban-original-name"><%= it.original_name %></p><% } %>
+              <% if (it.info) { %><p class="douban-meta"><%= it.info %></p><% } %>
               <div class="douban-rating">
                 <span class="douban-stars"><%- stars(it.rating) %></span>
-                <% if (it.rating) { %><span class="douban-score"><%= it.rating %></span><% } %>
               </div>
-              <% if (it.date) { %><div class="douban-date"><i class="fas fa-calendar-day"></i> <%= it.date %></div><% } %>
               <% if (it.note) { %><p class="douban-note"><%= it.note %></p><% } %>
+              <% if (it.link) { %><a class="douban-link" href="<%= it.link %>" target="_blank" rel="noopener noreferrer">详情 <i class="fas fa-arrow-right"></i></a><% } %>
             </div>
           </article>
         <% }); %>

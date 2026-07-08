@@ -18,30 +18,43 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
-function fetchPage(url, cookie) {
-  return new Promise(function (resolve, reject) {
-    var headers = {
-      'User-Agent': UA,
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-      'Referer': 'https://www.douban.com/',
-    };
-    if (cookie) headers['Cookie'] = cookie;
+/**
+ * 解决豆瓣安全验证的 SHA-512 工作量证明挑战
+ */
+function solveSecChallenge(cha, difficulty) {
+  difficulty = difficulty || 4;
+  var target = Array(difficulty + 1).join('0');
+  var nonce = 0;
+  var hash;
+  do {
+    nonce++;
+    hash = crypto.createHash('sha512').update(cha + nonce, 'utf8').digest('hex');
+  } while (hash.substring(0, difficulty) !== target);
+  return nonce;
+}
 
-    var redirectCount = 0;
-    function doFetch(u) {
+function fetchPage(url, cookie) {
+  var headers = {
+    'User-Agent': UA,
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'Referer': 'https://www.douban.com/',
+  };
+  if (cookie) headers['Cookie'] = cookie;
+
+  function doGet(u) {
+    return new Promise(function (resolve, reject) {
       var mod = u.startsWith('https') ? require('https') : require('http');
       mod.get(u, { headers: headers }, function (res) {
-        // Handle redirects
-        if ([301, 302, 303, 307, 308].indexOf(res.statusCode) !== -1 && res.headers.location && redirectCount < 5) {
-          redirectCount++;
+        if ([301, 302, 303, 307, 308].indexOf(res.statusCode) !== -1 && res.headers.location) {
           var next = res.headers.location;
           if (next.startsWith('/')) next = new URL(u).origin + next;
           res.resume();
-          return doFetch(next);
+          return doGet(next).then(resolve, reject);
         }
         if (res.statusCode !== 200) {
           res.resume();
@@ -50,12 +63,54 @@ function fetchPage(url, cookie) {
         var chunks = [];
         res.on('data', function (c) { chunks.push(c); });
         res.on('end', function () {
-          var html = Buffer.concat(chunks).toString('utf-8');
-          resolve(html);
+          resolve(Buffer.concat(chunks).toString('utf-8'));
         });
       }).on('error', reject);
+    });
+  }
+
+  return doGet(url).then(function (html) {
+    // 豆瓣电影页面有安全验证（SHA-512 工作量证明）
+    if (html.indexOf('name="sec"') > -1 || html.indexOf('sha512') > -1) {
+      var tokMatch = html.match(/name="tok"[^>]*value="([^"]+)"/);
+      var chaMatch = html.match(/name="cha"[^>]*value="([^"]+)"/);
+      var redMatch = html.match(/name="red"[^>]*value="([^"]+)"/);
+      if (tokMatch && chaMatch) {
+        var sol = solveSecChallenge(chaMatch[1], 4);
+        var postBody = 'tok=' + encodeURIComponent(tokMatch[1]) + '&cha=' + encodeURIComponent(chaMatch[1]) + '&sol=' + sol + '&red=' + encodeURIComponent(redMatch ? redMatch[1] : url);
+        return new Promise(function (resolve, reject) {
+          var postReq = require('https').request('https://sec.douban.com/c', {
+            method: 'POST',
+            headers: {
+              'User-Agent': UA,
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+              'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+              'Referer': url,
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Length': Buffer.byteLength(postBody),
+            },
+          }, function (res) {
+            var setCookies = res.headers['set-cookie'];
+            if (setCookies) {
+              headers['Cookie'] = setCookies.map(function (c) { return c.split(';')[0]; }).join('; ');
+            }
+            if ([301, 302, 303, 307, 308].indexOf(res.statusCode) !== -1 && res.headers.location) {
+              var next = res.headers.location;
+              if (next.startsWith('/')) next = 'https://sec.douban.com' + next;
+              res.resume();
+              return doGet(next).then(resolve, reject);
+            }
+            var chunks = [];
+            res.on('data', function (c) { chunks.push(c); });
+            res.on('end', function () { resolve(Buffer.concat(chunks).toString('utf-8')); });
+          });
+          postReq.on('error', reject);
+          postReq.write(postBody);
+          postReq.end();
+        });
+      }
     }
-    doFetch(url);
+    return html;
   });
 }
 
@@ -146,14 +201,7 @@ function extractItem(block) {
 
   if (!title) return null;
 
-  // 原始名（英文或别名）：如果 <em> 里有 / 分隔，第二部分就是
-  var originalName = '';
-  if (emMatch && fullName.indexOf('/') > -1) {
-    var nameParts = fullName.split(/\s*\/\s*/);
-    if (nameParts.length > 1) {
-      originalName = nameParts.slice(1).join(' / ').trim();
-    }
-  }
+  // 原始名（英文名）：不保存，只保留中文名
 
   // 条目链接（用于提取 subject ID）
   var linkMatch = block.match(/href="(https?:\/\/(?:book|movie|music)\.douban\.com\/subject\/(\d+)\/)"/i);
@@ -174,9 +222,17 @@ function extractItem(block) {
       .replace(/_s_ratio_poster/, '_l_ratio_poster');
   }
 
-  // 评分（rating5-t = 5星 → 10 分制，无评分则为 0）
+  // 评分（个人评分）
+  // 旧格式: rating5-t, rating3-t (1-5 星 → ×2 转为 10 分制)
+  // 新格式: allstar50, allstar35 等 (直接是 10 分制)
   var ratingMatch = block.match(/rating(\d)-t/);
-  var rating = ratingMatch ? parseInt(ratingMatch[1], 10) * 2 : 0;
+  var allstarMatch = block.match(/allstar(\d{2})/);
+  var rating = 0;
+  if (ratingMatch) {
+    rating = parseInt(ratingMatch[1], 10) * 2;
+  } else if (allstarMatch) {
+    rating = parseInt(allstarMatch[1], 10);
+  }
 
   // 日期
   var dateMatch = block.match(/<span\s+class="date">([\s\S]*?)<\/span>/i);
@@ -189,7 +245,37 @@ function extractItem(block) {
     || block.match(/<span\s+class="comment">([\s\S]*?)<\/span>/i);
   var note = noteMatch ? noteMatch[1].replace(/<[^>]*>/g, '').trim() : '';
 
-  return { name: title, original_name: originalName, cover: cover, cover_local: '', id: subjectId, link: link, rating: rating, date: dateStr, note: note };
+  // 作者/出版社/年份等信息
+  // 书籍: <div class="pub">刘慈欣 / 长江文艺出版社 / 2008-11</div>
+  // 电影收藏页: <li class="intro">2022 / 中国大陆 / 喜剧 科幻</li>
+  var infoMatch = block.match(/<div\s+class="pub"[^>]*>([\s\S]*?)<\/div>/i)
+    || block.match(/<li\s+class="intro"[^>]*>([\s\S]*?)<\/li>/i)
+    || block.match(/<p\s+class="pl"[^>]*>([\s\S]*?)<\/p>/i)
+    || block.match(/<span\s+class="pl"[^>]*>([\s\S]*?)<\/span>/i);
+  var info = infoMatch ? infoMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+  // 清理 info：去掉价格、提取电影类型
+  if (info) {
+    var infoParts = info.split(/\s*\/\s*/);
+    // 已知电影类型关键词
+    var GENRES = ['剧情','喜剧','动作','爱情','科幻','悬疑','惊悚','恐怖','犯罪','同性',
+      '音乐','歌舞','传记','历史','战争','西部','奇幻','冒险','灾难','武侠','情色',
+      '家庭','儿童','纪录','短片','戏曲','黑色电影','古装','运动','动画','谈话'];
+    var genreParts = infoParts.filter(function(p) {
+      return GENRES.indexOf(p.trim()) > -1;
+    });
+    if (genreParts.length > 0) {
+      // 电影：只保留类型
+      info = genreParts.join(' / ');
+    } else {
+      // 书籍：去掉价格部分（如 28.00元、CNY 79.80、￥35、纯数字价格）
+      infoParts = infoParts.filter(function(p) {
+        return !/[\d.]+元/.test(p) && !/^CNY\s/i.test(p) && !/^￥/.test(p) && !/^\d+(\.\d+)?$/.test(p.trim());
+      });
+      info = infoParts.join(' / ');
+    }
+  }
+
+  return { name: title, original_name: '', cover: cover, cover_local: '', id: subjectId, link: link, rating: rating, date: dateStr, note: note, info: info };
 }
 
 /**
@@ -212,7 +298,7 @@ function parseItems(html) {
   var bookBlocks = html.split(/<li\s+class="subject-item"/);
   if (bookBlocks.length > 1) {
     for (var i = 1; i < bookBlocks.length; i++) {
-      var item = extractItem(bookBlocks[i].substring(0, 2000));
+      var item = extractItem(bookBlocks[i].substring(0, 3000));
       if (item) items.push(item);
     }
     return items;
@@ -224,7 +310,7 @@ function parseItems(html) {
   var movieBlocks = searchHtml.split(/<div\s+class="item(?:\s+[^"]*)?"/);
   if (movieBlocks.length > 1) {
     for (var j = 1; j < movieBlocks.length; j++) {
-      var item = extractItem(movieBlocks[j].substring(0, 2000));
+      var item = extractItem(movieBlocks[j].substring(0, 3000));
       if (item) items.push(item);
     }
   }
@@ -302,6 +388,23 @@ async function fetchCategory(baseUrl, userId, type, cookie, baseDir) {
 }
 
 /**
+ * 将已有数据中的评分合并到新抓取的数据中
+ * 避免每次同步都重新从条目页抓取评分
+ */
+function mergeExistingRatings(newItems, oldItems) {
+  if (!oldItems || !oldItems.length) return;
+  var oldMap = {};
+  oldItems.forEach(function (it) {
+    if (it.name && it.rating > 0) oldMap[it.name] = it.rating;
+  });
+  newItems.forEach(function (it) {
+    if ((!it.rating || it.rating === 0) && oldMap[it.name]) {
+      it.rating = oldMap[it.name];
+    }
+  });
+}
+
+/**
  * 核心同步逻辑（console 命令和 before_generate filter 共用）
  * @param {object} hexo  - Hexo 实例
  * @param {object} opts  - { books, movies, music } 布尔值，全 false/空 则抓取全部
@@ -340,6 +443,8 @@ async function runSync(hexo, opts) {
     console.log('📚 抓取书籍...');
     try {
       result.books = await fetchCategory('https://book.douban.com', userId, 'books', cookie, hexo.base_dir);
+      // 保留已有评分（避免重新抓取评分）
+      mergeExistingRatings(result.books, existing.books);
     } catch (e) {
       console.error('  ✗ 书籍抓取失败: ' + e.message);
       result.books = existing.books || [];
@@ -353,6 +458,7 @@ async function runSync(hexo, opts) {
     console.log('🎬 抓取电影...');
     try {
       result.movies = await fetchCategory('https://movie.douban.com', userId, 'movies', cookie, hexo.base_dir);
+      mergeExistingRatings(result.movies, existing.movies);
     } catch (e) {
       console.error('  ✗ 电影抓取失败: ' + e.message);
       result.movies = existing.movies || [];
@@ -366,6 +472,7 @@ async function runSync(hexo, opts) {
     console.log('🎵 抓取音乐...');
     try {
       result.music = await fetchCategory('https://music.douban.com', userId, 'music', cookie, hexo.base_dir);
+      mergeExistingRatings(result.music, existing.music);
     } catch (e) {
       console.error('  ✗ 音乐抓取失败: ' + e.message);
       result.music = existing.music || [];
@@ -373,6 +480,51 @@ async function runSync(hexo, opts) {
     console.log('');
   } else {
     result.music = existing.music || [];
+  }
+
+  // 补全缺失评分 + 电影类型：从豆瓣条目页抓取
+  var allNew = [].concat(result.books || [], result.movies || [], result.music || []);
+  // 需要 rating=0 的条目，或电影 info 不含类型的条目
+  var GENRES = ['剧情','喜剧','动作','爱情','科幻','悬疑','惊悚','恐怖','犯罪','同性',
+    '音乐','歌舞','传记','历史','战争','西部','奇幻','冒险','灾难','武侠','情色',
+    '家庭','儿童','纪录','短片','戏曲','黑色电影','古装','运动','动画','谈话'];
+  var needFetch = allNew.filter(function (it) {
+    if (!it.link) return false;
+    if (!it.rating || it.rating === 0) return true;
+    // 电影 info 没有类型关键词时也需要抓取
+    if (it.link.indexOf('movie.douban.com') > -1 && it.info) {
+      return !GENRES.some(function(g) { return it.info.indexOf(g) > -1; });
+    }
+    return false;
+  });
+  if (needFetch.length > 0) {
+    console.log('⭐ 抓取 ' + needFetch.length + ' 个条目的评分/类型...');
+    for (var u = 0; u < needFetch.length; u++) {
+      var uItem = needFetch[u];
+      try {
+        var sHtml = await fetchPage(uItem.link, cookie);
+        // 评分
+        if (!uItem.rating || uItem.rating === 0) {
+          var rMatch = sHtml.match(/property="v:average"[^>]*>\s*([\d.]+)\s*</);
+          if (rMatch) uItem.rating = Math.round(parseFloat(rMatch[1]) * 10) / 10;
+        }
+        // 电影类型
+        if (uItem.link.indexOf('movie.douban.com') > -1) {
+          var genreMatches = sHtml.match(/property="v:genre">([^<]+)</g);
+          if (genreMatches) {
+            var genres = genreMatches.map(function(m) {
+              return m.replace(/property="v:genre">([^<]+)</, '$1').trim();
+            });
+            uItem.info = genres.join(' / ');
+          }
+        }
+        console.log('  [' + (u + 1) + '/' + needFetch.length + '] ' + uItem.name + ' ✓ ' + (uItem.rating || '—') + (uItem.info ? ' / ' + uItem.info : ''));
+      } catch (e) {
+        console.log('  [' + (u + 1) + '/' + needFetch.length + '] ' + uItem.name + ' ✗ ' + e.message);
+      }
+      await new Promise(function (r) { setTimeout(r, 3000); });
+    }
+    console.log('');
   }
 
   // 保存
@@ -398,18 +550,87 @@ async function runSync(hexo, opts) {
   console.log('   📁 保存至: source/_data/douban.json\n');
 }
 
+/**
+ * 只补全缺失评分和电影类型（不重新抓取收藏列表）
+ * 用法：npx hexo douban --ratings
+ */
+async function fetchMissingRatings(hexo) {
+  var cfg = hexo.theme.config.douban || {};
+  var cookie = cfg.cookie || '';
+  var dataPath = path.join(hexo.base_dir, 'source/_data/douban.json');
+
+  if (!fs.existsSync(dataPath)) {
+    console.log('\n  ✗ 找不到 source/_data/douban.json，请先运行 npx hexo douban\n');
+    return;
+  }
+
+  var data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+  var allItems = [].concat(data.books || [], data.movies || [], data.music || []);
+
+  var GENRES = ['剧情','喜剧','动作','爱情','科幻','悬疑','惊悚','恐怖','犯罪','同性',
+    '音乐','歌舞','传记','历史','战争','西部','奇幻','冒险','灾难','武侠','情色',
+    '家庭','儿童','纪录','短片','戏曲','黑色电影','古装','运动','动画','谈话'];
+
+  var needFetch = allItems.filter(function (it) {
+    if (!it.link) return false;
+    if (!it.rating || it.rating === 0) return true;
+    if (it.link.indexOf('movie.douban.com') > -1 && it.info) {
+      return !GENRES.some(function(g) { return it.info.indexOf(g) > -1; });
+    }
+    return false;
+  });
+
+  if (needFetch.length === 0) {
+    console.log('\n  ✓ 所有条目都已有评分和类型，无需补全\n');
+    return;
+  }
+
+  console.log('\n⭐ 共 ' + needFetch.length + ' 个条目需要补全\n');
+
+  for (var i = 0; i < needFetch.length; i++) {
+    var item = needFetch[i];
+    try {
+      var sHtml = await fetchPage(item.link, cookie);
+      if (!item.rating || item.rating === 0) {
+        var rMatch = sHtml.match(/property="v:average"[^>]*>\s*([\d.]+)\s*</);
+        if (rMatch) item.rating = Math.round(parseFloat(rMatch[1]) * 10) / 10;
+      }
+      if (item.link.indexOf('movie.douban.com') > -1) {
+        var genreMatches = sHtml.match(/property="v:genre">([^<]+)</g);
+        if (genreMatches) {
+          item.info = genreMatches.map(function(m) {
+            return m.replace(/property="v:genre">([^<]+)</, '$1').trim();
+          }).join(' / ');
+        }
+      }
+      console.log('  [' + (i + 1) + '/' + needFetch.length + '] ' + item.name + ' ✓ ' + (item.rating || '—') + (item.info ? ' / ' + item.info : ''));
+    } catch (e) {
+      console.log('  [' + (i + 1) + '/' + needFetch.length + '] ' + item.name + ' ✗ ' + e.message);
+    }
+    await new Promise(function (r) { setTimeout(r, 3000); });
+  }
+
+  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), 'utf-8');
+  console.log('\n✅ 补全完成，已保存到 douban.json\n');
+}
+
 /* ========== 手动命令：npx hexo douban ========== */
 hexo.extend.console.register('douban', '同步豆瓣书影音收藏到 source/_data/douban.json', {
   options: [
     { name: '--books', desc: '只抓取书籍' },
     { name: '--movies', desc: '只抓取电影' },
     { name: '--music', desc: '只抓取音乐' },
+    { name: '--ratings', desc: '只补全缺失评分和电影类型（不重新抓取收藏列表）' },
     { name: '--force', desc: '强制重新抓取（忽略缓存）' }
-  ]
+  ],
 }, async function (args) {
   /* 必须先 load 才能拿到 theme.config */
   await this.load();
-  await runSync(this, { books: args.books, movies: args.movies, music: args.music });
+  if (args.ratings) {
+    await fetchMissingRatings(this);
+  } else {
+    await runSync(this, { books: args.books, movies: args.movies, music: args.music });
+  }
   console.log('   运行 hexo clean && hexo generate 重新生成页面');
 });
 

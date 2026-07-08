@@ -193,12 +193,9 @@ comments:
   # Giscus: https://giscus.app/
   # inputPosition: top 评论框在上 / bottom 评论框在下
   # reactionsEnabled: 1 开启表情反应 / 0 关闭
-  # cdn: 本地开发(HTTP)时加载自定义主题CSS的回退地址
-  #   生产环境(HTTPS)自动从站点同源加载 /assets/css/custom-light.css
-  #   仅 HTTP 环境(如 localhost)使用此 CDN 地址
-  #   GitHub Pages 部署可填 jsdelivr 地址（国内可访问）：
-  #   https://cdn.jsdelivr.net/gh/你的用户名/你的仓库@master/themes/moeMac/source/assets/css
-  #   Vercel / 自有服务器等无需配置，留空即可
+  # 主题：生产环境(HTTPS)自动从站点同源加载自定义主题CSS
+  #   本地开发(HTTP)回退到 Giscus 内置 noborder 主题
+  #   暗黑模式通过 postMessage 动态切换，无需手动配置
   giscus:
     repo: "s-Ruthless/moeMac-comments"                # owner/repo
     repoId: "R_kgDOTPRTtA"
@@ -207,7 +204,6 @@ comments:
     mapping: "pathname"
     inputPosition: "top"
     reactionsEnabled: 0
-    cdn: "https://cdn.jsdelivr.net/gh/s-Ruthless/s-Ruthless.github.io@master/themes/moeMac/source/assets/css"
   # Gitalk: https://github.com/gitalk/gitalk
   gitalk:
     clientID: ""

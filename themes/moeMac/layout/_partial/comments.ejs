@@ -39,17 +39,12 @@
     <% if (giscusOk) { %>
     <script>
       /* 动态创建 Giscus 脚本：使用自定义主题 CSS 定制评论框内部样式。
-         - 生产环境(HTTPS)：从站点同源加载 /assets/css/custom-*.css
-         - 本地开发(HTTP)：从 _config.yml 的 giscus.cdn 配置地址加载
-         - 未配置 cdn：回退到 Giscus 内置 noborder 主题 */
+         生产环境(HTTPS)从站点同源加载；本地(HTTP)回退到内置 noborder 主题。 */
       (function(){
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-        var origin = window.location.origin;
-        var cdn = '<%= (c.giscus.cdn || "").replace(/\/$/, "") %>';
-        /* HTTPS → 同源；HTTP → cdn 回退 */
-        var base = origin.indexOf('https://') === 0 ? origin + '/assets/css' : cdn;
-        var lightTheme = base ? base + '/custom-light.css' : 'noborder_light';
-        var darkTheme = base ? base + '/custom-dark.css' : 'noborder_dark';
+        var isHttps = window.location.origin.indexOf('https://') === 0;
+        var lightTheme = isHttps ? '/assets/css/custom-light.css' : 'noborder_light';
+        var darkTheme = isHttps ? '/assets/css/custom-dark.css' : 'noborder_dark';
         var s = document.createElement('script');
         s.src = 'https://giscus.app/client.js';
         s.setAttribute('data-repo', '<%= c.giscus.repo %>');
@@ -198,11 +193,9 @@
 <script>
   /* 暗黑模式切换同步：通过 postMessage 通知 Giscus 切换主题。 */
   (function(){
-    var origin = window.location.origin;
-    var cdn = '<%= (c.giscus.cdn || "").replace(/\/$/, "") %>';
-    var base = origin.indexOf('https://') === 0 ? origin + '/assets/css' : cdn;
-    var lightTheme = base ? base + '/custom-light.css' : 'noborder_light';
-    var darkTheme = base ? base + '/custom-dark.css' : 'noborder_dark';
+    var isHttps = window.location.origin.indexOf('https://') === 0;
+    var lightTheme = isHttps ? '/assets/css/custom-light.css' : 'noborder_light';
+    var darkTheme = isHttps ? '/assets/css/custom-dark.css' : 'noborder_dark';
     function syncTheme(){
       var iframe = document.querySelector('iframe.giscus-frame');
       if(!iframe) return;

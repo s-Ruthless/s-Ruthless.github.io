@@ -52,8 +52,8 @@
         /* HTTPS → 同源；HTTP（localhost）→ 生产 HTTPS 地址 */
         var baseUrl = origin.indexOf('https://') === 0 ? origin
                     : (prodUrl.indexOf('https://') === 0 ? prodUrl : '');
-        var lightUrl = baseUrl ? baseUrl + '/giscus/custom-light.css' : '';
-        var darkUrl = baseUrl ? baseUrl + '/giscus/custom-dark.css' : '';
+        var lightUrl = baseUrl ? baseUrl + '/assets/css/custom-light.css' : '';
+        var darkUrl = baseUrl ? baseUrl + '/assets/css/custom-dark.css' : '';
 
         function createGiscus(theme){
           var s = document.createElement('script');
@@ -226,8 +226,8 @@
     var prodUrl = '<%= (config.url || "").replace(/\/$/, "") %>';
     var baseUrl = origin.indexOf('https://') === 0 ? origin
                 : (prodUrl.indexOf('https://') === 0 ? prodUrl : '');
-    var lightUrl = baseUrl ? baseUrl + '/giscus/custom-light.css' : 'noborder_light';
-    var darkUrl = baseUrl ? baseUrl + '/giscus/custom-dark.css' : 'noborder_dark';
+    var lightUrl = baseUrl ? baseUrl + '/assets/css/custom-light.css' : 'noborder_light';
+    var darkUrl = baseUrl ? baseUrl + '/assets/css/custom-dark.css' : 'noborder_dark';
     /* 预检 CSS 是否存在，缓存结果供切换时使用 */
     var cssChecked = false, cssAvailable = false;
     function checkCss(cb){

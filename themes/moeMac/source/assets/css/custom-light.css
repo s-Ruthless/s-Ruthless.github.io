@@ -98,3 +98,13 @@ main .gsc-loading-image {
 .gsc-comment:not(.gsc-reply-box) .gsc-replies {
   border-radius: unset;
 }
+
+/* 去掉输入/预览标签的上间距和左右间距 */
+main .mt-2 {
+  margin-top: 0 !important;
+}
+
+main .mx-2 {
+  margin-inline-start: 0 !important;
+  margin-inline-end: 0 !important;
+}

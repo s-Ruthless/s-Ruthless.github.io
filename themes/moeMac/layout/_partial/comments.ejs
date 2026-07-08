@@ -39,34 +39,74 @@
     <% if (giscusOk) { %>
     <script>
       /* 动态创建 Giscus 脚本：使用自定义主题 CSS 定制评论框内部样式。
-         生产环境(HTTPS)从站点同源加载；本地(HTTP)回退到内置 noborder 主题。 */
+         生产环境(HTTPS)从站点同源加载；本地(HTTP)回退到内置 noborder 主题。
+         如果站点 CSS 因网络问题(如 ERR_CONNECTION_RESET)无法访问，也回退到 noborder。 */
       (function(){
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         var isHttps = window.location.origin.indexOf('https://') === 0;
-        /* Giscus 的 data-theme 如果传相对路径，会被解析为相对于 giscus.app 域名。
-           必须传完整绝对 URL，Giscus 才能从你的站点加载自定义 CSS。 */
-        var lightTheme = isHttps ? window.location.origin + '/assets/css/custom-light.css' : 'noborder_light';
-        var darkTheme = isHttps ? window.location.origin + '/assets/css/custom-dark.css' : 'noborder_dark';
-        var s = document.createElement('script');
-        s.src = 'https://giscus.app/client.js';
-        s.setAttribute('data-repo', '<%= c.giscus.repo %>');
-        s.setAttribute('data-repo-id', '<%= c.giscus.repoId %>');
-        s.setAttribute('data-category', '<%= c.giscus.category %>');
-        s.setAttribute('data-category-id', '<%= c.giscus.categoryId %>');
-        s.setAttribute('data-mapping', '<%= c.giscus.mapping || 'pathname' %>');
-        s.setAttribute('data-strict', '1');
-        s.setAttribute('data-reactions-enabled', '<%= c.giscus.reactionsEnabled !== undefined ? c.giscus.reactionsEnabled : 0 %>');
-        s.setAttribute('data-emit-metadata', '0');
-        s.setAttribute('data-input-position', '<%= c.giscus.inputPosition || 'top' %>');
-        s.setAttribute('data-theme', dark ? darkTheme : lightTheme);
-        s.setAttribute('data-lang', 'zh-CN');
-        s.setAttribute('data-loading', 'eager');
-        s.setAttribute('crossorigin', 'anonymous');
-        s.async = true;
-        s.onerror = function(){
-          if(window.__commentsShowError) window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试');
-        };
-        document.getElementById('comments-mount').appendChild(s);
+        var customLight = window.location.origin + '/assets/css/custom-light.css';
+        var customDark  = window.location.origin + '/assets/css/custom-dark.css';
+        var fallbackLight = 'noborder_light';
+        var fallbackDark  = 'noborder_dark';
+
+        /* 全局变量：供暗黑模式切换复用，避免重复探测 */
+        window.__giscusCustomOk = false;
+
+        function createGiscus(theme){
+          var s = document.createElement('script');
+          s.src = 'https://giscus.app/client.js';
+          s.setAttribute('data-repo', '<%= c.giscus.repo %>');
+          s.setAttribute('data-repo-id', '<%= c.giscus.repoId %>');
+          s.setAttribute('data-category', '<%= c.giscus.category %>');
+          s.setAttribute('data-category-id', '<%= c.giscus.categoryId %>');
+          s.setAttribute('data-mapping', '<%= c.giscus.mapping || 'pathname' %>');
+          s.setAttribute('data-strict', '1');
+          s.setAttribute('data-reactions-enabled', '<%= c.giscus.reactionsEnabled !== undefined ? c.giscus.reactionsEnabled : 0 %>');
+          s.setAttribute('data-emit-metadata', '0');
+          s.setAttribute('data-input-position', '<%= c.giscus.inputPosition || 'top' %>');
+          s.setAttribute('data-theme', theme);
+          s.setAttribute('data-lang', 'zh-CN');
+          s.setAttribute('data-loading', 'eager');
+          s.setAttribute('crossorigin', 'anonymous');
+          s.async = true;
+          s.onerror = function(){
+            if(window.__commentsShowError) window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试');
+          };
+          document.getElementById('comments-mount').appendChild(s);
+        }
+
+        if(!isHttps){
+          /* 本地 HTTP 环境：直接用内置 noborder 主题 */
+          createGiscus(dark ? fallbackDark : fallbackLight);
+          return;
+        }
+
+        /* HTTPS 环境：先探测自定义 CSS 是否可访问，超时 3s */
+        var tested = false;
+        var timer = setTimeout(function(){
+          if(tested) return;
+          tested = true;
+          createGiscus(dark ? fallbackDark : fallbackLight);
+        }, 3000);
+
+        fetch(customLight, { method:'HEAD', mode:'cors', cache:'no-cache' })
+          .then(function(res){
+            if(tested) return;
+            tested = true;
+            clearTimeout(timer);
+            if(res.ok){
+              window.__giscusCustomOk = true;
+              createGiscus(dark ? customDark : customLight);
+            } else {
+              createGiscus(dark ? fallbackDark : fallbackLight);
+            }
+          })
+          .catch(function(){
+            if(tested) return;
+            tested = true;
+            clearTimeout(timer);
+            createGiscus(dark ? fallbackDark : fallbackLight);
+          });
       })();
     </script>
     <% } %>
@@ -193,17 +233,23 @@
 
 <% if (giscusOk) { %>
 <script>
-  /* 暗黑模式切换同步：通过 postMessage 通知 Giscus 切换主题。 */
+  /* 暗黑模式切换同步：通过 postMessage 通知 Giscus 切换主题。
+     复用初始化时的探测结果：自定义 CSS 可用就用自定义，否则用 noborder。 */
   (function(){
-    var isHttps = window.location.origin.indexOf('https://') === 0;
-    var lightTheme = isHttps ? window.location.origin + '/assets/css/custom-light.css' : 'noborder_light';
-    var darkTheme = isHttps ? window.location.origin + '/assets/css/custom-dark.css' : 'noborder_dark';
+    var customLight = window.location.origin + '/assets/css/custom-light.css';
+    var customDark  = window.location.origin + '/assets/css/custom-dark.css';
+    var fallbackLight = 'noborder_light';
+    var fallbackDark  = 'noborder_dark';
     function syncTheme(){
       var iframe = document.querySelector('iframe.giscus-frame');
       if(!iframe) return;
       var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      var useCustom = window.__giscusCustomOk;
+      var theme = dark
+        ? (useCustom ? customDark : fallbackDark)
+        : (useCustom ? customLight : fallbackLight);
       iframe.contentWindow.postMessage({
-        giscus: { setConfig: { theme: dark ? darkTheme : lightTheme } }
+        giscus: { setConfig: { theme: theme } }
       }, 'https://giscus.app');
     }
     var observer = new MutationObserver(syncTheme);

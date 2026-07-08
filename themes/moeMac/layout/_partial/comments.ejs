@@ -145,13 +145,26 @@
       });
     }
 
-    /* ---- CWD：轮询检测容器高度，评论渲染后高度会明显增大 ---- */
+    /* ---- CWD：轮询检测 Shadow DOM 内容，多重检测 + 超时兜底 ---- */
     if(p === 'cwd'){
       /* 初始隐藏，等待渲染完成 */
       mount.style.opacity = '0';
       mount.style.transform = 'translateY(8px)';
+      var cwdStartTime = Date.now();
       var cwdPoll = setInterval(function(){
-        if(mount && mount.offsetHeight > 200){
+        var ready = false;
+        /* 方式1：host 元素高度检测（桌面端通常可行） */
+        if(mount && mount.offsetHeight > 200) ready = true;
+        /* 方式2：检测 Shadow DOM 内部是否有非 STYLE 的实质内容 */
+        if(mount && mount.shadowRoot){
+          for(var i = 0; i < mount.shadowRoot.children.length; i++){
+            if(mount.shadowRoot.children[i].tagName !== 'STYLE'){
+              ready = true; break;
+            }
+          }
+        }
+        /* 方式3：超时兜底 — 8秒后无论结果如何都隐藏骨架屏 */
+        if(ready || Date.now() - cwdStartTime > 8000){
           clearInterval(cwdPoll);
           var firstChild = mount.firstElementChild;
           if(firstChild) firstChild.setAttribute('data-loaded', 'true');

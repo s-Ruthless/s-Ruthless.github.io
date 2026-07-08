@@ -193,8 +193,9 @@ comments:
   # Giscus: https://giscus.app/
   # inputPosition: top 评论框在上 / bottom 评论框在下
   # reactionsEnabled: 1 开启表情反应 / 0 关闭
-  # 已经适配主题样式：生产环境(HTTPS)自动从站点同源加载自定义主题CSS
-  #   本地开发(HTTP)回退到 Giscus 内置 noborder 主题
+  # 自定义主题：优先加载站点同源 CSS（/assets/css/custom-light.css 等），
+  #   Giscus 通过 crossorigin 加载 CSS，要求服务器返回 CORS 头；
+  #   若服务器无 CORS 头（如 GitHub Pages 默认不返回），自动回退到内置 noborder 主题
   #   暗黑模式通过 postMessage 动态切换，无需手动配置
   giscus:
     repo: "s-Ruthless/moeMac-comments"                # owner/repo

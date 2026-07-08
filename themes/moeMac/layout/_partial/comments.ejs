@@ -38,18 +38,20 @@
   <div id="comments-mount"<% if (giscusOk) { %> class="comments-mount-giscus"<% } %>>
     <% if (giscusOk) { %>
     <script>
-      /* 动态创建 Giscus 脚本：使用自定义主题 CSS 定制评论框内部样式。
-         生产环境(HTTPS)从站点同源加载；本地(HTTP)回退到内置 noborder 主题。
-         如果站点 CSS 因网络问题(如 ERR_CONNECTION_RESET)无法访问，也回退到 noborder。 */
+      /* Giscus 自定义主题加载策略：
+         1. 先尝试加载站点同源的自定义 CSS（custom-light.css / custom-dark.css）
+         2. Giscus 通过 <link crossorigin="anonymous"> 加载 CSS，要求服务器返回 CORS 头
+         3. 探测 CSS 响应头中是否包含 Access-Control-Allow-Origin，有则用自定义，无则回退内置主题
+         4. 本地 HTTP 环境直接用内置 noborder 主题 */
       (function(){
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         var isHttps = window.location.origin.indexOf('https://') === 0;
         var customLight = window.location.origin + '/assets/css/custom-light.css';
         var customDark  = window.location.origin + '/assets/css/custom-dark.css';
-        var fallbackLight = 'noborder_light';
-        var fallbackDark  = 'noborder_dark';
+        var builtinLight = 'noborder_light';
+        var builtinDark  = 'noborder_dark';
 
-        /* 全局变量：供暗黑模式切换复用，避免重复探测 */
+        /* 全局变量：标记自定义 CSS 是否可用，供暗黑模式切换复用 */
         window.__giscusCustomOk = false;
 
         function createGiscus(theme){
@@ -77,35 +79,44 @@
 
         if(!isHttps){
           /* 本地 HTTP 环境：直接用内置 noborder 主题 */
-          createGiscus(dark ? fallbackDark : fallbackLight);
+          createGiscus(dark ? builtinDark : builtinLight);
           return;
         }
 
-        /* HTTPS 环境：先探测自定义 CSS 是否可访问，超时 3s */
+        /* HTTPS 环境：探测自定义 CSS 是否可用且支持跨域
+           Giscus iframe 在 giscus.app 域名下，通过 <link crossorigin="anonymous"> 加载 CSS，
+           要求服务器返回 Access-Control-Allow-Origin 头，否则 CSS 加载失败导致黑框无样式 */
         var tested = false;
         var timer = setTimeout(function(){
           if(tested) return;
           tested = true;
-          createGiscus(dark ? fallbackDark : fallbackLight);
+          createGiscus(dark ? builtinDark : builtinLight);
         }, 3000);
 
-        fetch(customLight, { method:'HEAD', mode:'cors', cache:'no-cache' })
+        fetch(customLight, { method:'HEAD', cache:'no-cache' })
           .then(function(res){
             if(tested) return;
             tested = true;
             clearTimeout(timer);
             if(res.ok){
-              window.__giscusCustomOk = true;
-              createGiscus(dark ? customDark : customLight);
+              /* 检查 CORS 头：Giscus 使用 crossorigin="anonymous" 加载 CSS，
+                 服务器必须返回 Access-Control-Allow-Origin 才能跨域加载 */
+              var acao = res.headers.get('Access-Control-Allow-Origin');
+              if(acao === '*' || (acao && acao !== 'null')){
+                window.__giscusCustomOk = true;
+                createGiscus(dark ? customDark : customLight);
+              } else {
+                createGiscus(dark ? builtinDark : builtinLight);
+              }
             } else {
-              createGiscus(dark ? fallbackDark : fallbackLight);
+              createGiscus(dark ? builtinDark : builtinLight);
             }
           })
           .catch(function(){
             if(tested) return;
             tested = true;
             clearTimeout(timer);
-            createGiscus(dark ? fallbackDark : fallbackLight);
+            createGiscus(dark ? builtinDark : builtinLight);
           });
       })();
     </script>
@@ -234,20 +245,20 @@
 <% if (giscusOk) { %>
 <script>
   /* 暗黑模式切换同步：通过 postMessage 通知 Giscus 切换主题。
-     复用初始化时的探测结果：自定义 CSS 可用就用自定义，否则用 noborder。 */
+     复用初始化时的 CORS 探测结果：自定义 CSS 可用就用自定义，否则用内置 noborder。 */
   (function(){
     var customLight = window.location.origin + '/assets/css/custom-light.css';
     var customDark  = window.location.origin + '/assets/css/custom-dark.css';
-    var fallbackLight = 'noborder_light';
-    var fallbackDark  = 'noborder_dark';
+    var builtinLight = 'noborder_light';
+    var builtinDark  = 'noborder_dark';
     function syncTheme(){
       var iframe = document.querySelector('iframe.giscus-frame');
       if(!iframe) return;
       var dark = document.documentElement.getAttribute('data-theme') === 'dark';
       var useCustom = window.__giscusCustomOk;
       var theme = dark
-        ? (useCustom ? customDark : fallbackDark)
-        : (useCustom ? customLight : fallbackLight);
+        ? (useCustom ? customDark : builtinDark)
+        : (useCustom ? customLight : builtinLight);
       iframe.contentWindow.postMessage({
         giscus: { setConfig: { theme: theme } }
       }, 'https://giscus.app');

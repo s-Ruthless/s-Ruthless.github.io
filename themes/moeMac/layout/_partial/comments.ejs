@@ -145,32 +145,10 @@
       });
     }
 
-    /* ---- CWD：轮询检测 Shadow DOM 内容，多重检测 + 超时兜底 ---- */
+    /* ---- CWD：初始隐藏，加载检测由 CWD init 函数接管 ---- */
     if(p === 'cwd'){
-      /* 初始隐藏，等待渲染完成 */
       mount.style.opacity = '0';
       mount.style.transform = 'translateY(8px)';
-      var cwdStartTime = Date.now();
-      var cwdPoll = setInterval(function(){
-        var ready = false;
-        /* 方式1：host 元素高度检测（桌面端通常可行） */
-        if(mount && mount.offsetHeight > 200) ready = true;
-        /* 方式2：检测 Shadow DOM 内部是否有非 STYLE 的实质内容 */
-        if(mount && mount.shadowRoot){
-          for(var i = 0; i < mount.shadowRoot.children.length; i++){
-            if(mount.shadowRoot.children[i].tagName !== 'STYLE'){
-              ready = true; break;
-            }
-          }
-        }
-        /* 方式3：超时兜底 — 8秒后无论结果如何都隐藏骨架屏 */
-        if(ready || Date.now() - cwdStartTime > 8000){
-          clearInterval(cwdPoll);
-          var firstChild = mount.firstElementChild;
-          if(firstChild) firstChild.setAttribute('data-loaded', 'true');
-          hideLoading();
-        }
-      }, 500);
     }
 
     /* ---- Gitalk / Twikoo / Waline：MutationObserver 检测常规 DOM ---- */
@@ -200,6 +178,7 @@
         + '</div>';
     }
     window.__commentsShowError = showError;
+    window.__commentsHideLoading = hideLoading;
   })();
 </script>
 
@@ -327,12 +306,34 @@
         }
       });
       mountObserver.observe(document.getElementById('comments-mount'), { childList: true });
-      /* 等待 Shadow DOM 创建后注入样式 */
+      /* 等待 Shadow DOM 创建后注入样式 + 检测评论加载完成 */
       var styleTimer = setInterval(function(){
         var host = document.getElementById('comments-mount');
         if(host && host.shadowRoot){
           injectCwdStyles(host.shadowRoot, document.documentElement.getAttribute('data-theme') === 'dark');
           clearInterval(styleTimer);
+          /* 检测 CWD 评论加载完成：监听 .cwd-loading 元素消失
+             CWD 组件首次渲染会显示 .cwd-loading（自身 loading spinner），
+             评论 API 返回后 loading:false → 重新渲染 → .cwd-loading 被移除。
+             这是组件级别的精确信号，桌面端/移动端行为完全一致。 */
+          function checkCwdLoaded(){
+            var loadingEl = host.shadowRoot.querySelector('.cwd-loading');
+            if(!loadingEl){
+              if(window.__commentsHideLoading) window.__commentsHideLoading();
+              var firstChild = host.firstElementChild;
+              if(firstChild) firstChild.setAttribute('data-loaded', 'true');
+              return true;
+            }
+            return false;
+          }
+          /* 立即检查一次（可能已加载完成） */
+          if(!checkCwdLoaded()){
+            /* 仍在加载，用 MutationObserver 监听 Shadow DOM 变化 */
+            var cwdLoadObserver = new MutationObserver(function(){
+              if(checkCwdLoaded()) cwdLoadObserver.disconnect();
+            });
+            cwdLoadObserver.observe(host.shadowRoot, { childList: true, subtree: true });
+          }
         }
       }, 200);
       /* 暗黑模式切换同步：重新注入样式 + 通知 CWD 切换主题 */

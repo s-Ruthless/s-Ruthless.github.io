@@ -528,7 +528,12 @@ html.is-mobile .wall-filter{
   -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
   flex-wrap:nowrap;
+  justify-content:flex-start;
   padding-bottom:4px;
+  /* 允许横向滚动到首尾按钮（覆盖桌面端 center 导致左侧裁切） */
+  margin:0 -4px;
+  padding-left:4px;
+  padding-right:4px;
 }
 html.is-mobile .wall-filter::-webkit-scrollbar{
   display:none;

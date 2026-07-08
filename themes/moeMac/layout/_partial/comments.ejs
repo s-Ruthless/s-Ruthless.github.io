@@ -43,8 +43,10 @@
       (function(){
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         var isHttps = window.location.origin.indexOf('https://') === 0;
-        var lightTheme = isHttps ? '/assets/css/custom-light.css' : 'noborder_light';
-        var darkTheme = isHttps ? '/assets/css/custom-dark.css' : 'noborder_dark';
+        /* Giscus 的 data-theme 如果传相对路径，会被解析为相对于 giscus.app 域名。
+           必须传完整绝对 URL，Giscus 才能从你的站点加载自定义 CSS。 */
+        var lightTheme = isHttps ? window.location.origin + '/assets/css/custom-light.css' : 'noborder_light';
+        var darkTheme = isHttps ? window.location.origin + '/assets/css/custom-dark.css' : 'noborder_dark';
         var s = document.createElement('script');
         s.src = 'https://giscus.app/client.js';
         s.setAttribute('data-repo', '<%= c.giscus.repo %>');
@@ -194,8 +196,8 @@
   /* 暗黑模式切换同步：通过 postMessage 通知 Giscus 切换主题。 */
   (function(){
     var isHttps = window.location.origin.indexOf('https://') === 0;
-    var lightTheme = isHttps ? '/assets/css/custom-light.css' : 'noborder_light';
-    var darkTheme = isHttps ? '/assets/css/custom-dark.css' : 'noborder_dark';
+    var lightTheme = isHttps ? window.location.origin + '/assets/css/custom-light.css' : 'noborder_light';
+    var darkTheme = isHttps ? window.location.origin + '/assets/css/custom-dark.css' : 'noborder_dark';
     function syncTheme(){
       var iframe = document.querySelector('iframe.giscus-frame');
       if(!iframe) return;

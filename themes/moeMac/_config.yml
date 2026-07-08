@@ -193,7 +193,9 @@ comments:
   # Giscus: https://giscus.app/
   # inputPosition: top 评论框在上 / bottom 评论框在下
   # reactionsEnabled: 1 开启表情反应 / 0 关闭
-  # 主题会根据站点暗黑模式自动切换 noborder_dark / noborder_light，无需手动配置
+  # 主题：自动使用 /giscus/custom-light.css 和 custom-dark.css 自定义主题
+  #   生产(HTTPS)同源加载；本地(HTTP)从生产 HTTPS 地址加载
+  #   暗黑模式通过 postMessage 动态切换，无需手动配置
   giscus:
     repo: "s-Ruthless/moeMac-comments"                # owner/repo
     repoId: "R_kgDOTPRTtA"
@@ -201,7 +203,6 @@ comments:
     categoryId: "DIC_kwDOTPRTtM4DAnxQ"
     mapping: "pathname"
     inputPosition: "top"
-    theme: "preferred_color_scheme"
     reactionsEnabled: 0
   # Gitalk: https://github.com/gitalk/gitalk
   gitalk:

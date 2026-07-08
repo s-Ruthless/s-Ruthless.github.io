@@ -171,7 +171,7 @@ douban:
 # ====== 壁纸设置 ======
 # wallpaper_path: 自定义壁纸图片路径，为空则使用默认渐变
 # 示例: "/assets/images/my-bg.jpg" 或 "https://example.com/bg.jpg"
-wallpaper_path: "https://img.netbian.com/file/2024/0525/001431sFPe6.jpg"
+wallpaper_path: "/assets/img/background.webp"
 
 # ====== 评论系统 ======
 # enable: false 关闭；true 开启
@@ -193,10 +193,13 @@ comments:
   # Giscus: https://giscus.app/
   # inputPosition: top 评论框在上 / bottom 评论框在下
   # reactionsEnabled: 1 开启表情反应 / 0 关闭
-  # 自定义主题：优先加载站点同源 CSS（/assets/css/custom-light.css 等），
-  #   Giscus 通过 crossorigin 加载 CSS，要求服务器返回 CORS 头；
-  #   若服务器无 CORS 头（如 GitHub Pages 默认不返回），自动回退到内置 noborder 主题
-  #   暗黑模式通过 postMessage 动态切换，无需手动配置
+  # theme_light / theme_dark: Giscus 内置主题名，暗黑模式自动切换
+  #   可选值: light / light_high_contrast / light_protanopia / light_tritanopia
+  #          dark / dark_high_contrast / dark_protanopia / dark_tritanopia / dark_dimmed
+  #          transparent_dark / noborder_light / noborder_dark / noborder_gray
+  #          preferred_color_scheme / cobalt / purple_dark / gruvbox / gruvbox_dark / gruvbox_light
+  #   也支持自定义 CSS URL（需部署在支持 CORS 的服务器上，如 jsDelivr CDN）
+  #   详见: https://giscus.app/  Theme 部分
   giscus:
     repo: "s-Ruthless/moeMac-comments"                # owner/repo
     repoId: "R_kgDOTPRTtA"
@@ -205,6 +208,8 @@ comments:
     mapping: "pathname"
     inputPosition: "top"
     reactionsEnabled: 0
+    theme_light: "light_tritanopia"                     # 亮色模式主题
+    theme_dark: "noborder_dark"                       # 暗黑模式主题
   # Gitalk: https://github.com/gitalk/gitalk
   gitalk:
     clientID: ""

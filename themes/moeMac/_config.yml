@@ -208,7 +208,7 @@ comments:
     mapping: "pathname"
     inputPosition: "top"
     reactionsEnabled: 0
-    theme_light: "light_tritanopia"                     # 亮色模式主题
+    theme_light: "noborder_light"                     # 亮色模式主题
     theme_dark: "noborder_dark"                       # 暗黑模式主题
   # Gitalk: https://github.com/gitalk/gitalk
   gitalk:

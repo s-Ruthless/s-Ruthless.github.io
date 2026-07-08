@@ -181,7 +181,7 @@
       }
       
       /* 确保页面加载时，所有年份都是折叠的 */
-      document.addEventListener('DOMContentLoaded', function() {
+      function _foldAllYears() {
         var headers = document.querySelectorAll('.archive-year-header');
         var icons = document.querySelectorAll('.year-toggle-icon');
         
@@ -197,7 +197,13 @@
         contents.forEach(function(content) {
           content.style.maxHeight = '0';
         });
-      });
+      }
+      /* AJAX 导航时 DOMContentLoaded 已触发，需兼容两种场景 */
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _foldAllYears);
+      } else {
+        _foldAllYears();
+      }
     </script>
     </div>
   </div>

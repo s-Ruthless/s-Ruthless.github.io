@@ -17,3 +17,5 @@ _fix*.js
 .workbuddy/
 # twikoo SDK — 改用 CDN 加载，本地文件包含腾讯云 SDK 代码会触发 GitHub 密钥检测
 themes/moeMac/source/assets/js/twikoo.all.min.js
+# CWD 评论系统后端（独立部署到 Cloudflare Workers）
+cwd/

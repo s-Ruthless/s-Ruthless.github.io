@@ -434,8 +434,8 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 .theme-toggle:hover{transform:translateY(-3px) translateZ(0);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
 
 /* ====== 壁纸适配（全局） ====== */
-.wallpaper-bg{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-3;overflow:hidden;pointer-events:none;}
-.wallpaper-img{position:absolute;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;filter:brightness(0.8) saturate(1.1);}
+.wallpaper-bg{position:fixed;inset:0;z-index:-3;overflow:hidden;pointer-events:none;}
+.wallpaper-img{position:absolute;inset:0;background-size:cover;background-position:center top;filter:brightness(0.8) saturate(1.1);}
 .wallpaper-overlay{
   position:absolute;top:0;left:0;width:100%;height:100%;
   background:radial-gradient(circle at 20% 20%,rgba(0,0,0,0.1) 0%,transparent 50%),

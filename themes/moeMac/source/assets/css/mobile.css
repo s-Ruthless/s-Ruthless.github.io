@@ -104,6 +104,8 @@ html.is-mobile .hero-text h2{
 html.is-mobile .hero-text p{
   font-size:13px;line-height:1.7;margin-bottom:8px;
 }
+html.is-mobile .hero-social{gap:8px;margin-bottom:6px;}
+html.is-mobile .hero-social-btn{width:34px;height:34px;font-size:14px;}
 html.is-mobile .hero-hitokoto{
   font-size:12px;padding:10px 14px;margin-top:20px;line-height:1.5;
   border-radius:10px;

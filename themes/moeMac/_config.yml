@@ -13,6 +13,16 @@ avatar_type: "image"
 avatar_url: "https://q1.qlogo.cn/g?b=qq&nk=2502393029&s=100"
 avatar_text: "屿"
 
+# ====== 社交链接 ======
+# 在首页"我的主页"窗口显示的社交按钮，留空则不显示
+# type: github / email / qq / wechat / twitter / bilibili / zhihu / link
+# url: 链接地址（email 用 mailto: 前缀，QQ 用 tencent://message/?uin= 前缀）
+# label: 鼠标悬停提示文字
+social:
+  - { type: "github", url: "https://github.com/s-Ruthless", label: "GitHub" }
+  - { type: "email", url: "mailto:2502393029@qq.com", label: "邮箱" }
+  - { type: "qq", url: "tencent://message/?uin=2502393029&Site=&Menu=yes", label: "QQ" }
+
 # ====== SEO / 站点元信息 ======
 # favicon: 自定义 favicon 路径，留空则使用 favicon_emoji 的 emoji 图标
 # favicon_emoji: 默认 emoji favicon
@@ -200,6 +210,14 @@ comments:
     repo: ""
     owner: ""
     admin: [""]
+  # CWD: https://cwd.js.org/  基于 Cloudflare Workers 的评论系统
+  # apiBaseUrl: 你的 CWD API 地址（Cloudflare Workers 部署后的地址）
+  # siteId: 站点标识，用于多站点数据隔离（推荐配置）
+  # lang: 评论组件语言，auto 自动检测浏览器语言
+  cwd:
+    apiBaseUrl: "https://cwd-api.2502393029.workers.dev"
+    siteId: "blog"
+    lang: "auto"
 
 # ====== 搜索 ======
 # 需安装 hexo-generator-searchdb 插件：npm i hexo-generator-searchdb

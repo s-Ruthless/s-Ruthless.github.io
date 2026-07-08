@@ -847,17 +847,82 @@
 
   /* ====== AJAX Nav ====== */
 
-  /* 重新执行容器内所有 <script> 标签
-     浏览器对 innerHTML 设置的 script 不会执行，需手动重建 */
+  /* 已加载的外部脚本缓存 — 避免重复加载
+     初始页面加载的脚本（head.ejs / scripts.ejs）也会被追踪 */
+  var _loadedScripts = {};
+
+  /* 扫描当前文档中所有已存在的外部 script，记录到缓存 */
+  function _scanLoadedScripts() {
+    document.querySelectorAll('script[src]').forEach(function (s) {
+      _loadedScripts[s.getAttribute('src')] = true;
+    });
+  }
+
+  /* AJAX 导航前清理：销毁旧评论实例、重置全局状态 */
+  function cleanupBeforeNav() {
+    /* 销毁 CWD 实例及其观察器 */
+    if (window.__cwdInstance) {
+      try {
+        if (window.__cwdInstance.unmount) window.__cwdInstance.unmount();
+        else if (window.__cwdInstance.destroy) window.__cwdInstance.destroy();
+      } catch (e) { console.warn('[cleanup] CWD unmount:', e); }
+      window.__cwdInstance = null;
+    }
+    /* 重置评论错误处理函数（新页面会重新定义） */
+    window.__commentsShowError = null;
+  }
+
+  /* 重新执行容器内所有 <script> 标签 + 处理 <link> 样式表
+     浏览器对 innerHTML 设置的 script 不会执行，需手动重建
+     - 已加载的外部脚本跳过（全局变量已定义），避免重复加载
+     - onerror 属性通过 setAttribute 对动态脚本不生效，需显式绑定
+     - 同时检查 document 中是否已有相同 src 的 script（初始页面加载的）
+     - <link rel="stylesheet"> 移到 <head> 并去重（innerHTML 后浏览器不一定加载容器内 link） */
   function execScripts(container) {
+    /* 1. 处理 <link rel="stylesheet"> — 移到 <head>，已存在则跳过 */
+    container.querySelectorAll('link[rel="stylesheet"]').forEach(function (link) {
+      var href = link.getAttribute('href');
+      if (!href) return;
+      /* 已在 <head> 中有相同 href 的 link，跳过 */
+      if (document.querySelector('head link[href="' + href + '"]')) {
+        if (link.parentNode) link.parentNode.removeChild(link);
+        return;
+      }
+      /* 移到 <head>，浏览器会自动加载 */
+      document.head.appendChild(link);
+    });
+
+    /* 2. 处理 <script> 标签 */
     var scripts = container.querySelectorAll('script');
     scripts.forEach(function (oldScript) {
+      var src = oldScript.getAttribute('src');
+      var onerr = oldScript.getAttribute('onerror');
+
+      /* 已加载的外部脚本：跳过（缓存命中 或 文档中已存在相同 src） */
+      if (src && (_loadedScripts[src] || document.querySelector('script[src="' + src + '"]'))) {
+        if (oldScript.parentNode) oldScript.parentNode.removeChild(oldScript);
+        return;
+      }
+
       var newScript = document.createElement('script');
       var attrs = oldScript.attributes;
       for (var i = 0; i < attrs.length; i++) {
+        /* onerror 属性单独处理（setAttribute 对动态 script 不可靠） */
+        if (attrs[i].name === 'onerror') continue;
         newScript.setAttribute(attrs[i].name, attrs[i].value);
       }
       newScript.textContent = oldScript.textContent;
+
+      /* 外部脚本：绑定 onload/onerror */
+      if (src) {
+        newScript.onload = function () { _loadedScripts[src] = true; };
+        if (onerr) {
+          newScript.onerror = function () {
+            try { new Function(onerr)(); } catch (e) { console.warn('[execScripts] onerror:', e); }
+          };
+        }
+      }
+
       oldScript.parentNode.replaceChild(newScript, oldScript);
     });
   }
@@ -897,12 +962,15 @@
             var doc = new DOMParser().parseFromString(xhr.responseText, 'text/html');
             var nc = doc.getElementById('ajax-container');
             if (nc) {
+              /* 清理旧评论实例（CWD 等），防止观察器/事件残留 */
+              cleanupBeforeNav();
+              /* 先更新 URL 和标题，确保评论系统等脚本读取到正确的 location.pathname */
+              if (push) history.pushState(null, null, u);
+              var t = doc.querySelector('title'); if (t) document.title = t.textContent;
               box.innerHTML = nc.innerHTML;
               /* 关键：innerHTML 不执行 <script>，需手动重建执行
                  必须在 init 调用之前，因为 Gallery.init 等依赖内联脚本设置的变量（如 GALLERY_DATA） */
               try { execScripts(box); } catch(e) { console.warn('execScripts error:', e); }
-              var t = doc.querySelector('title'); if (t) document.title = t.textContent;
-              if (push) history.pushState(null, null, u);
               /* DesktopMode 必须先执行：移除首页的 overflow:hidden，
                  否则非首页内容不可滚动 */
               try { DesktopMode.check(); } catch(e) { console.warn('DesktopMode error:', e); }
@@ -918,6 +986,8 @@
               CountUp.init();
               ArchiveFold.init();
               Gallery.init();
+              /* 重新触发卜算子访客统计（脚本在 head 中，AJAX 不会自动重新加载） */
+              refreshBusuanzi();
               window.scrollTo(0, 0);
               // GSAP 动画需在 AJAX 加载完成后重新执行
               if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
@@ -973,6 +1043,22 @@
         glass.style.width = inner.offsetWidth + 'px';
       }
     });
+  }
+
+  /* ====== 卜算子访客统计 — AJAX 导航后重新触发 ====== */
+  function refreshBusuanzi() {
+    /* 卜算子在 head.ejs 中加载，位于 ajax-container 之外，AJAX 导航不会重新触发。
+       此函数通过重新插入 script 标签来重新获取访客数据。 */
+    var old = document.querySelector('script[src*="busuanzi"]');
+    var src = old ? old.getAttribute('src') : '/assets/js/busuanzi.pure.mini.js';
+    if (old) old.remove();
+    /* 重置全局状态，让新脚本干净初始化 */
+    window.bszCaller = undefined;
+    window.bszTag = undefined;
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    document.head.appendChild(s);
   }
 
   /* ====== 统计数字计数动画 ====== */
@@ -1199,6 +1285,7 @@
 
   /* ====== Init ====== */
   document.addEventListener('DOMContentLoaded', function () {
+    _scanLoadedScripts(); /* 记录初始页面加载的所有外部脚本，供 execScripts 去重 */
     syncMobileClass(); /* 确保移动端 class 与当前视口一致 */
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
     DockTip.init(); /* dock tooltip — 不依赖 GSAP */

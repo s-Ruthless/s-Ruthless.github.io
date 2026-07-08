@@ -7,17 +7,53 @@
   var showComments = page.comment !== undefined ? page.comment : isPost;
   if (!showComments) return;
   var p = c.provider || 'waline';
-  var giscusOk = p === 'giscus' && c.giscus && c.giscus.repo;
+
+  /* 检查当前 provider 配置是否完整 */
+  var providerOk = false;
+  var hintMsg = '';
+  if (p === 'giscus') {
+    providerOk = c.giscus && c.giscus.repo;
+    if (!providerOk) hintMsg = 'Giscus 缺少 repo 配置，请在 _config.yml 的 comments.giscus.repo 填写 GitHub 仓库（owner/repo）';
+  } else if (p === 'waline') {
+    providerOk = c.waline && c.waline.serverURL;
+    if (!providerOk) hintMsg = 'Waline 缺少 serverURL 配置，请在 _config.yml 的 comments.waline.serverURL 填写服务端地址';
+  } else if (p === 'twikoo') {
+    providerOk = c.twikoo && c.twikoo.envId;
+    if (!providerOk) hintMsg = 'Twikoo 缺少 envId 配置，请在 _config.yml 的 comments.twikoo.envId 填写环境 ID';
+  } else if (p === 'gitalk') {
+    providerOk = c.gitalk && c.gitalk.clientID;
+    if (!providerOk) hintMsg = 'Gitalk 缺少 clientID 配置，请在 _config.yml 的 comments.gitalk 中填写 clientID / clientSecret / repo / owner';
+  } else if (p === 'cwd') {
+    providerOk = c.cwd && c.cwd.apiBaseUrl;
+    if (!providerOk) hintMsg = 'CWD 缺少 apiBaseUrl 配置，请在 _config.yml 的 comments.cwd.apiBaseUrl 填写 API 地址';
+  } else {
+    hintMsg = '未知的评论系统 provider：' + p + '，支持 giscus / waline / twikoo / gitalk / cwd';
+  }
+  var giscusOk = p === 'giscus' && providerOk;
 %>
-<div class="comments-wrap" id="comments-wrap">
-  <div class="comments-loading" id="comments-loading"><div class="comments-spinner"></div><span>评论加载中…</span></div>
-  <div id="comments-mount" class="comments-mount-giscus">
+<div class="comments-wrap" id="comments-wrap"<% if (p === 'cwd') { %> style="border:none;box-shadow:none;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0;"<% } %>>
+  <% if (providerOk) { %>
+  <div class="comments-loading" id="comments-loading"<% if (p === 'cwd') { %> style="background:transparent;border-radius:0;"<% } %>><div class="comments-spinner"></div><span>评论加载中…</span></div>
+  <% } %>
+  <div id="comments-mount"<% if (giscusOk) { %> class="comments-mount-giscus"<% } %>>
     <% if (giscusOk) { %>
     <script>
-      /* 动态创建 Giscus 脚本：根据当前 data-theme 设置正确的 Giscus 主题，
-         避免 preferred_color_scheme 跟随浏览器系统偏好而导致夜间模式白屏 */
+      /* 动态创建 Giscus 脚本：使用自定义主题 CSS 文件定制评论框内部样式。
+         data-theme 支持传入 CSS 文件 URL，Giscus 会在 iframe 内加载该 CSS。
+         暗黑模式使用 custom-dark.css，浅色模式使用 custom-light.css。
+         Giscus iframe 是 HTTPS，自定义 CSS 也必须 HTTPS。
+         - 生产环境（HTTPS）：从当前站点同源加载 CSS
+         - 本地开发（HTTP）：从生产站点 HTTPS 地址加载 CSS，本地也能预览自定义样式
+         - 生产 URL 未配置或非 HTTPS：回退到内置 noborder 主题 */
       (function(){
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var origin = window.location.origin;
+        var prodUrl = '<%= (config.url || "").replace(/\/$/, "") %>';
+        /* HTTPS → 同源；HTTP（localhost）→ 生产 HTTPS 地址 */
+        var baseUrl = origin.indexOf('https://') === 0 ? origin
+                    : (prodUrl.indexOf('https://') === 0 ? prodUrl : '');
+        var lightTheme = baseUrl ? baseUrl + '/giscus/custom-light.css' : 'noborder_light';
+        var darkTheme = baseUrl ? baseUrl + '/giscus/custom-dark.css' : 'noborder_dark';
         var s = document.createElement('script');
         s.src = 'https://giscus.app/client.js';
         s.setAttribute('data-repo', '<%= c.giscus.repo %>');
@@ -29,11 +65,14 @@
         s.setAttribute('data-reactions-enabled', '<%= c.giscus.reactionsEnabled !== undefined ? c.giscus.reactionsEnabled : 0 %>');
         s.setAttribute('data-emit-metadata', '0');
         s.setAttribute('data-input-position', '<%= c.giscus.inputPosition || 'top' %>');
-        s.setAttribute('data-theme', dark ? 'noborder_dark' : 'noborder_light');
+        s.setAttribute('data-theme', dark ? darkTheme : lightTheme);
         s.setAttribute('data-lang', 'zh-CN');
         s.setAttribute('data-loading', 'eager');
         s.setAttribute('crossorigin', 'anonymous');
         s.async = true;
+        s.onerror = function(){
+          if(window.__commentsShowError) window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试');
+        };
         document.getElementById('comments-mount').appendChild(s);
       })();
     </script>
@@ -41,13 +80,6 @@
   </div>
 </div>
 <script>
-  /*
-   * 评论区加载优化 v4：
-   * 1. CSS .comments-mount-giscus{opacity:0} 从第一帧隐藏 iframe，杜绝 Giscus 原生加载动画闪现
-   * 2. data-loading="eager" 立即加载 iframe
-   * 3. 监听 postMessage 的 resizeHeight，等高度稳定 800ms → 评论完全渲染 → 骨架屏淡出 + iframe 淡入
-   * 4. 容器高度由 Giscus 的 resizeHeight 自动撑开，不固定死
-   */
   (function(){
     var loading = document.getElementById('comments-loading');
     var wrap = document.getElementById('comments-wrap');
@@ -58,74 +90,133 @@
     function hideLoading(){
       if(hidden) return;
       hidden = true;
-      /* 骨架屏淡出 */
       loading.style.opacity = '0';
       loading.style.transition = 'opacity 0.4s ease';
-      setTimeout(function(){ loading.style.display = 'none'; }, 400);
-      /* iframe 容器淡入 */
+      /* 淡入评论容器 + 高度平滑过渡 */
       if(mount){
         mount.style.opacity = '1';
-        mount.style.transition = 'opacity 0.4s ease';
+        mount.style.transform = 'translateY(0)';
+        /* 标记已加载，触发 CSS 淡入动画 */
+        if(mount.firstElementChild) mount.firstElementChild.setAttribute('data-loaded', 'true');
       }
+      /* 评论区背景高度平滑撑开动画 */
+      wrap.style.transition = 'height 0.4s ease, min-height 0.4s ease';
+      setTimeout(function(){
+        loading.style.display = 'none';
+        /* 移除过渡，避免影响后续交互 */
+        wrap.style.transition = '';
+      }, 400);
     }
 
-    /* iframe 容器初始透明由 CSS .comments-mount-giscus{opacity:0} 控制，
-       确保 Giscus 原生加载动画从第一帧就不可见 */
+    var p = '<%= p %>';
 
-    /* ---- 非 Giscus 系统：检测到容器即隐藏 ---- */
-    var mo = new MutationObserver(function(){
-      if(wrap.querySelector('.gt-container, .tk-comment, .wl-panel')){
-        hideLoading();
-        mo.disconnect();
-      }
-    });
-    mo.observe(wrap, { childList: true, subtree: true });
+    /* ---- Giscus：监听 iframe load + resizeHeight 双重确认 ---- */
+    if(p === 'giscus'){
+      var iframeLoaded = false;
+      var heightStable = false;
+      var lastHeight = 0;
+      var stableTimer = null;
 
-    /* ---- Giscus：监听 postMessage 中的 resizeHeight ----
-       Giscus 渲染评论（包括"暂无评论"提示）时会发送 resizeHeight 消息。
-       高度可能多次变化，等连续 800ms 不再变化 → 评论完全加载完毕。 */
-    var lastHeight = 0;
-    var stableTimer = null;
-    var firstMessageReceived = false;
-
-    window.addEventListener('message', function(e){
-      if(e.origin !== 'https://giscus.app') return;
-      var data = e.data;
-      if(!data || typeof data !== 'object' || !data.giscus) return;
-
-      if(data.giscus.resizeHeight){
-        firstMessageReceived = true;
-        var h = data.giscus.resizeHeight;
-        /* 高度发生变化，重置稳定计时器 */
-        if(h !== lastHeight){
-          lastHeight = h;
-          clearTimeout(stableTimer);
-          stableTimer = setTimeout(function(){
-            /* 800ms 内高度没再变化 → 评论完全加载 */
-            hideLoading();
-          }, 800);
+      var iframeObserver = new MutationObserver(function(){
+        var iframe = wrap.querySelector('iframe.giscus-frame');
+        if(iframe && !iframeLoaded){
+          iframeLoaded = true;
+          iframe.addEventListener('load', function(){
+            setTimeout(checkReady, 1500);
+          });
+          iframeObserver.disconnect();
         }
-      }
-    });
+      });
+      iframeObserver.observe(mount, { childList: true, subtree: true });
 
-    /* 超时兜底：20 秒后强制隐藏 */
-    setTimeout(function(){
-      if(!hidden) hideLoading();
-    }, 20000);
+      function checkReady(){
+        if(hidden) return;
+        if(heightStable){ hideLoading(); return; }
+        setTimeout(checkReady, 500);
+      }
+
+      window.addEventListener('message', function(e){
+        if(e.origin !== 'https://giscus.app') return;
+        var data = e.data;
+        if(!data || typeof data !== 'object' || !data.giscus) return;
+        if(data.giscus.resizeHeight){
+          var h = data.giscus.resizeHeight;
+          if(h !== lastHeight && h > 0){
+            lastHeight = h;
+            clearTimeout(stableTimer);
+            stableTimer = setTimeout(function(){
+              heightStable = true;
+              if(iframeLoaded) hideLoading();
+            }, 1000);
+          }
+        }
+      });
+    }
+
+    /* ---- CWD：轮询检测容器高度，评论渲染后高度会明显增大 ---- */
+    if(p === 'cwd'){
+      /* 初始隐藏，等待渲染完成 */
+      mount.style.opacity = '0';
+      mount.style.transform = 'translateY(8px)';
+      var cwdPoll = setInterval(function(){
+        if(mount && mount.offsetHeight > 200){
+          clearInterval(cwdPoll);
+          var firstChild = mount.firstElementChild;
+          if(firstChild) firstChild.setAttribute('data-loaded', 'true');
+          hideLoading();
+        }
+      }, 500);
+    }
+
+    /* ---- Gitalk / Twikoo / Waline：MutationObserver 检测常规 DOM ---- */
+    if(p === 'gitalk' || p === 'twikoo' || p === 'waline'){
+      /* 初始隐藏，等待渲染完成 */
+      mount.style.opacity = '0';
+      mount.style.transform = 'translateY(8px)';
+      var mo = new MutationObserver(function(){
+        var loadedEl = wrap.querySelector('.gt-container, .tk-comment, .wl-panel');
+        if(loadedEl){
+          loadedEl.setAttribute('data-loaded', 'true');
+          hideLoading();
+          mo.disconnect();
+        }
+      });
+      mo.observe(wrap, { childList: true, subtree: true });
+    }
+
+    /* 错误提示：仅当脚本加载失败（如 404）时显示，否则一直转圈 */
+    function showError(msg){
+      if(hidden) return;
+      hidden = true;
+      loading.innerHTML = '<div style="text-align:center;color:#999;font-size:13px;line-height:1.8;">'
+        + '<i class="fas fa-exclamation-circle" style="font-size:20px;margin-bottom:8px;display:block;"></i>'
+        + (msg || '评论加载失败')
+        + '<br><a href="javascript:location.reload()" style="color:var(--accent-color);">点击重试</a>'
+        + '</div>';
+    }
+    window.__commentsShowError = showError;
   })();
 </script>
 
 <% if (giscusOk) { %>
 <script>
   /* 暗黑模式切换同步：用户点击切换按钮后，通过 postMessage 通知 Giscus 切换主题。
-     初始主题已在上方动态创建脚本时正确设置，此处仅处理运行时切换。 */
+     初始主题已在上方动态创建脚本时正确设置，此处仅处理运行时切换。
+     切换时传入自定义 CSS 文件 URL，保持与初始加载一致。
+     本地开发（HTTP）从生产 HTTPS 地址加载 CSS。 */
   (function(){
+    var origin = window.location.origin;
+    var prodUrl = '<%= (config.url || "").replace(/\/$/, "") %>';
+    var baseUrl = origin.indexOf('https://') === 0 ? origin
+                : (prodUrl.indexOf('https://') === 0 ? prodUrl : '');
+    var lightTheme = baseUrl ? baseUrl + '/giscus/custom-light.css' : 'noborder_light';
+    var darkTheme = baseUrl ? baseUrl + '/giscus/custom-dark.css' : 'noborder_dark';
     function syncTheme(){
       var iframe = document.querySelector('iframe.giscus-frame');
       if(!iframe) return;
       var dark = document.documentElement.getAttribute('data-theme') === 'dark';
       iframe.contentWindow.postMessage({
-        giscus: { setConfig: { theme: dark ? 'noborder_dark' : 'noborder_light' } }
+        giscus: { setConfig: { theme: dark ? darkTheme : lightTheme } }
       }, 'https://giscus.app');
     }
     var observer = new MutationObserver(syncTheme);
@@ -136,28 +227,34 @@
 <% } else if (p === 'waline' && c.waline && c.waline.serverURL) { %>
 <link rel="stylesheet" href="<%= A %>/css/waline.css">
 <script type="module">
-  import { init } from '<%= A %>/js/waline.js';
-  init({
-    el: '#comments-mount',
-    serverURL: '<%= c.waline.serverURL %>',
-    dark: 'html[data-theme="dark"]',
-    lang: 'zh-CN'
-  });
+  import('<%= A %>/js/waline.js')
+    .then(function(mod){ mod.init({
+      el: '#comments-mount',
+      serverURL: '<%= c.waline.serverURL %>',
+      dark: 'html[data-theme="dark"]',
+      lang: 'zh-CN'
+    }); })
+    .catch(function(){ if(window.__commentsShowError) window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试'); });
 </script>
 
 <% } else if (p === 'twikoo' && c.twikoo && c.twikoo.envId) { %>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js" onerror="window.__commentsShowError&&window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试')"></script>
 <script>
   (function(){
     function init(){ twikoo.init({ envId: '<%= c.twikoo.envId %>', el: '#comments-mount' }); }
     if (window.twikoo) init();
-    else document.addEventListener('DOMContentLoaded', init);
+    else {
+      var _tkWait = setInterval(function(){
+        if(window.twikoo){ clearInterval(_tkWait); init(); }
+      }, 100);
+      setTimeout(function(){ clearInterval(_tkWait); }, 15000);
+    }
   })();
 </script>
 
 <% } else if (p === 'gitalk' && c.gitalk && c.gitalk.clientID) { %>
 <link rel="stylesheet" href="<%= A %>/css/gitalk.css">
-<script src="<%= A %>/js/gitalk.min.js"></script>
+<script src="<%= A %>/js/gitalk.min.js" onerror="window.__commentsShowError&&window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试')"></script>
 <script>
   (function(){
     function init(){
@@ -173,9 +270,91 @@
       gitalk.render('comments-mount');
     }
     if (window.Gitalk) init();
-    else document.addEventListener('DOMContentLoaded', init);
+    else {
+      var _gtWait = setInterval(function(){
+        if(window.Gitalk){ clearInterval(_gtWait); init(); }
+      }, 100);
+      setTimeout(function(){ clearInterval(_gtWait); }, 15000);
+    }
+  })();
+</script>
+<% } else if (p === 'cwd' && c.cwd && c.cwd.apiBaseUrl) { %>
+<script src="<%= A %>/js/cwd.js" onerror="window.__commentsShowError&&window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试')"></script>
+<script>
+  (function(){
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    /* 主题色 — 读取页面 :root 上的 --accent-color，回退到 _config 注入值 */
+    var accentColor = '<%= theme.accent_color || "#c0504d" %>';
+    function getAccent(){
+      return getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || accentColor;
+    }
+    /* 向 CWD Shadow DOM 注入覆盖样式 */
+    function injectCwdStyles(shadow, isDark){
+      var accent = getAccent();
+      var style = document.createElement('style');
+      style.id = 'cwd-theme-override';
+      style.textContent = ''
+        + ':host{--cwd-primary:' + accent + '!important;'
+        + '--cwd-primary-hover:' + accent + '!important;}'
+        + '.cwd-comments-container,[data-theme=light]{--cwd-primary:' + accent + '!important;'
+        + '--cwd-primary-hover:' + accent + '!important;}'
+        + (isDark ? '[data-theme=dark]{--cwd-primary:' + accent + '!important;'
+          + '--cwd-primary-hover:' + accent + '!important;}' : '')
+        + '.cwd-comment-form{border:none!important;background:transparent!important;}'
+        + '.cwd-btn-primary{background:' + accent + '!important;'
+          + 'border-color:' + accent + '!important;}'
+        + '.cwd-btn-primary:hover{filter:brightness(1.1);}'
+        + '.cwd-comment-avatar{border-radius:50%!important;}';
+      var old = shadow.querySelector('#cwd-theme-override');
+      if(old) old.remove();
+      shadow.appendChild(style);
+    }
+    function init(){
+      var comments = new CWDComments({
+        el: '#comments-mount',
+        apiBaseUrl: '<%= c.cwd.apiBaseUrl %>',
+        siteId: '<%= c.cwd.siteId || "" %>',
+        lang: '<%= c.cwd.lang || "auto" %>',
+        theme: dark ? 'dark' : 'light'
+      });
+      comments.mount();
+      window.__cwdInstance = comments;
+      /* 渲染完成后标记加载状态 */
+      var mountObserver = new MutationObserver(function(){
+        var firstChild = document.getElementById('comments-mount').firstElementChild;
+        if(firstChild){
+          firstChild.setAttribute('data-loaded', 'true');
+          mountObserver.disconnect();
+        }
+      });
+      mountObserver.observe(document.getElementById('comments-mount'), { childList: true });
+      /* 等待 Shadow DOM 创建后注入样式 */
+      var styleTimer = setInterval(function(){
+        var host = document.getElementById('comments-mount');
+        if(host && host.shadowRoot){
+          injectCwdStyles(host.shadowRoot, document.documentElement.getAttribute('data-theme') === 'dark');
+          clearInterval(styleTimer);
+        }
+      }, 200);
+      /* 暗黑模式切换同步：重新注入样式 + 通知 CWD 切换主题 */
+      var observer = new MutationObserver(function(){
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        comments.updateConfig({ theme: d ? 'dark' : 'light' });
+        var host = document.getElementById('comments-mount');
+        if(host && host.shadowRoot) injectCwdStyles(host.shadowRoot, d);
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+    if (window.CWDComments) init();
+    else {
+      /* AJAX 导航时 DOMContentLoaded 已触发，改用轮询等待脚本加载 */
+      var _cwdWait = setInterval(function(){
+        if(window.CWDComments){ clearInterval(_cwdWait); init(); }
+      }, 100);
+      setTimeout(function(){ clearInterval(_cwdWait); }, 15000);
+    }
   })();
 </script>
 <% } else { %>
-<div class="comments-config-hint">评论系统已开启但配置不完整，请在主题 <code>_config.yml</code> 的 <code>comments</code> 中填写对应 provider 的字段。</div>
+<div class="comments-config-hint"><i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i><%= hintMsg %></div>
 <% } %>

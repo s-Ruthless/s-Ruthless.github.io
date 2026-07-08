@@ -283,32 +283,21 @@
           + 'border-color:' + accent + '!important;}'
         + '.cwd-btn-primary:hover{filter:brightness(1.1);}'
         + '.cwd-comment-avatar{border-radius:50%!important;}'
-        /* ====== 表单输入框：内联标签 + 美化 ====== */
-        + '.cwd-form-row .cwd-form-field{position:relative!important;display:block!important}'
-        + '.cwd-form-row .cwd-form-field input::placeholder{color:transparent!important}'
+        /* ====== 表单输入框美化 ====== */
+        + '.cwd-form-row .cwd-form-field{position:relative!important}'
         + '.cwd-form-row .cwd-form-field input{'
           + 'padding-left:68px!important;'
           + 'height:42px;'
           + 'border-radius:10px!important;'
           + 'font-size:14px;'
           + 'transition:border-color .2s,box-shadow .2s;}'
-        /* 内联标签文字 — 通过 :has(input[type]) 区分三个字段 */
-        + '.cwd-form-row .cwd-form-field:has(input[type="text"])::before,'
-        + '.cwd-form-row .cwd-form-field:has(input[type="email"])::before,'
-        + '.cwd-form-row .cwd-form-field:has(input[type="url"])::before{'
+        + '.cwd-inline-label{'
           + 'position:absolute;left:12px;top:0;'
           + 'height:42px;line-height:42px;'
-          + 'font-size:13px;font-weight:500;color:var(--cwd-text-secondary);'
+          + 'font-size:13px;font-weight:500;'
+          + 'color:var(--cwd-text-secondary);'
           + 'pointer-events:none;z-index:1;white-space:nowrap;}'
-        + '.cwd-form-row .cwd-form-field:has(input[type="text"])::before{content:"昵称"}'
-        + '.cwd-form-row .cwd-form-field:has(input[type="email"])::before{content:"邮箱"}'
-        + '.cwd-form-row .cwd-form-field:has(input[type="url"])::before{content:"网址"}'
-        /* 必填项红色星号 */
-        + '.cwd-form-row .cwd-form-field:has(input[type="text"])::after,'
-        + '.cwd-form-row .cwd-form-field:has(input[type="email"])::after{'
-          + 'content:"*";position:absolute;left:42px;top:0;'
-          + 'height:42px;line-height:42px;'
-          + 'color:#e53e3e;font-size:14px;pointer-events:none;z-index:1;}'
+        + '.cwd-inline-required{color:#e53e3e;margin-left:2px;}'
         /* 评论输入框美化 */
         + '.cwd-form-textarea{'
           + 'border-radius:10px!important;'
@@ -356,16 +345,37 @@
         if(host && host.shadowRoot){
           injectCwdStyles(host.shadowRoot, document.documentElement.getAttribute('data-theme') === 'dark');
           clearInterval(styleTimer);
-          /* 清除输入框 placeholder，避免与内联标签重复显示 */
-          function clearPlaceholders(){
-            var inputs = host.shadowRoot.querySelectorAll('.cwd-form-row input');
-            for(var i = 0; i < inputs.length; i++){
-              if(inputs[i].placeholder) inputs[i].placeholder = '';
+          /* 注入内联标签 + 彻底删除 placeholder，避免重复显示 */
+          function patchFormFields(){
+            var formRow = host.shadowRoot.querySelector('.cwd-form-row');
+            if(!formRow) return;
+            var fields = formRow.querySelectorAll('.cwd-form-field');
+            var labels = ['昵称','邮箱','网址'];
+            var required = [true,true,false];
+            for(var i = 0; i < fields.length; i++){
+              var input = fields[i].querySelector('input');
+              if(!input) continue;
+              /* 彻底删除 placeholder 属性 */
+              input.removeAttribute('placeholder');
+              /* 已有标签则跳过 */
+              if(fields[i].querySelector('.cwd-inline-label')) continue;
+              /* 插入标签 span */
+              var label = document.createElement('span');
+              label.className = 'cwd-inline-label';
+              label.textContent = labels[i] || '';
+              if(required[i]){
+                var star = document.createElement('span');
+                star.className = 'cwd-inline-required';
+                star.textContent = '*';
+                label.appendChild(star);
+              }
+              fields[i].style.position = 'relative';
+              fields[i].insertBefore(label, input);
             }
           }
-          clearPlaceholders();
-          /* 监听 CWD 重新渲染，持续清除 placeholder */
-          var phObserver = new MutationObserver(function(){ clearPlaceholders(); });
+          patchFormFields();
+          /* 监听 CWD 重新渲染，持续注入标签 + 清除 placeholder */
+          var phObserver = new MutationObserver(function(){ patchFormFields(); });
           phObserver.observe(host.shadowRoot, { childList: true, subtree: true });
           /* 检测 CWD 评论加载完成：监听 .cwd-loading 元素消失
              CWD 组件首次渲染会显示 .cwd-loading（自身 loading spinner），

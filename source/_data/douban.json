@@ -177,7 +177,7 @@
       "cover_local": "/images/douban/movie/p2516481762.jpg",
       "id": "24773958",
       "link": "https://movie.douban.com/subject/24773958/",
-      "rating": 0,
+      "rating": 8.1,
       "date": "2021-02-01",
       "note": "",
       "info": "动作 / 科幻 / 奇幻 / 冒险"
@@ -189,7 +189,7 @@
       "cover_local": "/images/douban/movie/p2229594647.jpg",
       "id": "10741834",
       "link": "https://movie.douban.com/subject/10741834/",
-      "rating": 0,
+      "rating": 7.5,
       "date": "2021-02-01",
       "note": "",
       "info": "动作 / 科幻 / 奇幻 / 冒险"
@@ -201,7 +201,7 @@
       "cover_local": "/images/douban/movie/p1469137689.jpg",
       "id": "1866479",
       "link": "https://movie.douban.com/subject/1866479/",
-      "rating": 0,
+      "rating": 8.3,
       "date": "2021-02-01",
       "note": "",
       "info": "动作 / 科幻 / 奇幻 / 冒险"
@@ -210,7 +210,7 @@
   "music": [],
   "_meta": {
     "user_id": "sjl511",
-    "synced_at": "2026-07-08T09:39:47.111Z",
+    "synced_at": "2026-07-08T09:52:51.223Z",
     "total": {
       "books": 6,
       "movies": 11,

@@ -284,8 +284,7 @@
         + '.cwd-btn-primary:hover{filter:brightness(1.1);}'
         + '.cwd-comment-avatar{border-radius:50%!important;}'
         /* ====== 表单输入框：内联标签 + 美化 ====== */
-        + '.cwd-form-row .cwd-form-field{position:relative!important}'
-        + '.cwd-form-row .cwd-form-field input::placeholder{color:transparent!important}'
+        + '.cwd-form-row .cwd-form-field{position:relative!important;display:block!important}'
         + '.cwd-form-row .cwd-form-field input{'
           + 'padding-left:68px!important;'
           + 'height:42px;'
@@ -296,7 +295,8 @@
         + '.cwd-form-row .cwd-form-field:has(input[type="text"])::before,'
         + '.cwd-form-row .cwd-form-field:has(input[type="email"])::before,'
         + '.cwd-form-row .cwd-form-field:has(input[type="url"])::before{'
-          + 'position:absolute;left:12px;top:50%;transform:translateY(-50%);'
+          + 'position:absolute;left:12px;top:0;'
+          + 'height:42px;line-height:42px;'
           + 'font-size:13px;font-weight:500;color:var(--cwd-text-secondary);'
           + 'pointer-events:none;z-index:1;white-space:nowrap;}'
         + '.cwd-form-row .cwd-form-field:has(input[type="text"])::before{content:"昵称"}'
@@ -305,7 +305,8 @@
         /* 必填项红色星号 */
         + '.cwd-form-row .cwd-form-field:has(input[type="text"])::after,'
         + '.cwd-form-row .cwd-form-field:has(input[type="email"])::after{'
-          + 'content:"*";position:absolute;left:42px;top:50%;transform:translateY(-50%);'
+          + 'content:"*";position:absolute;left:42px;top:0;'
+          + 'height:42px;line-height:42px;'
           + 'color:#e53e3e;font-size:14px;pointer-events:none;z-index:1;}'
         /* 评论输入框美化 */
         + '.cwd-form-textarea{'
@@ -354,6 +355,17 @@
         if(host && host.shadowRoot){
           injectCwdStyles(host.shadowRoot, document.documentElement.getAttribute('data-theme') === 'dark');
           clearInterval(styleTimer);
+          /* 清除输入框 placeholder，避免与内联标签重复显示 */
+          function clearPlaceholders(){
+            var inputs = host.shadowRoot.querySelectorAll('.cwd-form-row input');
+            for(var i = 0; i < inputs.length; i++){
+              if(inputs[i].placeholder) inputs[i].placeholder = '';
+            }
+          }
+          clearPlaceholders();
+          /* 监听 CWD 重新渲染，持续清除 placeholder */
+          var phObserver = new MutationObserver(function(){ clearPlaceholders(); });
+          phObserver.observe(host.shadowRoot, { childList: true, subtree: true });
           /* 检测 CWD 评论加载完成：监听 .cwd-loading 元素消失
              CWD 组件首次渲染会显示 .cwd-loading（自身 loading spinner），
              评论 API 返回后 loading:false → 重新渲染 → .cwd-loading 被移除。

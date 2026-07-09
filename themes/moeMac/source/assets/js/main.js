@@ -868,8 +868,9 @@
       } catch (e) { console.warn('[cleanup] CWD unmount:', e); }
       window.__cwdInstance = null;
     }
-    /* 重置评论错误处理函数（新页面会重新定义） */
+    /* 重置评论全局回调（新页面会重新定义） */
     window.__commentsShowError = null;
+    window.__commentsHideLoading = null;
   }
 
   /* 重新执行容器内所有 <script> 标签 + 处理 <link> 样式表

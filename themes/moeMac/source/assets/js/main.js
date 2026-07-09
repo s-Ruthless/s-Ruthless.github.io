@@ -6,18 +6,22 @@
 
   /* ====== 移动端检测 ====== */
   var MOBILE_BP = 768;
-  /* 多层检测：UA + 触摸能力 + 屏幕物理宽度，确保各种浏览器都能正确识别 */
+  /* 多层检测：UA + 触摸能力 + 屏幕物理宽度 + userAgentData，确保各种浏览器都能正确识别 */
   var _uaMobile = (function(){
     var ua = navigator.userAgent || navigator.vendor || '';
     /* 标准 Android 手机、iPhone */
     if (/Android.*Mobile|iPhone|iPod/i.test(ua)) return true;
-    /* 荣耀/华为手机：部分 UA 不含 'Mobile' */
-    if (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser/i.test(ua)) return true;
+    /* 荣耀/华为手机：部分 UA 不含 'Mobile'，增加 HarmonyOS/ArkWeb 匹配 */
+    if (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser|HarmonyOS|ArkWeb/i.test(ua)) return true;
     /* 触摸设备 + 无 hover + 屏幕宽度 ≤900 */
     var hasTouch = (navigator.maxTouchPoints || 0) > 0;
     var coarsePointer = window.matchMedia && window.matchMedia('(pointer:coarse) and (hover:none)').matches;
     var smallScreen = window.innerWidth <= 900 || (screen.width <= 900 && screen.height <= 900);
     if ((hasTouch || coarsePointer) && smallScreen) return true;
+    /* userAgentData API — 现代浏览器检测 */
+    if (navigator.userAgentData && navigator.userAgentData.mobile) return true;
+    /* 物理屏幕宽度兜底：手机物理屏幕通常 ≤500 CSS px */
+    if (screen.width <= 500) return true;
     return false;
   })();
   function isMobile() {

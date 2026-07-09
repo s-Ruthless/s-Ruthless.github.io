@@ -174,8 +174,14 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 }
 /* 桌面端：未定位的拖拽窗口隐藏等待 JS 布局 */
 html:not(.is-mobile) .drag-win:not([data-pos]){visibility:hidden;}
-/* 移动端兜底：即使 JS 未设置 is-mobile，CSS 媒体查询也确保窗口可见 */
-@media (max-width:768px){
+/* 移动端兜底：即使 JS 未设置 is-mobile，CSS 媒体查询也确保窗口可见
+   三层检测确保所有浏览器都能命中：
+   1. max-width:768px — 标准移动端断点
+   2. max-width:1024px + pointer:coarse — 触摸设备（荣耀/华为浏览器 viewport 可能 >768px）
+   3. max-width:1024px + hover:none — 无 hover 设备（同上） */
+@media (max-width:768px),
+       (max-width:1024px) and (pointer:coarse),
+       (max-width:1024px) and (hover:none){
   .drag-win:not([data-pos]){visibility:visible!important;}
 }
 .drag-bar{cursor:move;}

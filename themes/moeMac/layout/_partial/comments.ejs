@@ -285,6 +285,7 @@
         + '.cwd-comment-avatar{border-radius:50%!important;}'
         /* ====== 表单输入框美化 ====== */
         + '.cwd-form-row .cwd-form-field{position:relative!important}'
+        + '.cwd-form-row .cwd-form-label{display:none!important}'
         + '.cwd-form-row .cwd-form-field input{'
           + 'padding-left:68px!important;'
           + 'height:42px;'
@@ -357,6 +358,9 @@
               if(!input) continue;
               /* 彻底删除 placeholder 属性 */
               input.removeAttribute('placeholder');
+              /* 删除原始 label，避免与内联标签重复显示 */
+              var oldLabel = fields[i].querySelector('.cwd-form-label');
+              if(oldLabel) oldLabel.remove();
               /* 已有标签则跳过 */
               if(fields[i].querySelector('.cwd-inline-label')) continue;
               /* 插入标签 span */
@@ -377,13 +381,24 @@
           /* 监听 CWD 重新渲染，持续注入标签 + 清除 placeholder */
           var phObserver = new MutationObserver(function(){ patchFormFields(); });
           phObserver.observe(host.shadowRoot, { childList: true, subtree: true });
-          /* 检测 CWD 评论加载完成：监听 .cwd-loading 元素消失
-             CWD 组件首次渲染会显示 .cwd-loading（自身 loading spinner），
-             评论 API 返回后 loading:false → 重新渲染 → .cwd-loading 被移除。
-             这是组件级别的精确信号，桌面端/移动端行为完全一致。 */
+          /* 检测 CWD 评论加载完成
+             修复竞态条件：CWD 的 mount() 同步创建 Shadow DOM，但内容（.cwd-loading 等）
+             是异步渲染的（需等待 _loadServerConfig() 完成后才调用 _render()）。
+             如果在 CWD 渲染内容前就检查 .cwd-loading，会因找不到该元素而误判为"已加载"，
+             导致 hideLoading() 被过早调用，之后 CWD 渲染的 .cwd-loading 反而无法被消除。
+             正确做法：先等待 CWD 实际渲染出内容（container 有子元素），再检查 .cwd-loading。 */
+          var cwdLoaded = false;
           function checkCwdLoaded(){
+            if(cwdLoaded) return true;
+            /* 必须等待 CWD 渲染出实际内容（container 有子元素） */
+            var container = host.shadowRoot.querySelector('.cwd-comments-container');
+            if(!container || !container.children.length){
+              return false;
+            }
+            /* CWD 已渲染内容，检查 loading 状态 */
             var loadingEl = host.shadowRoot.querySelector('.cwd-loading');
             if(!loadingEl){
+              cwdLoaded = true;
               if(window.__commentsHideLoading) window.__commentsHideLoading();
               var firstChild = host.firstElementChild;
               if(firstChild) firstChild.setAttribute('data-loaded', 'true');
@@ -393,14 +408,33 @@
           }
           /* 立即检查一次（可能已加载完成） */
           if(!checkCwdLoaded()){
-            /* 仍在加载，用 MutationObserver 监听 Shadow DOM 变化 */
+            /* 用 MutationObserver 监听 Shadow DOM 变化 */
             var cwdLoadObserver = new MutationObserver(function(){
               if(checkCwdLoaded()) cwdLoadObserver.disconnect();
             });
             cwdLoadObserver.observe(host.shadowRoot, { childList: true, subtree: true });
+            /* 兜底超时：15 秒后强制隐藏加载状态，防止 API 挂起或异常导致骨架屏永久停留 */
+            setTimeout(function(){
+              if(!cwdLoaded){
+                cwdLoaded = true;
+                cwdLoadObserver.disconnect();
+                if(window.__commentsHideLoading) window.__commentsHideLoading();
+                var firstChild = host.firstElementChild;
+                if(firstChild) firstChild.setAttribute('data-loaded', 'true');
+              }
+            }, 15000);
           }
         }
       }, 200);
+      /* styleTimer 兜底超时：20 秒内 Shadow DOM 未创建则强制隐藏骨架屏
+         （CWD 脚本加载失败、网络异常等情况） */
+      setTimeout(function(){
+        if(styleTimer){ clearInterval(styleTimer); }
+        var _host = document.getElementById('comments-mount');
+        if(!_host || !_host.shadowRoot){
+          if(window.__commentsHideLoading) window.__commentsHideLoading();
+        }
+      }, 20000);
       /* 暗黑模式切换同步：重新注入样式 + 通知 CWD 切换主题 */
       var observer = new MutationObserver(function(){
         var d = document.documentElement.getAttribute('data-theme') === 'dark';

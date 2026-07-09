@@ -42,7 +42,7 @@
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
   <!-- 第三方库 CSS + 组件库 -->
-  <% var V = '?v=20260709'; %>
+  <% var V = '?v=20260709b'; %>
   <link rel="stylesheet" href="<%= A %>/css/icons.css">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>">
@@ -66,8 +66,13 @@
       if (saved === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
-      /* 移动端检测：尽早设置 is-mobile class，避免桌面布局闪烁 */
-      var isMobile = window.matchMedia('(max-width: 768px)').matches || window.innerWidth <= 768;
+      /* 移动端检测：尽早设置 is-mobile class，避免桌面布局闪烁
+         荣耀/华为等浏览器可能 innerWidth 偏大，增加 UA + pointer 检测兜底 */
+      var ua = navigator.userAgent || '';
+      var uaMobile = /Android.*Mobile|iPhone|iPod/i.test(ua)
+        || (/Android/i.test(ua) && /Honor|HWV|HUAWEI/i.test(ua))
+        || (window.matchMedia && window.matchMedia('(pointer:coarse) and (hover:none)').matches && window.innerWidth <= 900);
+      var isMobile = uaMobile || window.matchMedia('(max-width: 768px)').matches || window.innerWidth <= 768;
       if (isMobile) {
         document.documentElement.classList.add('is-mobile');
       }

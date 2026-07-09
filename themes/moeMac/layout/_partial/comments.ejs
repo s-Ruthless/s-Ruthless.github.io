@@ -82,22 +82,24 @@
     function hideLoading(){
       if(hidden) return;
       hidden = true;
-      loading.style.opacity = '0';
-      loading.style.transition = 'opacity 0.4s ease';
-      /* 淡入评论容器 + 高度平滑过渡 */
+      /* 先淡入评论容器，让内容可见 */
       if(mount){
         mount.style.opacity = '1';
         mount.style.transform = 'translateY(0)';
-        /* 标记已加载，触发 CSS 淡入动画 */
         if(mount.firstElementChild) mount.firstElementChild.setAttribute('data-loaded', 'true');
       }
-      /* 评论区背景高度平滑撑开动画 */
-      wrap.style.transition = 'height 0.4s ease, min-height 0.4s ease';
+      /* 延迟 150ms 再隐藏 loading spinner，确保评论内容已渲染到屏幕上，
+         避免背景卡片撑开时出现空白闪烁 */
       setTimeout(function(){
-        loading.style.display = 'none';
-        /* 移除过渡，避免影响后续交互 */
-        wrap.style.transition = '';
-      }, 400);
+        loading.style.opacity = '0';
+        loading.style.transition = 'opacity 0.3s ease';
+        /* 背景高度平滑过渡 */
+        wrap.style.transition = 'height 0.4s ease, min-height 0.4s ease';
+        setTimeout(function(){
+          loading.style.display = 'none';
+          wrap.style.transition = '';
+        }, 350);
+      }, 150);
     }
 
     var p = '<%= p %>';

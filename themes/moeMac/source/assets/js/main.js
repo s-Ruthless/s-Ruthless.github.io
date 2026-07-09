@@ -6,8 +6,20 @@
 
   /* ====== 移动端检测 ====== */
   var MOBILE_BP = 768;
+  /* UA 检测：荣耀/华为等手机浏览器可能报告较大的 innerWidth，
+     导致纯宽度检测失效。增加 UA + 触摸能力双重兜底。 */
+  var _uaMobile = (function(){
+    var ua = navigator.userAgent || navigator.vendor || '';
+    /* Android 手机、iPhone、iPad（桌面模式除外） */
+    if (/Android.*Mobile|iPhone|iPod/i.test(ua)) return true;
+    /* 荣耀/华为手机：Android 但不含 'Mobile' 的 UA（部分荣耀浏览器） */
+    if (/Android/i.test(ua) && /Honor|HWV|HUAWEI/i.test(ua)) return true;
+    /* 触摸设备 + 小屏幕：pointer:coarse 且无 hover 能力 */
+    if (window.matchMedia && window.matchMedia('(pointer:coarse) and (hover:none)').matches && window.innerWidth <= 900) return true;
+    return false;
+  })();
   function isMobile() {
-    return window.innerWidth <= MOBILE_BP;
+    return _uaMobile || window.innerWidth <= MOBILE_BP;
   }
   /* 尽早同步 is-mobile class（与 head.ejs 早期脚本配合） */
   function syncMobileClass() {

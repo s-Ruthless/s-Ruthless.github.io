@@ -2,15 +2,15 @@
   /* cdn 配置与 head.ejs 一致，所有 JS 资源统一加 cdn 前缀 */
   var A = (theme.cdn || '') + '/assets';
   /* 版本号用于强制浏览器刷新缓存，修改 JS 后递增此数字 */
-  var V = '?v=20260709d';
+  var V = '?v=20260709e';
 %>
-<script src="<%= A %>/js/APlayer.min.js" defer></script>
-<script src="<%= A %>/js/Meting.min.js" defer></script>
-<script src="<%= A %>/js/gsap.min.js"></script>
-<script src="<%= A %>/js/ScrollTrigger.min.js"></script>
+<script defer src="<%= A %>/js/gsap.min.js"></script>
+<script defer src="<%= A %>/js/ScrollTrigger.min.js"></script>
+<script defer src="<%= A %>/js/APlayer.min.js"></script>
+<script defer src="<%= A %>/js/Meting.min.js"></script>
 <% if (theme.comments && theme.comments.enable && theme.comments.provider === 'cwd' && theme.comments.cwd && theme.comments.cwd.apiBaseUrl) { %>
-<script src="<%= A %>/js/cwd.js" defer></script>
+<script defer src="<%= A %>/js/cwd.js"></script>
 <% } %>
-<script src="<%= A %>/js/main.js<%= V %>"></script>
-<script src="<%= A %>/js/gsap-animations.js<%= V %>"></script>
-<script src="<%= A %>/js/ui-enhance.js<%= V %>"></script>
+<script defer src="<%= A %>/js/main.js<%= V %>"></script>
+<script defer src="<%= A %>/js/gsap-animations.js<%= V %>"></script>
+<script defer src="<%= A %>/js/ui-enhance.js<%= V %>"></script>

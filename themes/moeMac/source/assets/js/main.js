@@ -6,16 +6,18 @@
 
   /* ====== 移动端检测 ====== */
   var MOBILE_BP = 768;
-  /* UA 检测：荣耀/华为等手机浏览器可能报告较大的 innerWidth，
-     导致纯宽度检测失效。增加 UA + 触摸能力双重兜底。 */
+  /* 多层检测：UA + 触摸能力 + 屏幕物理宽度，确保各种浏览器都能正确识别 */
   var _uaMobile = (function(){
     var ua = navigator.userAgent || navigator.vendor || '';
-    /* Android 手机、iPhone、iPad（桌面模式除外） */
+    /* 标准 Android 手机、iPhone */
     if (/Android.*Mobile|iPhone|iPod/i.test(ua)) return true;
-    /* 荣耀/华为手机：Android 但不含 'Mobile' 的 UA（部分荣耀浏览器） */
-    if (/Android/i.test(ua) && /Honor|HWV|HUAWEI/i.test(ua)) return true;
-    /* 触摸设备 + 小屏幕：pointer:coarse 且无 hover 能力 */
-    if (window.matchMedia && window.matchMedia('(pointer:coarse) and (hover:none)').matches && window.innerWidth <= 900) return true;
+    /* 荣耀/华为手机：部分 UA 不含 'Mobile' */
+    if (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser/i.test(ua)) return true;
+    /* 触摸设备 + 无 hover + 屏幕宽度 ≤900 */
+    var hasTouch = (navigator.maxTouchPoints || 0) > 0;
+    var coarsePointer = window.matchMedia && window.matchMedia('(pointer:coarse) and (hover:none)').matches;
+    var smallScreen = window.innerWidth <= 900 || (screen.width <= 900 && screen.height <= 900);
+    if ((hasTouch || coarsePointer) && smallScreen) return true;
     return false;
   })();
   function isMobile() {

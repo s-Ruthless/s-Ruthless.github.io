@@ -172,7 +172,12 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 [data-theme="dark"] .win-head-icon{
   background:color-mix(in srgb,var(--accent-color) 18%,transparent);
 }
-.drag-win:not([data-pos]){visibility:hidden;}
+/* 桌面端：未定位的拖拽窗口隐藏等待 JS 布局 */
+html:not(.is-mobile) .drag-win:not([data-pos]){visibility:hidden;}
+/* 移动端兜底：即使 JS 未设置 is-mobile，CSS 媒体查询也确保窗口可见 */
+@media (max-width:768px){
+  .drag-win:not([data-pos]){visibility:visible!important;}
+}
 .drag-bar{cursor:move;}
 .win-body{padding:8px 16px 16px;overflow:auto;position:relative;z-index:1;}
 

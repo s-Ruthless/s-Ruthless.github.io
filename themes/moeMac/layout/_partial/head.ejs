@@ -25,17 +25,53 @@
   <link rel="icon" href="<%= favicon %>">
   <link rel="apple-touch-icon" href="<%= theme.apple_touch_icon || favicon %>">
 
+  <%
+    /* 动态资源预连接：从用户配置中提取外部域名，自动生成 preconnect + dns-prefetch
+       适配所有用户 —— 只预连接用户实际配置了的外部 API/CDN 域名 */
+    var _siteOrigin = (config.url || '').replace(/^\/+|\/+$/g, '');
+    var _pcSet = {};
+    function _addPC(url) {
+      if (!url || typeof url !== 'string') return;
+      var m = url.match(/^(https?:\/\/[^\/]+)/i);
+      if (!m) return;
+      var origin = m[1];
+      if (origin === _siteOrigin) return; /* 同源不需要预连接 */
+      _pcSet[origin] = true;
+    }
+    /* CDN 域名 */
+    if (theme.cdn) _addPC(theme.cdn);
+    /* 头像外部链接 */
+    if (theme.avatar_type === 'image' && theme.avatar_url) _addPC(theme.avatar_url);
+    /* 一言 API */
+    if (theme.hitokoto && theme.hitokoto_api) _addPC(theme.hitokoto_api);
+    /* 音乐 API */
+    if (theme.meting_api) _addPC(theme.meting_api);
+    /* 评论系统 API */
+    if (theme.comments && theme.comments.enable) {
+      var _cp = theme.comments.provider;
+      if (_cp === 'cwd' && theme.comments.cwd && theme.comments.cwd.apiBaseUrl) _addPC(theme.comments.cwd.apiBaseUrl);
+      if (_cp === 'waline' && theme.comments.waline && theme.comments.waline.serverURL) _addPC(theme.comments.waline.serverURL);
+      if (_cp === 'twikoo' && theme.comments.twikoo && theme.comments.twikoo.envId) _addPC(theme.comments.twikoo.envId);
+      if (_cp === 'giscus' && theme.comments.giscus && theme.comments.giscus.repo) _addPC('https://giscus.app');
+    }
+    /* 豆瓣页面：封面图可能使用外部 CDN */
+    if (page.layout === 'douban' || (page.path || '').indexOf('douban') > -1) {
+      var _db = (site.data && site.data.douban) ? site.data.douban : (theme.douban || {});
+      ['books','movies','music'].forEach(function(k) {
+        (_db[k] || []).forEach(function(it) {
+          if (it.cover && !it.cover_local) _addPC(it.cover);
+        });
+      });
+    }
+    var _pcOrigins = Object.keys(_pcSet);
+  %>
+  <% if (_pcOrigins.length) { %>
   <!-- 资源预连接：提前建立 DNS 解析 + TCP/TLS 握手，减少外部资源加载延迟 -->
-  <link rel="preconnect" href="https://cwd.moeao.cn" crossorigin>
-  <link rel="dns-prefetch" href="https://cwd.moeao.cn">
-  <link rel="preconnect" href="https://q1.qlogo.cn" crossorigin>
-  <link rel="dns-prefetch" href="https://q1.qlogo.cn">
-  <link rel="preconnect" href="https://v1.hitokoto.cn" crossorigin>
-  <link rel="dns-prefetch" href="https://v1.hitokoto.cn">
-  <link rel="preconnect" href="https://api.moeyao.cn" crossorigin>
-  <link rel="dns-prefetch" href="https://api.moeyao.cn">
-  <link rel="preconnect" href="https://img1.doubanio.com" crossorigin>
-  <link rel="dns-prefetch" href="https://img1.doubanio.com">
+  <% _pcOrigins.forEach(function(o) { %>
+  <link rel="preconnect" href="<%= o %>" crossorigin>
+  <link rel="dns-prefetch" href="<%= o %>">
+  <% }); %>
+  <% } %>
 
   <!-- Open Graph -->
   <meta property="og:type" content="<%= page.layout === 'post' ? 'article' : 'website' %>">
@@ -83,7 +119,6 @@
       var ua = navigator.userAgent || '';
       var hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window);
       var coarsePointer = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
-      var noHover = window.matchMedia && window.matchMedia('(hover:none)').matches;
       var smallScreen = window.innerWidth <= 900 || (screen.width <= 900 && screen.height <= 900);
       var uaMobile = /Android.*Mobile|iPhone|iPod/i.test(ua)
         || (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser|HarmonyOS|ArkWeb/i.test(ua))
@@ -109,12 +144,6 @@
 
   <!-- 卜算子访客统计 -->
   <script async src="<%= A %>/js/busuanzi.pure.mini.js"></script>
-
-  <!-- Giscus 评论预连接（提前建立 TCP/TLS，减少脚本加载握手耗时） -->
-  <% if (theme.comments && theme.comments.enable && theme.comments.provider === 'giscus' && theme.comments.giscus && theme.comments.giscus.repo) { %>
-  <link rel="preconnect" href="https://giscus.app" crossorigin>
-  <link rel="dns-prefetch" href="https://giscus.app">
-  <% } %>
 
   <!-- 主题 CSS -->
   <link rel="stylesheet" href="<%= A %>/css/style.css<%= V %>">

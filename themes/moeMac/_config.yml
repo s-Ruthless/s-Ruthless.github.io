@@ -78,7 +78,7 @@ sentences:
 # platform: 音乐平台（netease / tencent / kugou / xiami / baidu）
 # playlist_id: 歌单ID
 # show_desktop_lyrics: 是否在 dock 栏上方显示桌面歌词
-meting_api: "https://api.moeyao.cn/meting/"
+meting_api: "https://api.injahow.cn/meting/"
 platform: "netease"
 playlist_id: "18117638485"
 show_desktop_lyrics: true

@@ -19,3 +19,5 @@ _fix*.js
 themes/moeMac/source/assets/js/twikoo.all.min.js
 # CWD 评论系统后端（独立部署到 Cloudflare Workers）
 cwd/
+# GitHub Actions 部署配置 — 已改用 Cloudflare Pages，不再需要 GitHub Pages 构建
+.github/workflows/deploy.yml

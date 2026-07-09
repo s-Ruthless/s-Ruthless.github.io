@@ -25,6 +25,18 @@
   <link rel="icon" href="<%= favicon %>">
   <link rel="apple-touch-icon" href="<%= theme.apple_touch_icon || favicon %>">
 
+  <!-- 资源预连接：提前建立 DNS 解析 + TCP/TLS 握手，减少外部资源加载延迟 -->
+  <link rel="preconnect" href="https://cwd.moeao.cn" crossorigin>
+  <link rel="dns-prefetch" href="https://cwd.moeao.cn">
+  <link rel="preconnect" href="https://q1.qlogo.cn" crossorigin>
+  <link rel="dns-prefetch" href="https://q1.qlogo.cn">
+  <link rel="preconnect" href="https://v1.hitokoto.cn" crossorigin>
+  <link rel="dns-prefetch" href="https://v1.hitokoto.cn">
+  <link rel="preconnect" href="https://api.moeyao.cn" crossorigin>
+  <link rel="dns-prefetch" href="https://api.moeyao.cn">
+  <link rel="preconnect" href="https://img1.doubanio.com" crossorigin>
+  <link rel="dns-prefetch" href="https://img1.doubanio.com">
+
   <!-- Open Graph -->
   <meta property="og:type" content="<%= page.layout === 'post' ? 'article' : 'website' %>">
   <meta property="og:title" content="<%= page.title || config.title %>">
@@ -113,4 +125,10 @@
   <link rel="stylesheet" href="<%= A %>/css/pages.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/mobile.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/aplayer.css<%= V %>">
+
+  <!-- 关键 JS 预加载：defer 脚本默认下载优先级低，preload 提前高优先级拉取
+       gsap + main.js 是桌面端布局的核心依赖，提前下载可缩短窗口渲染等待时间 -->
+  <link rel="preload" href="<%= A %>/js/gsap.min.js" as="script">
+  <link rel="preload" href="<%= A %>/js/main.js<%= V %>" as="script">
+  <link rel="preload" href="<%= A %>/js/ScrollTrigger.min.js" as="script">
 </head>

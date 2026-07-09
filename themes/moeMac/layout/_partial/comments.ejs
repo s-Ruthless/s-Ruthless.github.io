@@ -341,13 +341,16 @@
       window.__cwdInstance = comments;
       /* 渲染完成后标记加载状态 */
       var mountObserver = new MutationObserver(function(){
-        var firstChild = document.getElementById('comments-mount').firstElementChild;
+        var mountEl = document.getElementById('comments-mount');
+        if(!mountEl) { mountObserver.disconnect(); return; }
+        var firstChild = mountEl.firstElementChild;
         if(firstChild){
           firstChild.setAttribute('data-loaded', 'true');
           mountObserver.disconnect();
         }
       });
-      mountObserver.observe(document.getElementById('comments-mount'), { childList: true });
+      var _mountEl = document.getElementById('comments-mount');
+      if(_mountEl) mountObserver.observe(_mountEl, { childList: true });
       /* 等待 Shadow DOM 创建后注入样式 + 检测评论加载完成 */
       var styleTimer = setInterval(function(){
         var host = document.getElementById('comments-mount');

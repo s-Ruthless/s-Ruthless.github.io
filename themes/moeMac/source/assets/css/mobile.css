@@ -692,10 +692,16 @@ html:not(.is-desktop) .douban-link{
 
 /* ====== 相册页 ====== */
 html:not(.is-desktop) .gallery-masonry{
-  column-count:2;column-gap:8px;
+  column-count:3;column-gap:6px;
 }
 html:not(.is-desktop) .gallery-item{
-  margin-bottom:8px;border-radius:10px;
+  margin-bottom:6px;border-radius:8px;
+}
+html:not(.is-desktop) .gallery-overlay{
+  padding:16px 6px 5px;
+}
+html:not(.is-desktop) .gallery-overlay span{
+  font-size:10px;
 }
 /* 灯箱 */
 html:not(.is-desktop) .lightbox-close{
@@ -802,7 +808,7 @@ html:not(.is-desktop) #ajax-container{
     font-size:15px;
   }
   html:not(.is-desktop) .gallery-masonry{
-    column-count:1;
+    column-count:2;
   }
   html:not(.is-desktop) .stat-hero-row{
     grid-template-columns:1fr;

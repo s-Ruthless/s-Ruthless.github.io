@@ -7,11 +7,11 @@
 /* ====== 移动端检测标记（由 JS 设置） ====== */
 
 /* ====== CSS 媒体查询兜底 ======
-   即使 JS 未设置 is-mobile class（如荣耀浏览器 UA/viewport 异常），
-   CSS 媒体查询也能确保移动端布局正确生效。
-   用 1024px 断点直接覆盖所有手机/平板设备，
-   不依赖 pointer/hover 媒体特性（荣耀浏览器可能不支持） */
-@media (max-width:1024px){
+   用 max-device-width 读取物理屏幕尺寸，不受浏览器 viewport 缩放影响。
+   荣耀/华为浏览器可能把 CSS viewport 放大到 980px+，但物理屏幕仍然是 360-400px。
+   不依赖 pointer/hover 媒体特性（荣耀浏览器可能不支持）。 */
+@media (max-width:768px),
+       (max-device-width:1024px){
   html,body{
     overflow:auto!important;
     overflow-y:scroll!important;

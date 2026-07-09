@@ -11,7 +11,7 @@ window.__moeMacMainLoaded = true;
 
   /* ====== 移动端检测 ====== */
   var MOBILE_BP = 768;
-  /* 多层检测：UA + 触摸能力 + 屏幕物理宽度 + userAgentData，确保各种浏览器都能正确识别 */
+  /* 多层检测：UA + 触摸能力 + 屏幕物理宽度 + userAgentData + ontouchstart，确保各种浏览器都能正确识别 */
   var _uaMobile = (function(){
     var ua = navigator.userAgent || navigator.vendor || '';
     /* 标准 Android 手机、iPhone */
@@ -19,14 +19,17 @@ window.__moeMacMainLoaded = true;
     /* 荣耀/华为手机：部分 UA 不含 'Mobile'，增加 HarmonyOS/ArkWeb 匹配 */
     if (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser|HarmonyOS|ArkWeb/i.test(ua)) return true;
     /* 触摸设备 + 无 hover + 屏幕宽度 ≤900 */
-    var hasTouch = (navigator.maxTouchPoints || 0) > 0;
-    var coarsePointer = window.matchMedia && window.matchMedia('(pointer:coarse) and (hover:none)').matches;
+    var hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window);
+    var coarsePointer = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+    var noHover = window.matchMedia && window.matchMedia('(hover:none)').matches;
     var smallScreen = window.innerWidth <= 900 || (screen.width <= 900 && screen.height <= 900);
     if ((hasTouch || coarsePointer) && smallScreen) return true;
     /* userAgentData API — 现代浏览器检测 */
     if (navigator.userAgentData && navigator.userAgentData.mobile) return true;
     /* 物理屏幕宽度兜底：手机物理屏幕通常 ≤500 CSS px */
     if (screen.width <= 500) return true;
+    /* 终极兜底：有触摸 + 无 hover 能力 = 移动设备 */
+    if (('ontouchstart' in window) && !window.matchMedia('(hover:hover)').matches) return true;
     return false;
   })();
   function isMobile() {
@@ -1313,7 +1316,10 @@ window.__moeMacMainLoaded = true;
   };
 
   /* ====== Init ====== */
-  document.addEventListener('DOMContentLoaded', function () {
+  /* 荣耀等浏览器可能不支持 defer，脚本可能在 DOMContentLoaded 之后才加载
+     此时 addEventListener('DOMContentLoaded') 永远不会触发，导致所有 init 不执行
+     必须检查 readyState：如果 DOM 已就绪就直接执行，否则等事件 */
+  function bootInit(){
     _scanLoadedScripts(); /* 记录初始页面加载的所有外部脚本，供 execScripts 去重 */
     syncMobileClass(); /* 确保移动端 class 与当前视口一致 */
     ProgressBar.init(); WinMgr.init(); Drag.init(); WallFilter(); Nav.init();
@@ -1346,6 +1352,13 @@ window.__moeMacMainLoaded = true;
         }
       }, 300);
     });
-    });
+  }
+  /* 如果 DOM 已就绪就直接执行，否则等 DOMContentLoaded
+     荣耀浏览器不支持 defer 时，脚本可能在 DOMContentLoaded 之后才加载 */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootInit);
+  } else {
+    bootInit();
+  }
 })();
 } /* end else */

@@ -82,24 +82,26 @@
     function hideLoading(){
       if(hidden) return;
       hidden = true;
-      /* 先淡入评论容器，让内容可见 */
+      /* 先展开 mount 高度并让内容可见，再淡出 loading spinner。
+         关键：height 和 opacity 同步切换，避免卡片撑开后内容还未显示的空白期。 */
       if(mount){
-        mount.style.opacity = '1';
-        mount.style.transform = 'translateY(0)';
-        if(mount.firstElementChild) mount.firstElementChild.setAttribute('data-loaded', 'true');
+        mount.style.height = '';
+        mount.style.overflow = '';
+        /* 用 rAF 确保 height 展开和 opacity 显示在同一帧渲染 */
+        requestAnimationFrame(function(){
+          mount.style.opacity = '1';
+          mount.style.transform = 'translateY(0)';
+          if(mount.firstElementChild) mount.firstElementChild.setAttribute('data-loaded', 'true');
+        });
       }
-      /* 延迟 150ms 再隐藏 loading spinner，确保评论内容已渲染到屏幕上，
-         避免背景卡片撑开时出现空白闪烁 */
+      /* 内容已开始显示，淡出 loading spinner */
       setTimeout(function(){
         loading.style.opacity = '0';
         loading.style.transition = 'opacity 0.3s ease';
-        /* 背景高度平滑过渡 */
-        wrap.style.transition = 'height 0.4s ease, min-height 0.4s ease';
         setTimeout(function(){
           loading.style.display = 'none';
-          wrap.style.transition = '';
-        }, 350);
-      }, 150);
+        }, 300);
+      }, 50);
     }
 
     var p = '<%= p %>';
@@ -151,6 +153,10 @@
     if(p === 'cwd'){
       mount.style.opacity = '0';
       mount.style.transform = 'translateY(8px)';
+      /* 关键：height:0 防止 CWD Shadow DOM 内容（表单等）撑开布局，
+         加载完成后再由 hideLoading() 展开高度并显示内容 */
+      mount.style.height = '0';
+      mount.style.overflow = 'hidden';
     }
 
     /* ---- Gitalk / Twikoo / Waline：MutationObserver 检测常规 DOM ---- */

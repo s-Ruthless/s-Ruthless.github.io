@@ -90,7 +90,7 @@
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
   <!-- 第三方库 CSS + 组件库 -->
-  <% var V = '?v=20260709k'; %>
+  <% var V = '?v=20260709l'; %>
   <link rel="stylesheet" href="<%= A %>/css/icons.css">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>">
@@ -110,33 +110,30 @@
        避免 FOUC（内容闪烁）和 Giscus 加载时主题不匹配 -->
   <script>
     (function(){
-      var saved = localStorage.getItem('theme');
-      if (saved === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-      /* 移动端检测：尽早设置 is-mobile class，避免桌面布局闪烁
-         多层检测：UA + 触摸能力 + 屏幕物理宽度 + userAgentData + ontouchstart，兼容荣耀/华为等浏览器 */
+      try { var saved = localStorage.getItem('theme'); if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark'); } catch(e){}
+      /* 安全的 matchMedia 包装：部分国产浏览器 matchMedia 可能返回 null 或抛异常 */
+      function mm(q){ try { return window.matchMedia ? window.matchMedia(q) : null; } catch(e){ return null; } }
+      function mmMatches(q){ var m = mm(q); return m ? m.matches : false; }
+      /* 移动端检测：多层策略，任一命中即为移动端
+         1. UA 关键词（最可靠，荣耀/华为 UA 含特征词）
+         2. 物理屏幕宽度 ≤500px（手机物理像素）
+         3. 触摸 + 无 hover + 小视口
+         4. userAgentData.mobile API
+         5. 视口宽度 ≤768px（响应式断点） */
       var ua = navigator.userAgent || '';
-      var hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window);
-      var coarsePointer = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
-      var smallScreen = window.innerWidth <= 900 || (screen.width <= 900 && screen.height <= 900);
       var uaMobile = /Android.*Mobile|iPhone|iPod/i.test(ua)
-        || (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser|HarmonyOS|ArkWeb/i.test(ua))
-        || ((hasTouch || coarsePointer) && smallScreen);
-      /* userAgentData API — 现代浏览器检测，部分国产浏览器支持 */
-      if (!uaMobile && navigator.userAgentData && navigator.userAgentData.mobile) uaMobile = true;
-      /* 物理屏幕宽度兜底：手机物理屏幕通常 ≤500 CSS px（即使 viewport 被放大） */
+        || (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser|HarmonyOS|ArkWeb/i.test(ua));
       if (!uaMobile && screen.width <= 500) uaMobile = true;
-      /* 终极兜底：有触摸 + 无 hover 能力 = 移动设备
-         荣耀浏览器可能不支持 matchMedia，用 ontouchstart 兜底 */
-      if (!uaMobile && ('ontouchstart' in window) && !window.matchMedia('(hover:hover)').matches) uaMobile = true;
-      var isMobile = uaMobile || (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) || window.innerWidth <= 768;
+      if (!uaMobile && navigator.userAgentData && navigator.userAgentData.mobile) uaMobile = true;
+      if (!uaMobile) {
+        var hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window);
+        var smallScreen = window.innerWidth <= 900 || (screen.width <= 900 && screen.height <= 900);
+        if (hasTouch && smallScreen && !mmMatches('(hover:hover)')) uaMobile = true;
+      }
+      var isMobile = uaMobile || mmMatches('(max-width: 768px)') || window.innerWidth <= 768;
       if (isMobile) {
         document.documentElement.classList.add('is-mobile');
       } else {
-        /* 确保一定有一个 class 被设置：is-mobile 或 is-desktop
-           CSS 默认样式 = 移动端，只有 is-desktop 才应用桌面端布局
-           这样即使 JS 检测失败，移动端也能获得正确布局 */
         document.documentElement.classList.add('is-desktop');
       }
     })();

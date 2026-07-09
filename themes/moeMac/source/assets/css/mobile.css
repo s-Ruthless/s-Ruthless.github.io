@@ -830,3 +830,26 @@ html:not(.is-desktop) #ajax-container{
     max-height:40vh;
   }
 }
+
+/* ====== 终极兜底：不依赖任何 JS class 的媒体查询 ======
+   即使 JS 完全不执行（或 is-desktop 被误设），小屏幕也能获得移动端布局
+   这是最可靠的安全网，媒体查询是浏览器原生能力，兼容性极好 */
+@media (max-width:768px){
+  /* 强制窗口可见 — 覆盖 style.css 中可能误触的 visibility:hidden */
+  .drag-win:not([data-pos]){visibility:visible!important;}
+  /* 强制窗口使用卡片流布局 */
+  .app-window{
+    position:relative!important;
+    left:auto!important;top:auto!important;
+    width:auto!important;max-width:100%!important;
+    min-height:auto!important;height:auto!important;
+    margin:0 12px 14px!important;
+    transform:none!important;
+    display:flex!important;
+    flex-direction:column;
+  }
+  /* 隐藏桌面端窗口操作按钮 */
+  .win-traffic,.win-resize-handle{display:none!important;}
+  /* 允许页面滚动 */
+  html,body{overflow-y:scroll!important;overflow-x:hidden!important;}
+}

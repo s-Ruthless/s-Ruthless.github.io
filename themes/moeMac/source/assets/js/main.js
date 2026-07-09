@@ -11,29 +11,27 @@ window.__moeMacMainLoaded = true;
 
   /* ====== 移动端检测 ====== */
   var MOBILE_BP = 768;
-  /* 多层检测：UA + 触摸能力 + 屏幕物理宽度 + userAgentData + ontouchstart，确保各种浏览器都能正确识别 */
+  /* 安全的 matchMedia 包装：部分国产浏览器 matchMedia 可能返回 null 或抛异常 */
+  function mmMatches(q){ try { var m = window.matchMedia ? window.matchMedia(q) : null; return m ? m.matches : false; } catch(e){ return false; } }
+  /* 多层检测：UA + 物理屏幕宽度 + 触摸 + userAgentData，确保各种浏览器都能正确识别 */
   var _uaMobile = (function(){
     var ua = navigator.userAgent || navigator.vendor || '';
     /* 标准 Android 手机、iPhone */
     if (/Android.*Mobile|iPhone|iPod/i.test(ua)) return true;
     /* 荣耀/华为手机：部分 UA 不含 'Mobile'，增加 HarmonyOS/ArkWeb 匹配 */
     if (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser|HarmonyOS|ArkWeb/i.test(ua)) return true;
-    /* 触摸设备 + 无 hover + 屏幕宽度 ≤900 */
-    var hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window);
-    var coarsePointer = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
-    var noHover = window.matchMedia && window.matchMedia('(hover:none)').matches;
-    var smallScreen = window.innerWidth <= 900 || (screen.width <= 900 && screen.height <= 900);
-    if ((hasTouch || coarsePointer) && smallScreen) return true;
-    /* userAgentData API — 现代浏览器检测 */
-    if (navigator.userAgentData && navigator.userAgentData.mobile) return true;
     /* 物理屏幕宽度兜底：手机物理屏幕通常 ≤500 CSS px */
     if (screen.width <= 500) return true;
-    /* 终极兜底：有触摸 + 无 hover 能力 = 移动设备 */
-    if (('ontouchstart' in window) && !window.matchMedia('(hover:hover)').matches) return true;
+    /* userAgentData API — 现代浏览器检测 */
+    if (navigator.userAgentData && navigator.userAgentData.mobile) return true;
+    /* 触摸设备 + 无 hover + 屏幕宽度 ≤900 */
+    var hasTouch = (navigator.maxTouchPoints || 0) > 0 || ('ontouchstart' in window);
+    var smallScreen = window.innerWidth <= 900 || (screen.width <= 900 && screen.height <= 900);
+    if (hasTouch && smallScreen && !mmMatches('(hover:hover)')) return true;
     return false;
   })();
   function isMobile() {
-    return _uaMobile || window.innerWidth <= MOBILE_BP;
+    return _uaMobile || mmMatches('(max-width: ' + MOBILE_BP + 'px)') || window.innerWidth <= MOBILE_BP;
   }
   /* 同步移动端/桌面端 class（与 head.ejs 早期脚本配合）
      关键：一定设一个，is-mobile 或 is-desktop，不能两个都没有 */

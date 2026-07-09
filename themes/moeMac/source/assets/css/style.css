@@ -86,7 +86,8 @@ body{
   background-attachment:fixed;user-select:none;
   -webkit-user-select:none;
 }
-html.is-desktop,html.is-desktop body{overflow:hidden;}
+/* 首页桌面端禁止滚动（body.is-desktop 仅在首页有 .drag-win 时设置） */
+html.is-desktop body.is-desktop{overflow:hidden;}
 .article-content,.article-content *{user-select:text;-webkit-user-select:text;}
 .about-content,.about-content *{user-select:text;-webkit-user-select:text;}
 .page-body,.page-body *{user-select:text;-webkit-user-select:text;}

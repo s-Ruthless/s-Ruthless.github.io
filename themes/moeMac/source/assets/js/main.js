@@ -1061,10 +1061,14 @@ window.__moeMacMainLoaded = true;
       if (isMobile()) {
         document.documentElement.classList.remove('is-desktop');
         document.body.classList.remove('is-desktop');
+        document.documentElement.classList.add('is-mobile');
         return;
       }
+      /* 非移动端：一定设 is-desktop，不管有没有 .drag-win
+         .drag-win 仅用于首页锁定滚动，不影响其他页面的桌面端布局 */
+      document.documentElement.classList.add('is-desktop');
+      document.documentElement.classList.remove('is-mobile');
       var hasDesktop = !!document.querySelector('.drag-win');
-      document.documentElement.classList.toggle('is-desktop', hasDesktop);
       document.body.classList.toggle('is-desktop', hasDesktop);
     }
   };

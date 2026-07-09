@@ -291,34 +291,35 @@
           + 'border-color:' + accent + '!important;}'
         + '.cwd-btn-primary:hover{filter:brightness(1.1);}'
         + '.cwd-comment-avatar{border-radius:50%!important;}'
-        /* ====== 表单输入框美化（纯 CSS + :has()，不修改 DOM，避免失焦）====== */
-        /* 主表单 input 字段（同时有 label 和 input）：label 定位为内联标签 */
-        + '.cwd-form-field:has(> .cwd-form-label):has(> input) > .cwd-form-label{'
+        /* ====== 表单输入框美化（用 JS 标记 class，兼容所有浏览器）====== */
+        /* 主表单 input 字段（有 label）：label 浮动到输入框内左侧 */
+        + '.cwd-field-labeled-input{position:relative!important}'
+        + '.cwd-field-labeled-input .cwd-form-label{'
           + 'position:absolute!important;left:12px!important;top:0!important;'
           + 'height:42px!important;line-height:42px!important;'
           + 'font-size:13px!important;font-weight:500!important;'
           + 'pointer-events:none!important;z-index:1!important;'
           + 'white-space:nowrap!important;margin:0!important;'
           + 'background:transparent!important;}'
-        /* 主表单 input 字段：input 添加左 padding 给 label 留空间 */
-        + '.cwd-form-field:has(> .cwd-form-label):has(> input) > input{'
+        + '.cwd-field-labeled-input input{'
           + 'padding-left:68px!important;'
           + 'height:42px!important;'
           + 'border-radius:10px!important;'
           + 'font-size:14px!important;'
           + 'transition:border-color .2s,box-shadow .2s;}'
-        /* textarea 字段的 label：保持正常块级标签，在 textarea 上方 */
-        + '.cwd-form-field:has(> .cwd-form-label):has(> textarea) > .cwd-form-label{'
+        /* textarea 字段的 label：正常块级标签，在 textarea 上方 */
+        + '.cwd-field-labeled-textarea .cwd-form-label{'
           + 'display:block!important;position:static!important;'
           + 'margin:0 0 6px 0!important;'
           + 'font-size:13px!important;font-weight:500!important;'
           + 'height:auto!important;line-height:1.4!important;'
           + 'background:transparent!important;}'
-        /* 所有 input 通用美化（包括回复表单，回复表单无 label 不加左 padding） */
-        + '.cwd-form-field > input{'
+        /* 回复表单字段（无 label，用 placeholder）：不加左 padding */
+        + '.cwd-field-placeholder-only input{'
           + 'height:42px!important;'
           + 'border-radius:10px!important;'
           + 'font-size:14px!important;'
+          + 'padding:8px 12px!important;'
           + 'transition:border-color .2s,box-shadow .2s;}'
         /* 评论输入框美化 */
         + '.cwd-form-textarea{'
@@ -341,6 +342,29 @@
       if(old) old.remove();
       shadow.appendChild(style);
     }
+    /* 给 .cwd-form-field 容器添加标记 class（不修改 input 本身，不影响焦点）
+       替代 :has() 选择器，兼容所有浏览器（包括荣耀等不支持 :has() 的内核）*/
+    function markFormFields(shadow){
+      if(!shadow) return;
+      shadow.querySelectorAll('.cwd-form-field').forEach(function(field){
+        var hasLabel = field.querySelector('.cwd-form-label');
+        var hasInput = field.querySelector('input');
+        var hasTextarea = field.querySelector('textarea');
+        if(hasLabel && hasInput){
+          if(!field.classList.contains('cwd-field-labeled-input')){
+            field.classList.add('cwd-field-labeled-input');
+          }
+        }else if(hasLabel && hasTextarea){
+          if(!field.classList.contains('cwd-field-labeled-textarea')){
+            field.classList.add('cwd-field-labeled-textarea');
+          }
+        }else if(hasInput && !hasLabel){
+          if(!field.classList.contains('cwd-field-placeholder-only')){
+            field.classList.add('cwd-field-placeholder-only');
+          }
+        }
+      });
+    }
     function init(){
       var comments = new CWDComments({
         el: '#comments-mount',
@@ -351,6 +375,54 @@
       });
       comments.mount();
       window.__cwdInstance = comments;
+      /* 对 store.updateFormField 做防抖，修复回复表单输入时焦点丢失
+         原因：回复表单的昵称/邮箱输入触发 onUpdateUserInfo → store.updateFormField →
+         state.form 变化 → ReplyEditor.updateProps 检测到 currentUser 变化 →
+         this.render() 重建 DOM → 焦点丢失
+         修复：防抖 store.updateFormField，输入时不立即触发状态更新，
+         提交前自动 flush 所有待更新字段
+         注意：store 在异步函数中创建（需等待 _loadServerConfig 网络请求），
+         所以需要轮询等待 store 就绪后再应用防抖 */
+      var _debounceApplied = false;
+      function applyDebounce(){
+        if(_debounceApplied) return;
+        var _cwdStore = comments.store;
+        if(!_cwdStore || !_cwdStore.updateFormField) return;
+        _debounceApplied = true;
+        var _origUpdateFormField = _cwdStore.updateFormField.bind(_cwdStore);
+        var _formDebounce = null;
+        var _pendingUpdates = {};
+        _cwdStore.updateFormField = function(field, value){
+          _pendingUpdates[field] = value;
+          clearTimeout(_formDebounce);
+          _formDebounce = setTimeout(function(){
+            for(var f in _pendingUpdates){
+              _origUpdateFormField(f, _pendingUpdates[f]);
+            }
+            _pendingUpdates = {};
+          }, 300);
+        };
+        /* 提交前 flush 待更新字段，确保 store 有最新数据 */
+        function flushPending(){
+          clearTimeout(_formDebounce);
+          for(var f in _pendingUpdates){
+            _origUpdateFormField(f, _pendingUpdates[f]);
+          }
+          _pendingUpdates = {};
+        }
+        if(_cwdStore.submitReply){
+          var _origSubmitReply = _cwdStore.submitReply.bind(_cwdStore);
+          _cwdStore.submitReply = function(id){ flushPending(); return _origSubmitReply(id); };
+        }
+        if(_cwdStore.submitNewComment){
+          var _origSubmitNew = _cwdStore.submitNewComment.bind(_cwdStore);
+          _cwdStore.submitNewComment = function(){ flushPending(); return _origSubmitNew(); };
+        }
+      }
+      var _storeTimer = setInterval(function(){
+        if(comments.store){ clearInterval(_storeTimer); applyDebounce(); }
+      }, 200);
+      setTimeout(function(){ clearInterval(_storeTimer); }, 15000);
       /* 渲染完成后标记加载状态 */
       var mountObserver = new MutationObserver(function(){
         var mountEl = document.getElementById('comments-mount');
@@ -369,6 +441,13 @@
         if(host && host.shadowRoot){
           injectCwdStyles(host.shadowRoot, document.documentElement.getAttribute('data-theme') === 'dark');
           clearInterval(styleTimer);
+          /* 用 MutationObserver 给 form-field 添加标记 class（替代 :has()）
+             只修改父 div 的 classList，不触碰 input，不会导致失焦 */
+          markFormFields(host.shadowRoot);
+          var fieldObserver = new MutationObserver(function(){
+            markFormFields(host.shadowRoot);
+          });
+          fieldObserver.observe(host.shadowRoot, { childList: true, subtree: true });
           /* 检测 CWD 评论加载完成
              修复竞态条件：CWD 的 mount() 同步创建 Shadow DOM，但内容（.cwd-loading 等）
              是异步渲染的（需等待 _loadServerConfig() 完成后才调用 _render()）。

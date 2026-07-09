@@ -291,21 +291,22 @@
           + 'border-color:' + accent + '!important;}'
         + '.cwd-btn-primary:hover{filter:brightness(1.1);}'
         + '.cwd-comment-avatar{border-radius:50%!important;}'
-        /* ====== 表单输入框美化 ====== */
-        + '.cwd-form-row .cwd-form-field{position:relative!important}'
-        + '.cwd-form-row .cwd-form-label{display:none!important}'
-        + '.cwd-form-row .cwd-form-field input{'
+        /* ====== 表单输入框美化（纯 CSS，不修改 DOM，避免失焦）====== */
+        + '.cwd-form-field{position:relative!important}'
+        /* 原始 label 定位为内联标签，不删除不隐藏 */
+        + '.cwd-form-field .cwd-form-label{'
+          + 'position:absolute!important;left:12px!important;top:0!important;'
+          + 'height:42px!important;line-height:42px!important;'
+          + 'font-size:13px!important;font-weight:500!important;'
+          + 'pointer-events:none!important;z-index:1!important;'
+          + 'white-space:nowrap!important;margin:0!important;'
+          + 'background:transparent!important;}'
+        + '.cwd-form-field input{'
           + 'padding-left:68px!important;'
-          + 'height:42px;'
+          + 'height:42px!important;'
           + 'border-radius:10px!important;'
-          + 'font-size:14px;'
+          + 'font-size:14px!important;'
           + 'transition:border-color .2s,box-shadow .2s;}'
-        + '.cwd-inline-label{'
-          + 'position:absolute;left:12px;top:0;'
-          + 'height:42px;line-height:42px;'
-          + 'font-size:13px;font-weight:500;'
-          + 'color:var(--cwd-text-secondary);'
-          + 'pointer-events:none;z-index:1;white-space:nowrap;}'
         + '.cwd-inline-required{color:#e53e3e;margin-left:2px;}'
         /* 评论输入框美化 */
         + '.cwd-form-textarea{'
@@ -322,7 +323,6 @@
           + 'box-shadow:0 0 0 3px ' + accent + '26!important;}'
         /* 表单标题 */
         + '.cwd-form-title{font-size:15px!important;font-weight:600!important}'
-        + '.cwd-form-label{font-size:13px!important;font-weight:500!important}'
         /* 按钮圆角 */
         + '.cwd-btn-secondary{border-radius:8px!important}';
       var old = shadow.querySelector('#cwd-theme-override');
@@ -357,41 +357,13 @@
         if(host && host.shadowRoot){
           injectCwdStyles(host.shadowRoot, document.documentElement.getAttribute('data-theme') === 'dark');
           clearInterval(styleTimer);
-          /* 注入内联标签 + 彻底删除 placeholder，避免重复显示 */
-          function patchFormFields(){
-            var formRow = host.shadowRoot.querySelector('.cwd-form-row');
-            if(!formRow) return;
-            var fields = formRow.querySelectorAll('.cwd-form-field');
-            var labels = ['昵称','邮箱','网址'];
-            var required = [true,true,false];
-            for(var i = 0; i < fields.length; i++){
-              var input = fields[i].querySelector('input');
-              if(!input) continue;
-              /* 彻底删除 placeholder 属性 */
-              input.removeAttribute('placeholder');
-              /* 删除原始 label，避免与内联标签重复显示 */
-              var oldLabel = fields[i].querySelector('.cwd-form-label');
-              if(oldLabel) oldLabel.remove();
-              /* 已有标签则跳过 */
-              if(fields[i].querySelector('.cwd-inline-label')) continue;
-              /* 插入标签 span */
-              var label = document.createElement('span');
-              label.className = 'cwd-inline-label';
-              label.textContent = labels[i] || '';
-              if(required[i]){
-                var star = document.createElement('span');
-                star.className = 'cwd-inline-required';
-                star.textContent = '*';
-                label.appendChild(star);
-              }
-              fields[i].style.position = 'relative';
-              fields[i].insertBefore(label, input);
-            }
+          /* 一次性清除所有 input 的 placeholder（不使用 MutationObserver，避免输入时失焦）*/
+          function clearPlaceholders(){
+            host.shadowRoot.querySelectorAll('input[placeholder]').forEach(function(inp){
+              inp.removeAttribute('placeholder');
+            });
           }
-          patchFormFields();
-          /* 监听 CWD 重新渲染，持续注入标签 + 清除 placeholder */
-          var phObserver = new MutationObserver(function(){ patchFormFields(); });
-          phObserver.observe(host.shadowRoot, { childList: true, subtree: true });
+          setTimeout(clearPlaceholders, 500);
           /* 检测 CWD 评论加载完成
              修复竞态条件：CWD 的 mount() 同步创建 Shadow DOM，但内容（.cwd-loading 等）
              是异步渲染的（需等待 _loadServerConfig() 完成后才调用 _render()）。

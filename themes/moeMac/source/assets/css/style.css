@@ -110,8 +110,10 @@ a{color:inherit;text-decoration:none;font-family:inherit;}
 @keyframes rainbow-shift{0%{background-position:0% 0}100%{background-position:200% 0}}
 
 /* ====== 窗口系统（全局）— 高级 iOS 毛玻璃光影 ====== */
+/* 移动端优先：默认 position:relative 卡片流布局
+   桌面端通过 html.is-desktop 覆盖为 position:absolute */
 .app-window{
-  position:absolute;
+  position:relative;
   backdrop-filter:var(--blur-strong);-webkit-backdrop-filter:var(--blur-strong);
   background:var(--glass-bg-window);
   border:1px solid var(--glass-border);
@@ -120,6 +122,10 @@ a{color:inherit;text-decoration:none;font-family:inherit;}
   transition:box-shadow var(--duration-slow) ease,border-color var(--duration-slow) ease;
   will-change:transform,box-shadow;z-index:10;
   overflow:hidden;
+}
+/* 桌面端：覆盖为绝对定位，JS 负责排列 */
+html.is-desktop .app-window{
+  position:absolute;
 }
 /* 伪元素 ::before — 噪点纹理 + 顶部高光 + 镜面反射 */
 .app-window::before{
@@ -176,9 +182,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 [data-theme="dark"] .win-head-icon{
   background:color-mix(in srgb,var(--accent-color) 18%,transparent);
 }
-/* 桌面端：未定位的拖拽窗口隐藏等待 JS 布局
-   ⚠️ 不再使用 visibility:hidden — 改用 opacity，更安全
-   如果 JS 不执行，窗口依然可见（只是 opacity:0 的过渡动画不会触发）
+/* 桌面端：未定位的拖拽窗口透明等待 JS 布局
    仅在大屏 + is-desktop 时生效 */
 @media (min-width:769px) and (min-device-width:769px){
   html.is-desktop .drag-win:not([data-pos]){opacity:0;}

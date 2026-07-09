@@ -291,23 +291,35 @@
           + 'border-color:' + accent + '!important;}'
         + '.cwd-btn-primary:hover{filter:brightness(1.1);}'
         + '.cwd-comment-avatar{border-radius:50%!important;}'
-        /* ====== 表单输入框美化（纯 CSS，不修改 DOM，避免失焦）====== */
-        + '.cwd-form-field{position:relative!important}'
-        /* 原始 label 定位为内联标签，不删除不隐藏 */
-        + '.cwd-form-field .cwd-form-label{'
+        /* ====== 表单输入框美化（纯 CSS + :has()，不修改 DOM，避免失焦）====== */
+        /* 主表单 input 字段（同时有 label 和 input）：label 定位为内联标签 */
+        + '.cwd-form-field:has(> .cwd-form-label):has(> input) > .cwd-form-label{'
           + 'position:absolute!important;left:12px!important;top:0!important;'
           + 'height:42px!important;line-height:42px!important;'
           + 'font-size:13px!important;font-weight:500!important;'
           + 'pointer-events:none!important;z-index:1!important;'
           + 'white-space:nowrap!important;margin:0!important;'
           + 'background:transparent!important;}'
-        + '.cwd-form-field input{'
+        /* 主表单 input 字段：input 添加左 padding 给 label 留空间 */
+        + '.cwd-form-field:has(> .cwd-form-label):has(> input) > input{'
           + 'padding-left:68px!important;'
           + 'height:42px!important;'
           + 'border-radius:10px!important;'
           + 'font-size:14px!important;'
           + 'transition:border-color .2s,box-shadow .2s;}'
-        + '.cwd-inline-required{color:#e53e3e;margin-left:2px;}'
+        /* textarea 字段的 label：保持正常块级标签，在 textarea 上方 */
+        + '.cwd-form-field:has(> .cwd-form-label):has(> textarea) > .cwd-form-label{'
+          + 'display:block!important;position:static!important;'
+          + 'margin:0 0 6px 0!important;'
+          + 'font-size:13px!important;font-weight:500!important;'
+          + 'height:auto!important;line-height:1.4!important;'
+          + 'background:transparent!important;}'
+        /* 所有 input 通用美化（包括回复表单，回复表单无 label 不加左 padding） */
+        + '.cwd-form-field > input{'
+          + 'height:42px!important;'
+          + 'border-radius:10px!important;'
+          + 'font-size:14px!important;'
+          + 'transition:border-color .2s,box-shadow .2s;}'
         /* 评论输入框美化 */
         + '.cwd-form-textarea{'
           + 'border-radius:10px!important;'
@@ -324,7 +336,7 @@
         /* 表单标题 */
         + '.cwd-form-title{font-size:15px!important;font-weight:600!important}'
         /* 按钮圆角 */
-        + '.cwd-btn-secondary{border-radius:8px!important}';
+        + '.cwd-btn-secondary{border-radius:8px!important}'
       var old = shadow.querySelector('#cwd-theme-override');
       if(old) old.remove();
       shadow.appendChild(style);
@@ -357,13 +369,6 @@
         if(host && host.shadowRoot){
           injectCwdStyles(host.shadowRoot, document.documentElement.getAttribute('data-theme') === 'dark');
           clearInterval(styleTimer);
-          /* 一次性清除所有 input 的 placeholder（不使用 MutationObserver，避免输入时失焦）*/
-          function clearPlaceholders(){
-            host.shadowRoot.querySelectorAll('input[placeholder]').forEach(function(inp){
-              inp.removeAttribute('placeholder');
-            });
-          }
-          setTimeout(clearPlaceholders, 500);
           /* 检测 CWD 评论加载完成
              修复竞态条件：CWD 的 mount() 同步创建 Shadow DOM，但内容（.cwd-loading 等）
              是异步渲染的（需等待 _loadServerConfig() 完成后才调用 _render()）。

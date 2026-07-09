@@ -172,16 +172,9 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 [data-theme="dark"] .win-head-icon{
   background:color-mix(in srgb,var(--accent-color) 18%,transparent);
 }
-/* 窗口默认可见（安全默认）
-   仅桌面端隐藏等待 JS 布局定位
-   不用 html:not(.is-mobile) — 如果 JS 没设 is-mobile 就会永久隐藏
-   改用 html.is-desktop — 只有 JS 明确判断是桌面才隐藏 */
+/* 桌面端：未定位的拖拽窗口隐藏等待 JS 布局
+   仅 is-desktop 时隐藏，其余情况默认可见（移动端安全默认） */
 html.is-desktop .drag-win:not([data-pos]){visibility:hidden;}
-/* 设备宽度兜底：max-device-width 读取物理屏幕尺寸，不受浏览器 viewport 缩放影响
-   荣耀/华为浏览器可能把 CSS viewport 放大到 980px+，但物理屏幕仍然是 360-400px */
-@media (max-device-width:1024px){
-  .drag-win:not([data-pos]){visibility:visible!important;}
-}
 .drag-bar{cursor:move;}
 .win-body{padding:8px 16px 16px;overflow:auto;position:relative;z-index:1;}
 

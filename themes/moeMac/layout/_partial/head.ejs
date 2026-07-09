@@ -42,7 +42,7 @@
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
   <!-- 第三方库 CSS + 组件库 -->
-  <% var V = '?v=20260709h'; %>
+  <% var V = '?v=20260709i'; %>
   <link rel="stylesheet" href="<%= A %>/css/icons.css">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>">
@@ -86,6 +86,11 @@
       var isMobile = uaMobile || (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) || window.innerWidth <= 768;
       if (isMobile) {
         document.documentElement.classList.add('is-mobile');
+      } else {
+        /* 确保一定有一个 class 被设置：is-mobile 或 is-desktop
+           CSS 默认样式 = 移动端，只有 is-desktop 才应用桌面端布局
+           这样即使 JS 检测失败，移动端也能获得正确布局 */
+        document.documentElement.classList.add('is-desktop');
       }
     })();
   </script>

@@ -35,9 +35,17 @@ window.__moeMacMainLoaded = true;
   function isMobile() {
     return _uaMobile || window.innerWidth <= MOBILE_BP;
   }
-  /* 尽早同步 is-mobile class（与 head.ejs 早期脚本配合） */
+  /* 同步移动端/桌面端 class（与 head.ejs 早期脚本配合）
+     关键：一定设一个，is-mobile 或 is-desktop，不能两个都没有 */
   function syncMobileClass() {
-    document.documentElement.classList.toggle('is-mobile', isMobile());
+    var html = document.documentElement;
+    if (isMobile()) {
+      html.classList.add('is-mobile');
+      html.classList.remove('is-desktop');
+    } else {
+      html.classList.add('is-desktop');
+      html.classList.remove('is-mobile');
+    }
   }
 
   /* ====== Progress Bar ====== */

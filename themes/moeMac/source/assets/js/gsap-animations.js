@@ -15,7 +15,7 @@
       if (this._master) { this._master.kill(); this._master = null; }
       var sels = '.post-list-item,.wall-card,.archive-row,.archive-year-header,.article-header,.article-content,.article-nav,.page-header,.dock-bar,.win-traffic-btn,.dock-item-inner';
       /* 移动端不清理 .app-window 的 transform（由 MobileSlider 控制） */
-      if (!document.documentElement.classList.contains('is-mobile')) {
+      if (document.documentElement.classList.contains('is-desktop')) {
         sels = '.app-window,' + sels;
       }
       gsap.killTweensOf(sels);
@@ -25,7 +25,7 @@
     /** 首页窗口：依次弹入 */
     heroWindows: function () {
       /* 移动端跳过窗口弹入动画（层叠滑动布局不需要） */
-      if (document.documentElement.classList.contains('is-mobile')) return;
+      if (!document.documentElement.classList.contains('is-desktop')) return;
       var windows = document.querySelectorAll('.app-window');
       if (!windows.length) return;
 

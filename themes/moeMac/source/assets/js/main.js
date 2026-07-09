@@ -405,7 +405,7 @@ window.__moeMacMainLoaded = true;
       if (!container) return;
       container.querySelectorAll('.app-window').forEach(function (el) {
         el.setAttribute('data-pos', '1');
-        el.style.visibility = 'visible';
+        el.style.opacity = '1';
         el.style.left = '';
         el.style.top = '';
         el.style.transform = '';
@@ -430,7 +430,7 @@ window.__moeMacMainLoaded = true;
         el.style.opacity = '';
         el.style.zIndex = '';
         el.style.pointerEvents = '';
-        el.style.visibility = '';
+        el.style.opacity = '';
       });
     }
   };
@@ -459,7 +459,7 @@ window.__moeMacMainLoaded = true;
         var best = self.findPos(ew, eh, placed);
         el.style.left = best.x + 'px'; el.style.top = best.y + 'px';
         el.setAttribute('data-pos', '1');
-        el.style.visibility = 'visible';
+        el.style.opacity = '1';
       });
       document.querySelectorAll('.app-window').forEach(function (el) {
         el.addEventListener('mousedown', function () { self.focus(el); });

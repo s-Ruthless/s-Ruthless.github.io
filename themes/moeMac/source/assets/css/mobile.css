@@ -27,7 +27,7 @@ html:not(.is-desktop) #ajax-container{
   margin:0 auto;
 }
 html:not(.is-desktop) .drag-win:not([data-pos]){
-  visibility:visible!important;
+  opacity:1!important;
 }
 html:not(.is-desktop) .app-window:not([style*="display:none"]):not(.win-minimized){
   display:flex!important;
@@ -41,17 +41,18 @@ html:not(.is-desktop) .app-window{
   border-radius:18px!important;
   border:1px solid rgba(0,0,0,0.06)!important;
   transform:none!important;
+  will-change:auto!important;
   z-index:10!important;
   overflow:hidden!important;
   box-shadow:0 4px 24px rgba(0,0,0,0.08)!important;
   display:flex!important;
   flex-direction:column;
-  background:var(--card-bg,rgba(255,255,255,0.88))!important;
+  background:rgba(255,255,255,0.95)!important;
   backdrop-filter:blur(20px) saturate(1.5);
   -webkit-backdrop-filter:blur(20px) saturate(1.5);
 }
 html:not(.is-desktop)[data-theme="dark"] .app-window{
-  background:var(--card-bg,rgba(30,30,50,0.88))!important;
+  background:rgba(30,30,50,0.95)!important;
   border-color:rgba(255,255,255,0.08)!important;
   box-shadow:0 4px 24px rgba(0,0,0,0.3)!important;
 }
@@ -94,12 +95,15 @@ html:not(.is-desktop) .app-window{
   border-radius:18px!important;
   border:1px solid rgba(0,0,0,0.06)!important;
   transform:none!important;
+  will-change:auto!important;
   z-index:10!important;
   overflow:hidden!important;
   box-shadow:0 4px 24px rgba(0,0,0,0.08)!important;
   display:flex!important;
   flex-direction:column;
-  background:var(--card-bg,rgba(255,255,255,0.88))!important;
+  /* 实色背景优先，backdrop-filter 仅作为增强
+     部分国产浏览器不支持 backdrop-filter，用实色背景保证窗口可见 */
+  background:rgba(255,255,255,0.95)!important;
   backdrop-filter:blur(20px) saturate(1.5);
   -webkit-backdrop-filter:blur(20px) saturate(1.5);
 }
@@ -111,7 +115,7 @@ html:not(.is-desktop)[data-theme="dark"] .app-window{
 
 /* 让隐藏的 drag-win 可见 */
 html:not(.is-desktop) .drag-win:not([data-pos]){
-  visibility:visible!important;
+  opacity:1!important;
 }
 html:not(.is-desktop) .app-window:not([style*="display:none"]):not(.win-minimized){
   display:flex!important;
@@ -833,11 +837,12 @@ html:not(.is-desktop) #ajax-container{
 
 /* ====== 终极兜底：不依赖任何 JS class 的媒体查询 ======
    即使 JS 完全不执行（或 is-desktop 被误设），小屏幕也能获得移动端布局
-   这是最可靠的安全网，媒体查询是浏览器原生能力，兼容性极好 */
-@media (max-width:768px){
-  /* 强制窗口可见 — 覆盖 style.css 中可能误触的 visibility:hidden */
-  .drag-win:not([data-pos]){visibility:visible!important;}
-  /* 强制窗口使用卡片流布局 */
+   同时用 max-width 和 max-device-width 双重触发，兼容更多浏览器
+   关键：用实色背景替代 backdrop-filter，防止不支持毛玻璃的浏览器窗口透明不可见 */
+@media (max-width:768px), (max-device-width:768px){
+  /* 强制窗口可见 */
+  .drag-win:not([data-pos]){opacity:1!important;}
+  /* 强制窗口使用卡片流布局 + 实色背景（不依赖 backdrop-filter）*/
   .app-window{
     position:relative!important;
     left:auto!important;top:auto!important;
@@ -845,8 +850,18 @@ html:not(.is-desktop) #ajax-container{
     min-height:auto!important;height:auto!important;
     margin:0 12px 14px!important;
     transform:none!important;
+    will-change:auto!important;
     display:flex!important;
     flex-direction:column;
+    background:rgba(255,255,255,0.92)!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    border:1px solid rgba(0,0,0,0.06)!important;
+    box-shadow:0 4px 24px rgba(0,0,0,0.08)!important;
+  }
+  [data-theme="dark"] .app-window{
+    background:rgba(30,30,50,0.92)!important;
+    border-color:rgba(255,255,255,0.08)!important;
   }
   /* 隐藏桌面端窗口操作按钮 */
   .win-traffic,.win-resize-handle{display:none!important;}

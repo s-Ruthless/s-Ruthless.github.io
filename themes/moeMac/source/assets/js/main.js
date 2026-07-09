@@ -1,6 +1,11 @@
 /**
  * moeMac Theme - Main JavaScript
  */
+/* 全局防重复执行守卫 — 荣耀等浏览器可能不支持 defer 导致脚本重复加载 */
+if (window.__moeMacMainLoaded) {
+  /* 已加载过，跳过所有初始化 */
+} else {
+window.__moeMacMainLoaded = true;
 (function () {
   'use strict';
 
@@ -759,6 +764,9 @@
       var input = document.getElementById('search-input');
       var clear = document.getElementById('search-clear');
       if (!trig || !modal) return;
+      /* 防重复绑定 — 荣耀等浏览器可能重复执行脚本 */
+      if (trig.dataset.searchInit) return;
+      trig.dataset.searchInit = '1';
       var self = this;
 
       function open() {
@@ -1107,6 +1115,8 @@
   /* ====== 暗黑模式切换 ====== */
   var ThemeToggle = {
     init: function () {
+      /* 防重复创建 — 荣耀等浏览器可能重复执行脚本 */
+      if (document.querySelector('.theme-toggle')) return;
       /* 从 localStorage 读取主题偏好 */
       var saved = localStorage.getItem('theme');
       if (saved === 'dark') {
@@ -1336,5 +1346,6 @@
         }
       }, 300);
     });
-  });
+    });
 })();
+} /* end else */

@@ -110,7 +110,46 @@ window.TagPlugins = (function () {
   }
 
   /* ========== copy-inline 点击复制 ========== */
-  function initCopyInline() {
+  
+  /* ========== Gallery 灯箱 ========== */
+  function initGalleryLightbox() {
+    var items = document.querySelectorAll('.article-content .gallery-item');
+    if (items.length === 0) return;
+    items.forEach(function(item, idx) {
+      if (item.dataset.galleryInit) return;
+      item.dataset.galleryInit = '1';
+      item.addEventListener('click', function() {
+        var img = item.querySelector('img');
+        if (!img) return;
+        openGalleryLightbox(img.src, img.alt || '');
+      });
+    });
+  }
+
+  var _galleryLightbox = null;
+  function openGalleryLightbox(src, alt) {
+    if (!_galleryLightbox) {
+      _galleryLightbox = document.createElement('div');
+      _galleryLightbox.className = 'gallery-lightbox';
+      _galleryLightbox.innerHTML = '<div class="lightbox-mask"></div><div class="lightbox-close"><i class="fas fa-xmark"></i></div><div class="lightbox-content"><img src="" alt=""></div>';
+      document.body.appendChild(_galleryLightbox);
+      _galleryLightbox.querySelector('.lightbox-mask').addEventListener('click', closeGalleryLightbox);
+      _galleryLightbox.querySelector('.lightbox-close').addEventListener('click', closeGalleryLightbox);
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeGalleryLightbox(); });
+    }
+    var lbImg = _galleryLightbox.querySelector('img');
+    lbImg.src = src;
+    lbImg.alt = alt;
+    _galleryLightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeGalleryLightbox() {
+    if (_galleryLightbox) {
+      _galleryLightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+function initCopyInline() {
     document.querySelectorAll('.copy-inline-btn').forEach(function (btn) {
       if (btn.dataset.initialized) return;
       btn.dataset.initialized = 'true';

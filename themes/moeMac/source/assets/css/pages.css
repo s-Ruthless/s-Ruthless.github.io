@@ -29,12 +29,21 @@
 .filter-btn.active .badge{
   background:var(--accent-color);color:#fff;
 }
+/* ====== 文章墙：column-count 瀑布流 ====== */
 .wall-grid{
   column-count:4;
   column-gap:16px;
 }
+/* 每张卡片不跨列拆分 */
 .wall-card{
-position:relative;
+  break-inside:avoid;
+  margin-bottom:16px;
+}
+/* 响应式 */
+@media(max-width:1200px){.wall-grid{column-count:3;}}
+@media(max-width:768px){.wall-grid{column-count:2;}}
+@media(max-width:480px){.wall-grid{column-count:1;}}
+.wall-card{position:relative;
 background:rgb(255,255,255);
 border:1px solid rgba(0,0,0,0.06);border-radius:16px;
 overflow:hidden;
@@ -42,12 +51,7 @@ padding:0;
 cursor:pointer;
 box-shadow:0 8px 32px rgba(0,0,0,0.08);
 transition:box-shadow 0.3s ease,border-color 0.3s ease;
-isolation:isolate;
--webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
-break-inside:avoid;
-margin-bottom:16px;
-display:block;
-width:100%;
+isolation:isolate;display:block;width:100%;
 }
 .wall-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
@@ -62,29 +66,29 @@ opacity:0;transition:opacity 0.3s ease;
 .wall-card:hover{
 box-shadow:0 16px 40px rgba(0,0,0,0.12),0 4px 12px color-mix(in srgb,var(--accent-color) 10%,transparent);
 border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
-animation:card-wobble 0.5s ease-in-out;
+
 }
 .wall-card:hover::before{transform:scaleX(1);}
 .wall-card:hover::after{opacity:1;}
 .wall-card.hidden{display:none;}
-.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;position:relative;z-index:1;}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;position:relative;z-index:1;}
 .card-cat{font-size:11px;color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:2px 8px;border-radius:6px;}
 .card-date{font-size:11px;color:#444;}
-.card-title{font-size:14px;font-weight:600;color:#111;margin-bottom:6px;line-height:1.4;position:relative;z-index:1;}
-.card-summary{font-size:12px;color:#444;line-height:1.5;margin-bottom:8px;position:relative;z-index:1;}
+.card-title{font-size:14px;font-weight:600;color:#111;margin-bottom:2px;line-height:1.4;position:relative;z-index:1;}
+.card-summary{font-size:12px;color:#444;line-height:1.5;margin-bottom:4px;position:relative;z-index:1;}
 .card-tags{display:flex;flex-wrap:wrap;gap:4px;position:relative;z-index:1;}
 .card-tag{font-size:11px;color:#444;background:rgba(0,0,0,0.04);padding:2px 6px;border-radius:4px;}
 /* 封面图片 */
-.card-cover{width:100%;height:160px;overflow:hidden;position:relative;z-index:1;border-radius:16px 16px 0 0;}
+.card-cover{width:100%;height:120px;overflow:hidden;position:relative;z-index:1;border-radius:16px 16px 0 0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 8%,transparent),color-mix(in srgb,var(--accent-color) 3%,transparent));}
 .card-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease;}
-.wall-card:hover .card-cover img{transform:translateZ(0) scale(1.06);}
+.wall-card:hover .card-cover img{transform:scale(1.06);}
 /* 卡片内容区内边距 */
 .card-top,.card-title,.card-summary,.card-tags{padding-left:16px;padding-right:16px;}
-.card-top{padding-top:14px;}
+.card-top{padding-top:4px;}
 .card-tags{padding-bottom:16px;}
-@media(max-width:1200px){.wall-grid{column-count:3;}}
-@media(max-width:768px){.wall-grid{column-count:2;}}
-@media(max-width:480px){.wall-grid{column-count:1;}}
+
+
+
 
 /* ====== 关于页 ====== */
 .about-card{
@@ -114,7 +118,7 @@ animation:card-wobble 0.5s ease-in-out;
   padding:14px;cursor:pointer;transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s ease;
   box-shadow:var(--card-shadow);
 }
-.link-card:hover{transform:translateZ(0) translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.1);}
+.link-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.1);}
 .link-ava{width:40px;height:40px;border-radius:10px;object-fit:cover;flex-shrink:0;}
 .link-info{min-width:0;}
 .link-name{font-size:14px;font-weight:600;color:#111;}
@@ -159,7 +163,7 @@ background:color-mix(in srgb,var(--accent-color) 3%,var(--card-bg));
 width:100%;height:100%;object-fit:cover;
 transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
 }
-.douban-card:hover .douban-cover img{transform:translateZ(0) scale(1.1);}
+.douban-card:hover .douban-cover img{transform:scale(1.1);}
 .douban-cover::after{
   content:'';position:absolute;inset:0;border-radius:8px;
   background:linear-gradient(135deg,transparent 60%,color-mix(in srgb,var(--accent-color) 25%,transparent));
@@ -250,11 +254,20 @@ transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
 [data-theme="dark"] .douban-card{background:var(--card-bg);border-color:rgba(255,255,255,0.14);}
 [data-theme="dark"] .douban-stars .star-off{color:rgba(255,255,255,0.2);}
 
-/* ====== 全局滚动条：完全隐藏，保留滚动功能 ====== */
-/* 覆盖 DaisyUI 的 *{scrollbar-color} 规则 */
-* {
-  scrollbar-width: none !important;              /* Firefox */
-  -ms-overflow-style: none !important;            /* IE/Edge */
+/* ====== 桌面端首页：隐藏滚动条（macOS 窗口系统不需要可见滚动条） ====== */
+/* 仅桌面端生效，移动端和文章内容页保留原生滚动条 */
+html.is-desktop body.is-desktop {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html.is-desktop body.is-desktop::-webkit-scrollbar {
+  width: 0; height: 0; display: none;
+}
+html.is-desktop body.is-desktop::-webkit-scrollbar-track,
+html.is-desktop body.is-desktop::-webkit-scrollbar-thumb,
+html.is-desktop body.is-desktop::-webkit-scrollbar-corner,
+html.is-desktop body.is-desktop::-webkit-scrollbar-button {
+  display: none; width: 0; height: 0; background: transparent;
 }
 ::-webkit-scrollbar {
   width: 0 !important;

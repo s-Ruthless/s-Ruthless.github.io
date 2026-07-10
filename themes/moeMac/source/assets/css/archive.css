@@ -1,6 +1,6 @@
 /* ============================================
-   archive.css �?归档/时间轴页专用样式
-   包含：统计看板、柱状图、年份折叠、文章列�?
+   archive.css — 归档/时间轴页专用样式
+   包含：统计看板、柱状图、年份折叠、文章列表
    ============================================ */
 
 /* ====== 归档页面容器 ====== */
@@ -41,7 +41,7 @@
   transition:transform var(--duration-slow) ease,box-shadow var(--duration-slow) ease;
 }
 .stat-hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-.stat-hero-card:hover{transform:translateZ(0) scale(1.03);box-shadow:0 8px 30px rgba(0,0,0,0.1),0 0 0 2px color-mix(in srgb,var(--accent-color) 30%,transparent);}
+.stat-hero-card:hover{box-shadow:0 8px 30px rgba(0,0,0,0.1),0 0 0 2px color-mix(in srgb,var(--accent-color) 30%,transparent);}
 .stat-hero-posts{background:var(--card-bg);}
 .stat-hero-posts::before{background:linear-gradient(90deg,#ff6b6b,#ffa36b);}
 .stat-hero-cats{background:var(--card-bg);}

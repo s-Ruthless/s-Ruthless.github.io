@@ -32,7 +32,7 @@
         <div class="post-list-item ajax-link<% if (post.sticky) { %> post-sticky<% } %>" data-href="<%- url_for(post.path) %>">
           <% if (coverImg) { %>
             <div class="post-list-cover">
-              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" onerror="this.parentElement.style.display='none'">
             </div>
           <% } %>
           <% if (post.sticky) { %>

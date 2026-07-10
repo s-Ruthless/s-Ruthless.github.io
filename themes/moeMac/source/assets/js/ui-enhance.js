@@ -184,6 +184,7 @@
         if (img.closest('.gallery-item')) return;  /* 跳过画廊图片 */
         if (img.closest('.douban-card')) return;   /* 跳过豆瓣封面 */
         if (img.closest('.flink-card')) return;    /* 跳过友链头像 */
+        if (img.closest('.card-cover')) return;    /* 跳过文章封面图（已有点击跳转，不需揭示动画） */
         img.dataset.clipInit = '1';
         img.classList.add('clip-reveal');
         if (typeof IntersectionObserver !== 'undefined') {
@@ -214,9 +215,7 @@
           name.classList.add('shimmer-text');
         }
       }
-    },
-
-    /* ====== 初始化全部（AJAX 加载后也可调用） ====== */
+    },/* ====== 初始化全部（AJAX 加载后也可调用） ====== */
     init: function () {
       this.meshGradient();
       this.glassShine();

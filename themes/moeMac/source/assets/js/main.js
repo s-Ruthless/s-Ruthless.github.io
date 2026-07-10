@@ -671,9 +671,9 @@ window.__moeMacMainLoaded = true;
         headings.forEach(function (h) { h.link.classList.toggle('toc-active', h === current); });
         /* 二级目录折叠模式：自动展开当前阅读位置的父级目录 */
         if (current && !self.tocExpand) {
-          var parentLi = current.link.closest('.post-toc-list > li');
+          var parentLi = current.link.closest('.post-toc-list li');
           if (parentLi && parentLi.querySelector('ol') && !parentLi.classList.contains('toc-expanded')) {
-            var expanded = wrap.querySelectorAll('.post-toc-list > li.toc-expanded');
+            var expanded = wrap.querySelectorAll('.post-toc-list li.toc-expanded');
             expanded.forEach(function (li) { if (li !== parentLi) li.classList.remove('toc-expanded'); });
             parentLi.classList.add('toc-expanded');
           }

@@ -1,6 +1,6 @@
 <%
   var tagName = page.tag;
-  var posts = page.posts.sort('date', -1);
+  var posts = page.posts.toArray().sort(function(a, b) { var sd = (b.sticky || 0) - (a.sticky || 0); if (sd !== 0) return sd; return b.date - a.date; });
 %>
 <div class="page-container">
   <div class="page-body">
@@ -9,7 +9,7 @@
     </div>
     <div class="page-content">
     <div class="list-container">
-    <% posts.each(function(post) { %>
+    <% posts.forEach(function(post) { %>
       <div class="list-card ajax-link" data-href="<%- url_for(post.path) %>">
         <div class="list-card-body row">
           <span class="badge badge-ghost badge-sm"><%= date(post.date, 'MM-DD') %></span>

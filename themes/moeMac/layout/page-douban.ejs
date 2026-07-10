@@ -1,6 +1,14 @@
 <%
   // 优先读取 _data/douban.json（hexo douban 命令抓取的数据），回退到主题配置
-  var db = (site.data && site.data.douban) ? site.data.douban : (theme.douban || {});
+  var jsonData = (site.data && site.data.douban) ? site.data.douban : null;
+  var themeData = theme.douban || {};
+  // 合并策略：JSON 中有数据的 section 用 JSON，空数组回退到主题配置
+  var db = {};
+  ['books', 'movies', 'music'].forEach(function(k) {
+    var jsonArr = jsonData && Array.isArray(jsonData[k]) ? jsonData[k] : [];
+    var themeArr = Array.isArray(themeData[k]) ? themeData[k] : [];
+    db[k] = jsonArr.length > 0 ? jsonArr : themeArr;
+  });
   // 过滤掉非数据字段（_meta 等）
   var sections = [
     { key: 'books',  title: '书籍', icon: 'fas fa-book-open',  empty: '还没有读过书哦～' },

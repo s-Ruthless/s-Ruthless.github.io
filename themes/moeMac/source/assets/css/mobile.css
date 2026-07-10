@@ -607,23 +607,28 @@ html:not(.is-desktop) .filter-btn{
   padding:5px 12px;font-size:11px;white-space:nowrap;flex-shrink:0;
 }
 html:not(.is-desktop) .wall-grid{
-grid-template-columns:1fr;grid-auto-rows:auto;gap:12px;
+column-count:2;column-gap:10px;
 }
 /* ====== 文章墙卡片 — 移动端紧凑 ====== */
 html:not(.is-desktop) .wall-card{
-  padding:10px 12px;border-radius:12px;margin-bottom:8px;
+  padding:0;border-radius:12px;
 }
-html:not(.is-desktop) .card-title{
-  font-size:13px;margin-bottom:3px;
+html:not(.is-desktop) .card-cover{
+  height:120px;border-radius:12px 12px 0 0;
 }
-html:not(.is-desktop) .card-summary{
-  font-size:11px;line-height:1.4;margin-bottom:4px;
+html:not(.is-desktop) .card-top,
+html:not(.is-desktop) .card-title,
+html:not(.is-desktop) .card-summary,
+html:not(.is-desktop) .card-tags{
+  padding-left:12px;padding-right:12px;
 }
-html:not(.is-desktop) .card-top{ margin-bottom:4px; }
+html:not(.is-desktop) .card-top{ padding-top:10px;margin-bottom:4px; }
 html:not(.is-desktop) .card-cat{ font-size:10px;padding:1px 6px; }
 html:not(.is-desktop) .card-date{ font-size:10px; }
 html:not(.is-desktop) .card-tag{ font-size:10px;padding:1px 5px; }
 html:not(.is-desktop) .card-tags{ gap:3px; }
+html:not(.is-desktop) .card-cover{ height:100px;margin:-10px -12px 8px; }
+html:not(.is-desktop) .post-list-cover{ height:120px;margin:-10px -12px 8px; }
 
 /* ====== 关于页 ====== */
 html:not(.is-desktop) .about-card{
@@ -696,10 +701,13 @@ html:not(.is-desktop) .douban-link{
 
 /* ====== 相册页 ====== */
 html:not(.is-desktop) .gallery-masonry{
-  column-count:3;column-gap:6px;
+  column-count:2;column-gap:8px;
 }
 html:not(.is-desktop) .gallery-item{
-  margin-bottom:6px;border-radius:8px;
+  border-radius:8px;margin-bottom:8px;
+}
+html:not(.is-desktop) .gallery-item img{
+  height:auto;
 }
 html:not(.is-desktop) .gallery-overlay{
   padding:16px 6px 5px;
@@ -740,21 +748,29 @@ html:not(.is-desktop) .not-found-desc{
 
 /* ====== 文章列表页（post-list） ====== */
 html:not(.is-desktop) .post-list-item{
-  padding:10px 12px!important;
+  padding:0!important;
+}
+html:not(.is-desktop) .post-list-cover{
+  height:120px;border-radius:12px 12px 0 0;
+}
+html:not(.is-desktop) .post-list-item h3,
+html:not(.is-desktop) .post-list-item .post-meta,
+html:not(.is-desktop) .post-list-item .post-excerpt{
+  padding-left:12px;padding-right:12px;
 }
 html:not(.is-desktop) .post-list-item h3{
-  font-size:13px;margin-bottom:2px;
+  font-size:13px;margin-bottom:2px;padding-top:10px;
 }
 html:not(.is-desktop) .post-list-item .post-meta{
   font-size:10px;gap:3px;
 }
 html:not(.is-desktop) .post-excerpt{
-  font-size:11px;line-height:1.4;margin-top:3px;
+  font-size:11px;line-height:1.4;margin-top:3px;padding-bottom:12px;
 }
 html:not(.is-desktop) .post-list-tag{
   font-size:10px;padding:1px 5px;
 }
-html:not(.is-desktop) .post-list-tags{ gap:3px;margin-top:4px; }
+html:not(.is-desktop) .post-list-tags{ gap:3px;margin-top:4px;padding-left:12px;padding-right:12px;padding-bottom:12px; }
 html:not(.is-desktop) .pagination{
   gap:12px;padding:12px 14px;
 }
@@ -812,7 +828,7 @@ html:not(.is-desktop) #ajax-container{
     font-size:15px;
   }
   html:not(.is-desktop) .gallery-masonry{
-    column-count:2;
+    column-count:2;column-gap:6px;
   }
   html:not(.is-desktop) .stat-hero-row{
     grid-template-columns:1fr;

@@ -35,12 +35,14 @@
         var maxLen = sizes[idx % sizes.length];
         var summary = fullText.substring(0, maxLen);
         var showTags = true;
-        /* 预估卡片高度：基础100px + 摘要行数×18px + 标签24px + gap 16px */
-        var summaryLines = Math.ceil(maxLen / 22);
-        var estimatedHeight = 100 + summaryLines * 18 + (showTags ? 24 : 0);
-        var estimatedSpan = Math.ceil(estimatedHeight / 2) + 8;
+        var coverImg = post.cover || post.thumbnail || '';
       %>
-      <div class="wall-card ajax-link<% if (post.sticky) { %> wall-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-color-idx="<%= idx % 8 %>" style="grid-row: span <%= estimatedSpan %>">
+      <div class="wall-card ajax-link<% if (post.sticky) { %> wall-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-color-idx="<%= idx % 8 %>">
+        <% if (coverImg) { %>
+          <div class="card-cover">
+            <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy">
+          </div>
+        <% } %>
         <div class="card-top">
           <% if (post.sticky) { %>
             <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>

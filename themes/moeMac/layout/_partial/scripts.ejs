@@ -2,18 +2,19 @@
   /* cdn 配置与 head.ejs 一致，所有 JS 资源统一加 cdn 前缀 */
   var A = (theme.cdn || '') + '/assets';
   /* 版本号用于强制浏览器刷新缓存，修改 JS 后递增此数字 */
-  var V = '?v=20260710r8';
+  var V = '?v=20260710r15';
 %>
 <script defer src="<%= A %>/js/APlayer.min.js"></script>
 <script defer src="<%= A %>/js/Meting.min.js"></script>
 <% if (theme.comments && theme.comments.enable && theme.comments.provider === 'cwd' && theme.comments.cwd && theme.comments.cwd.apiBaseUrl) { %>
 <script defer src="<%= A %>/js/cwd.js"></script>
 <% } %>
-<!-- KaTeX 自动渲染脚本 -->
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<!-- KaTeX 自动渲染脚本（本地化） -->
+<script defer src="<%= A %>/js/katex.min.js"></script>
+<script defer src="<%= A %>/js/auto-render.min.js"></script>
 <!-- 标签外挂交互脚本（Tabs/Folding/KaTeX渲染/Mermaid 等） -->
 <script defer src="<%= A %>/js/tag-plugins.js<%= V %>"></script>
-<script defer src="<%= A %>/js/main.js<%= V %>"></script>
+<!-- animations.js + ui-enhance.js 必须在 main.js 之前加载，确保 main.js 调用时已定义 -->
 <script defer src="<%= A %>/js/animations.js<%= V %>"></script>
 <script defer src="<%= A %>/js/ui-enhance.js<%= V %>"></script>
+<script defer src="<%= A %>/js/main.js<%= V %>"></script>

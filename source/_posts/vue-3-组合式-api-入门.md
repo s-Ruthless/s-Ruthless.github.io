@@ -1,6 +1,7 @@
----
+﻿---
 title: "Vue 3 组合式 API 入门"
 date: 2026-06-10 12:00:00
+cover: https://picsum.photos/seed/vue3-composition/600/400
 tags:
   - Vue
   - 前端

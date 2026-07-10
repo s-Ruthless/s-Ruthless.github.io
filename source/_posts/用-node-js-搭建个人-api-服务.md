@@ -1,6 +1,7 @@
----
+﻿---
 title: "用 Node.js 搭建个人 API 服务"
 date: 2026-06-28 12:00:00
+cover: https://picsum.photos/seed/nodejs-api/600/400
 tags:
   - Node-js
   - 后端

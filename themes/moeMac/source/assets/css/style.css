@@ -223,7 +223,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   position:relative;flex-shrink:0;transition:transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
 }
 @media (hover:hover){
-  .win-traffic-btn:hover{transform:scale(1.3);}
+  .win-traffic-btn:hover{transform:translateZ(0) scale(1.3);}
   .win-traffic-btn:active{transform:scale(1.15);}
 }
 .win-traffic-btn svg{width:10px;height:10px;opacity:0;pointer-events:none;transition:opacity 0.15s ease;}
@@ -299,7 +299,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 .dock-item.active .dock-icon{color:var(--accent-medium);filter:drop-shadow(0 2px 8px color-mix(in srgb,var(--accent-color) 30%,transparent));}
 .dock-item:hover .dock-icon{color:var(--accent-soft);}
 @media (hover:hover){
-  .dock-item:hover .dock-item-inner{transform:translateY(-8px) scale(1.25);}
+  .dock-item:hover .dock-item-inner{transform:translateZ(0) translateY(-8px) scale(1.25);}
   .dock-item:active .dock-item-inner{transform:translateY(-4px) scale(1.1);}
 }
 .dock-text{
@@ -328,7 +328,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 }
 .dock-minimized-item:hover .dock-icon{color:var(--accent-soft);}
 @media (hover:hover){
-  .dock-minimized-item:hover .dock-item-inner{transform:translateY(-8px) scale(1.25);}
+  .dock-minimized-item:hover .dock-item-inner{transform:translateZ(0) translateY(-8px) scale(1.25);}
   .dock-minimized-item:active .dock-item-inner{transform:translateY(-4px) scale(1.1);}
 }
 @media (hover:none){
@@ -363,7 +363,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   box-shadow:var(--card-shadow);
   display:flex;align-items:center;justify-content:center;transition:color 0.25s ease,background 0.25s ease,transform 0.25s ease,box-shadow 0.25s ease;
 }
-.search-trigger:hover{color:var(--accent-color);background:rgba(255,255,255,0.6);transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
+.search-trigger:hover{color:var(--accent-color);background:rgba(255,255,255,0.6);transform:translateZ(0) translateY(-2px);box-shadow:0 8px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
 .search-modal{position:fixed;inset:0;z-index:10001;display:none;align-items:flex-start;justify-content:center;padding-top:12vh;}
 .search-modal.open{display:flex;}
 .search-modal-mask{
@@ -423,7 +423,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   display:flex;align-items:center;justify-content:center;
   transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.25s ease,color 0.25s ease;
 }
-.back-top-btn:hover{transform:translateY(-4px);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 25%,transparent);color:var(--accent-color);}
+.back-top-btn:hover{transform:translateZ(0) translateY(-4px);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 25%,transparent);color:var(--accent-color);}
 @media(max-width:768px){ .back-top-btn{bottom:14px;} }
 
 /* ====== 主题切换按钮（全局组件） ====== */
@@ -437,7 +437,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   cursor:pointer;transition:transform var(--duration-normal) ease,box-shadow var(--duration-normal) ease;
   font-size:16px;color:var(--accent-soft);
 }
-.theme-toggle:hover{transform:translateY(-3px);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
+.theme-toggle:hover{transform:translateZ(0) translateY(-3px);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
 
 /* ====== 壁纸适配（全局） ====== */
 .wallpaper-bg{position:fixed;inset:0;z-index:-3;overflow:hidden;pointer-events:none;}
@@ -488,28 +488,60 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 /* glass-shine 已移除 — hover 时的扫光动画会创建额外合成层，导致字体模糊 */
 /* .glass-shine 效果由 box-shadow hover 变化替代 */
 @media (prefers-reduced-motion:reduce){
-  .mesh-blob,.shimmer-text{animation:none!important;}
-  .clip-reveal{clip-path:none!important;transition:none!important;}
-  .anim-fade-up,.anim-fade-in,.anim-scale-in{animation:none!important;opacity:1!important;transform:none!important;}
+.mesh-blob,.shimmer-text{animation:none!important;}
+.clip-reveal{clip-path:none!important;transition:none!important;}
+.anim-fade-up,.anim-fade-in,.anim-scale-in,.anim-slide-left,.anim-slide-right,.anim-slide-down,.anim-dock-up,.anim-flip-in,.anim-zoom-in,.anim-bounce-in,.anim-rotate-in{animation:none!important;opacity:1!important;transform:none!important;}
 }
 
-/* ====== CSS 入场动画（替代 GSAP） ====== */
+/* ====== CSS 入场动画（替代 GSAP）— 多样化动画库 ====== */
 @keyframes anim-fade-up{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
 @keyframes anim-fade-in{from{opacity:0;}to{opacity:1;}}
 @keyframes anim-scale-in{from{opacity:0;transform:scale(0.93);}to{opacity:1;transform:scale(1);}}
-@keyframes anim-slide-left{from{opacity:0;transform:translateX(-18px);}to{opacity:1;transform:translateX(0);}}
+@keyframes anim-slide-left{from{opacity:0;transform:translateX(-30px);}to{opacity:1;transform:translateX(0);}}
+@keyframes anim-slide-right{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:translateX(0);}}
+@keyframes anim-slide-down{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
 @keyframes anim-dock-up{from{opacity:0;transform:translateY(60px);}to{opacity:1;transform:translateY(0);}}
+@keyframes anim-flip-in{from{opacity:0;transform:perspective(600px) rotateY(80deg);}to{opacity:1;transform:perspective(600px) rotateY(0);}}
+@keyframes anim-zoom-in{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
+@keyframes anim-bounce-in{0%{opacity:0;transform:scale(0.3);}50%{opacity:1;transform:scale(1.05);}70%{opacity:1;transform:scale(0.9);}100%{opacity:1;transform:scale(1);}}
+@keyframes anim-rotate-in{from{opacity:0;transform:rotate(-8deg) scale(0.8);}to{opacity:1;transform:rotate(0) scale(1);}}
 
 .anim-fade-up{animation:anim-fade-up 0.5s cubic-bezier(0.4,0,0.2,1) both;}
 .anim-fade-in{animation:anim-fade-in 0.4s ease both;}
 .anim-scale-in{animation:anim-scale-in 0.5s cubic-bezier(0.34,1.4,0.64,1) both;}
-.anim-slide-left{animation:anim-slide-left 0.35s cubic-bezier(0.4,0,0.2,1) both;}
+.anim-slide-left{animation:anim-slide-left 0.4s cubic-bezier(0.4,0,0.2,1) both;}
+.anim-slide-right{animation:anim-slide-right 0.4s cubic-bezier(0.4,0,0.2,1) both;}
+.anim-slide-down{animation:anim-slide-down 0.4s cubic-bezier(0.4,0,0.2,1) both;}
 .anim-dock-up{animation:anim-dock-up 0.5s cubic-bezier(0.34,1.4,0.64,1) both;}
+.anim-flip-in{animation:anim-flip-in 0.5s cubic-bezier(0.4,0,0.2,1) both;}
+.anim-zoom-in{animation:anim-zoom-in 0.4s cubic-bezier(0.34,1.4,0.64,1) both;}
+.anim-bounce-in{animation:anim-bounce-in 0.6s cubic-bezier(0.34,1.56,0.64,1) both;}
+.anim-rotate-in{animation:anim-rotate-in 0.4s cubic-bezier(0.34,1.4,0.64,1) both;}
 
-/* 桌面端：未定位的拖拽窗口默认隐藏，定位后由 JS 添加 .anim-scale-in */
+/* ====== 卡片 hover 波浪抖动 ====== */
+@keyframes card-wobble{
+  0%{transform:translateZ(0) rotate(0deg);}
+  20%{transform:translateZ(0) rotate(0.6deg);}
+  40%{transform:translateZ(0) rotate(-0.5deg);}
+  60%{transform:translateZ(0) rotate(0.3deg);}
+  80%{transform:translateZ(0) rotate(-0.15deg);}
+  100%{transform:translateZ(0) rotate(0deg);}
+}
+
+/* ====== 防 hover 字体模糊 ======
+   transform 创建合成层后文字可能子像素渲染模糊
+   解决方案：基础状态就创建合成层（translateZ(0)），保持稳定
+   + font-smoothing 强制抗锯齿 + backface-visibility 消除背面闪烁
+   这样 hover 时 transform 变化不会重新创建合成层，避免子像素重算 */
+.post-list-item,.wall-card,.link-card,.douban-card,.flink-card,.stat-hero-card,.cat-item,.tag,.search-item,.dock-item-inner,.back-top-btn,.theme-toggle,.search-trigger{
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  transform:translateZ(0);
+}
+
+/* 桌面端：未定位的拖拽窗口默认隐藏，定位后由 JS (animations.js heroWindows) 添加动画 */
 @media (min-width:769px) and (min-device-width:769px){
   html.is-desktop .drag-win:not([data-pos]){opacity:0;}
-  html.is-desktop .drag-win[data-pos] .app-window{animation:anim-scale-in 0.5s cubic-bezier(0.34,1.4,0.64,1) both;}
 }
 
 /* ====== 性能优化 ====== */

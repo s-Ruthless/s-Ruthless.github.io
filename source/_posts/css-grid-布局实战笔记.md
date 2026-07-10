@@ -1,6 +1,7 @@
----
+﻿---
 title: "CSS Grid 布局实战笔记"
 date: 2026-06-18 12:00:00
+cover: https://picsum.photos/seed/css-grid/600/400
 tags:
   - CSS
   - 前端

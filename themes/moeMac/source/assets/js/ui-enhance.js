@@ -176,10 +176,14 @@
     },
 
     /* ====== 5. Clip-Path 图片揭示 — IntersectionObserver ====== */
+    /* 用 JS closest() 排除画廊/豆瓣图片，比 CSS :not() 更可靠 */
     clipReveal: function () {
-      var imgs = document.querySelectorAll('.article-content img, .wall-card img, .douban-card img');
+      var imgs = document.querySelectorAll('.article-content img, .wall-card img');
       imgs.forEach(function (img) {
         if (img.dataset.clipInit) return;
+        if (img.closest('.gallery-item')) return;  /* 跳过画廊图片 */
+        if (img.closest('.douban-card')) return;   /* 跳过豆瓣封面 */
+        if (img.closest('.flink-card')) return;    /* 跳过友链头像 */
         img.dataset.clipInit = '1';
         img.classList.add('clip-reveal');
         if (typeof IntersectionObserver !== 'undefined') {

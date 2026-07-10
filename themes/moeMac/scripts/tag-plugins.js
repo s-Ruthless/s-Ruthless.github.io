@@ -178,25 +178,30 @@ var TAG_RENDERERS = {
     content = content.trim();
     var images = [];
     var lines = content.split('\n');
-    var hasCsv = lines.some(function (l) { return l.trim() && l.indexOf(',') !== -1 && l.indexOf('![') === -1; });
-    if (hasCsv) {
+    /* 优先检测 markdown 图片语法 ![caption](url) */
+    var imgRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+    var m;
+    while ((m = imgRegex.exec(content)) !== null) {
+      images.push({ url: m[2].trim(), caption: m[1] || '' });
+    }
+    /* 如果没有 markdown 语法，尝试 CSV 格式 */
+    if (images.length === 0) {
       lines.forEach(function (line) {
         line = line.trim();
         if (!line) return;
-        var parts = line.split(',').map(function (s) { return s.trim(); });
-        images.push({ url: parts[0], caption: parts[1] || '' });
+        /* CSV 格式：url, caption（caption 可选） */
+        var commaIdx = line.indexOf(',');
+        if (commaIdx !== -1) {
+          images.push({ url: line.substring(0, commaIdx).trim(), caption: line.substring(commaIdx + 1).trim() });
+        } else {
+          images.push({ url: line, caption: '' });
+        }
       });
-    } else {
-      var imgRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
-      var m;
-      while ((m = imgRegex.exec(content)) !== null) {
-        images.push({ url: m[2], caption: m[1] || '' });
-      }
     }
     if (images.length === 0) return content;
     var html = '<div class="gallery-grid" style="--gallery-cols:' + columns + '">';
     images.forEach(function (img) {
-      html += '<figure class="gallery-item"><img src="' + img.url + '" alt="' + escapeHtml(img.caption) + '" loading="lazy">';
+      html += '<figure class="gallery-item"><img src="' + img.url + '" alt="' + escapeHtml(img.caption) + '" loading="lazy" decoding="async">';
       if (img.caption) html += '<figcaption>' + img.caption + '</figcaption>';
       html += '</figure>';
     });

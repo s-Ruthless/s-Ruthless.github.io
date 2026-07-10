@@ -1,6 +1,7 @@
----
+﻿---
 title: moeMac标签外挂演示
 date: 2026-06-30 12:00:00
+cover: https://picsum.photos/seed/moemac-tags/600/400
 sticky: 2
 tags:
   - 前端
@@ -454,17 +455,17 @@ print("Hello, Hidden World!")
 
 ### 效果
 
-{% gallery 3 %}
-https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400, 自然风光
-https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=400, 猫咪
-https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400, 山间湖泊
-https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=400, 城市夜景
-https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400, 海边日落
-https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400, 晨雾山景
-https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400, 翠绿山谷
-https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400, 森林阳光
-https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?w=400, 黄石公园
+{% gallery %}
+![](https://i.loli.net/2019/12/25/Fze9jchtnyJXMHN.jpg)
+![](https://i.loli.net/2019/12/25/ryLVePaqkYm4TEK.jpg)
+![](https://i.loli.net/2019/12/25/gEy5Zc1Ai6VuO4N.jpg)
+![](https://i.loli.net/2019/12/25/d6QHbytlSYO4FBG.jpg)
+![](https://i.loli.net/2019/12/25/6nepIJ1xTgufatZ.jpg)
+![](https://i.loli.net/2019/12/25/E7Jvr4eIPwUNmzq.jpg)
+![](https://i.loli.net/2019/12/25/mh19anwBSWIkGlH.jpg)
+![](https://i.loli.net/2019/12/25/2tu9JC8ewpBFagv.jpg)
 {% endgallery %}
+
 
 ---
 

@@ -1,6 +1,7 @@
----
+﻿---
 title: TypeScript 类型体操精解
 date: 2025-09-28 11:00:00
+cover: https://picsum.photos/seed/ts-types/600/400
 categories:
   - 技术
 tags:

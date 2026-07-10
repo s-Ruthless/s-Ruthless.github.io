@@ -22,6 +22,80 @@ const crypto = require('crypto');
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
+/* 全局 cookie 缓存 — 首次请求前先访问主页获取 bid 等基础 cookie */
+var _globalCookie = '';
+var _cookieFetched = {};
+/* IP 封禁标记 — 检测到 004 错误后跳过后续所有请求 */
+var _ipBlocked = false;
+
+/* 代理配置：通过环境变量 DOUBAN_PROXY 设置，如 http://127.0.0.1:7890 */
+var _proxyUrl = process.env.DOUBAN_PROXY || '';
+var _proxyAgent = null;
+function getProxyAgent() {
+  if (_proxyAgent || !_proxyUrl) return _proxyAgent;
+  try {
+    var purl = new URL(_proxyUrl);
+    if (purl.protocol === 'http:') {
+      _proxyAgent = new (require('http').Agent)({ proxy: _proxyUrl });
+    } else {
+      var HttpsProxyAgent = require('https-proxy-agent');
+      _proxyAgent = new HttpsProxyAgent.HttpsProxyAgent(_proxyUrl);
+    }
+    console.log('  🌐 使用代理: ' + _proxyUrl);
+  } catch (e) {
+    console.log('  ⚠ 代理配置无效: ' + _proxyUrl + ' (' + e.message + ')');
+  }
+  return _proxyAgent;
+}
+
+/**
+ * 访问豆瓣主页/子域名获取基础 cookie（bid 等），解决 403 问题
+ * 豆瓣要求请求带 bid cookie，否则直接返回 403
+ * 各子域名（book/movie/music）需要分别访问获取 cookie
+ */
+function ensureBaseCookie(baseUrl) {
+  if (_ipBlocked) return Promise.resolve(_globalCookie);
+  if (_cookieFetched[baseUrl]) return Promise.resolve(_globalCookie);
+  return new Promise(function (resolve) {
+    var mod = require('https');
+    var opts = {
+      headers: {
+        'User-Agent': UA,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+      }
+    };
+    var agent = getProxyAgent();
+    if (agent) opts.agent = agent;
+    mod.get(baseUrl + '/', opts, function (res) {
+      var setCookies = res.headers['set-cookie'] || [];
+      var newCookies = setCookies.map(function (c) { return c.split(';')[0]; });
+      if (newCookies.length > 0) {
+        var existing = _globalCookie ? _globalCookie.split('; ') : [];
+        newCookies.forEach(function (c) {
+          var key = c.split('=')[0];
+          existing = existing.filter(function (e) { return e.split('=')[0] !== key; });
+          existing.push(c);
+        });
+        _globalCookie = existing.join('; ');
+      }
+      _cookieFetched[baseUrl] = true;
+      res.resume();
+      resolve(_globalCookie);
+    }).on('error', function () {
+      _cookieFetched[baseUrl] = true;
+      resolve(_globalCookie);
+    });
+  });
+}
+
+/**
+ * 检查 403 响应体是否为 IP 封禁（error code: 004）
+ */
+function isIpBlocked(body) {
+  return body && body.indexOf('error code: 004') > -1;
+}
+
 /**
  * 解决豆瓣安全验证的 SHA-512 工作量证明挑战
  */
@@ -38,23 +112,92 @@ function solveSecChallenge(cha, difficulty) {
 }
 
 function fetchPage(url, cookie) {
+  var baseCookie = [cookie, _globalCookie].filter(Boolean).join('; ');
   var headers = {
     'User-Agent': UA,
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
     'Referer': 'https://www.douban.com/',
   };
-  if (cookie) headers['Cookie'] = cookie;
+  if (baseCookie) headers['Cookie'] = baseCookie;
 
   function doGet(u) {
+    if (_ipBlocked) return Promise.reject(new Error('IP 被 douban 封禁（004），跳过请求'));
     return new Promise(function (resolve, reject) {
       var mod = u.startsWith('https') ? require('https') : require('http');
-      mod.get(u, { headers: headers }, function (res) {
+      var opts = { headers: headers };
+      var agent = getProxyAgent();
+      if (agent) opts.agent = agent;
+      mod.get(u, opts, function (res) {
         if ([301, 302, 303, 307, 308].indexOf(res.statusCode) !== -1 && res.headers.location) {
           var next = res.headers.location;
           if (next.startsWith('/')) next = new URL(u).origin + next;
           res.resume();
           return doGet(next).then(resolve, reject);
+        }
+        /* 403 时读取响应体，检查是否含安全验证挑战 */
+        if (res.statusCode === 403) {
+          var chunks403 = [];
+          res.on('data', function (c) { chunks403.push(c); });
+          res.on('end', function () {
+            var body = Buffer.concat(chunks403).toString('utf-8');
+            /* 检查 IP 封禁（004 错误）*/
+            if (isIpBlocked(body)) {
+              _ipBlocked = true;
+              console.error('  🚫 IP 被 douban 封禁（error code: 004），请更换 IP 或使用代理');
+              console.error('     设置环境变量 DOUBAN_PROXY=http://127.0.0.1:7890 后重试');
+              return reject(new Error('IP 被 douban 封禁（004）'));
+            }
+            /* 如果包含安全验证，尝试解决并重试 */
+            if (body.indexOf('name="sec"') > -1 || body.indexOf('sha512') > -1) {
+              var tokMatch = body.match(/name="tok"[^>]*value="([^"]+)"/);
+              var chaMatch = body.match(/name="cha"[^>]*value="([^"]+)"/);
+              var redMatch = body.match(/name="red"[^>]*value="([^"]+)"/);
+              if (tokMatch && chaMatch) {
+                var sol = solveSecChallenge(chaMatch[1], 4);
+                var postBody = 'tok=' + encodeURIComponent(tokMatch[1]) + '&cha=' + encodeURIComponent(chaMatch[1]) + '&sol=' + sol + '&red=' + encodeURIComponent(redMatch ? redMatch[1] : u);
+                return new Promise(function (resolve2, reject2) {
+                  var postReq = require('https').request('https://sec.douban.com/c', {
+                    method: 'POST',
+                    headers: {
+                      'User-Agent': UA,
+                      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                      'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+                      'Referer': u,
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                      'Content-Length': Buffer.byteLength(postBody),
+                    },
+                  }, function (postRes) {
+                    var setCookies = postRes.headers['set-cookie'];
+                    if (setCookies) {
+                      var existing = _globalCookie ? _globalCookie.split('; ') : [];
+                      setCookies.map(function (c) { return c.split(';')[0]; }).forEach(function (c) {
+                        var key = c.split('=')[0];
+                        existing = existing.filter(function (e) { return e.split('=')[0] !== key; });
+                        existing.push(c);
+                      });
+                      _globalCookie = existing.join('; ');
+                      headers['Cookie'] = [cookie, _globalCookie].filter(Boolean).join('; ');
+                    }
+                    if ([301, 302, 303, 307, 308].indexOf(postRes.statusCode) !== -1 && postRes.headers.location) {
+                      var next2 = postRes.headers.location;
+                      if (next2.startsWith('/')) next2 = 'https://sec.douban.com' + next2;
+                      postRes.resume();
+                      return doGet(next2).then(resolve2, reject2);
+                    }
+                    var chunks2 = [];
+                    postRes.on('data', function (c) { chunks2.push(c); });
+                    postRes.on('end', function () { resolve2(Buffer.concat(chunks2).toString('utf-8')); });
+                  });
+                  postReq.on('error', reject2);
+                  postReq.write(postBody);
+                  postReq.end();
+                }).then(resolve, reject);
+              }
+            }
+            reject(new Error('HTTP 403 for ' + u));
+          });
+          return;
         }
         if (res.statusCode !== 200) {
           res.resume();
@@ -335,6 +478,8 @@ async function fetchCategory(baseUrl, userId, type, cookie, baseDir) {
 
     var html;
     try {
+    // 首次请求前确保已获取基础 cookie（访问子域名主页获取 bid）
+    if (!_cookieFetched[baseUrl]) await ensureBaseCookie(baseUrl);
       html = await fetchPage(url, cookie);
     } catch (e) {
       console.error('  ✗ 请求失败: ' + e.message);
@@ -428,9 +573,13 @@ async function runSync(hexo, opts) {
   var fetchMovies = opts.movies || (!opts.books && !opts.movies && !opts.music);
   var fetchMusic = opts.music || (!opts.books && !opts.movies && !opts.music);
 
-  console.log('\n🔄 开始同步豆瓣收藏 [用户: ' + userId + ']\n');
+  console.log('\n🔄 开始同步豆瓣收藏 [用户: ' + userId + ']');
+  if (_proxyUrl) console.log('🌐 使用代理: ' + _proxyUrl);
+  console.log('');
 
   var result = {};
+  /* 追踪是否有任何成功抓取到数据 */
+  var anySuccess = false;
 
   // 读取已有数据（作为回退）
   var dataPath = path.join(hexo.base_dir, 'source/_data/douban.json');
@@ -443,8 +592,8 @@ async function runSync(hexo, opts) {
     console.log('📚 抓取书籍...');
     try {
       result.books = await fetchCategory('https://book.douban.com', userId, 'books', cookie, hexo.base_dir);
-      // 保留已有评分（避免重新抓取评分）
       mergeExistingRatings(result.books, existing.books);
+      if (result.books.length > 0) anySuccess = true;
     } catch (e) {
       console.error('  ✗ 书籍抓取失败: ' + e.message);
       result.books = existing.books || [];
@@ -454,11 +603,19 @@ async function runSync(hexo, opts) {
     result.books = existing.books || [];
   }
 
+  /* IP 被封禁后跳过后续分类，直接用已有数据 */
+  if (_ipBlocked) {
+    console.log('🚫 IP 被 douban 封禁，跳过后续抓取，保留已有数据');
+    if (fetchMovies && !result.movies) result.movies = existing.movies || [];
+    if (fetchMusic && !result.music) result.music = existing.music || [];
+  } else {
+
   if (fetchMovies) {
     console.log('🎬 抓取电影...');
     try {
       result.movies = await fetchCategory('https://movie.douban.com', userId, 'movies', cookie, hexo.base_dir);
       mergeExistingRatings(result.movies, existing.movies);
+      if (result.movies.length > 0) anySuccess = true;
     } catch (e) {
       console.error('  ✗ 电影抓取失败: ' + e.message);
       result.movies = existing.movies || [];
@@ -473,6 +630,7 @@ async function runSync(hexo, opts) {
     try {
       result.music = await fetchCategory('https://music.douban.com', userId, 'music', cookie, hexo.base_dir);
       mergeExistingRatings(result.music, existing.music);
+      if (result.music.length > 0) anySuccess = true;
     } catch (e) {
       console.error('  ✗ 音乐抓取失败: ' + e.message);
       result.music = existing.music || [];
@@ -481,6 +639,7 @@ async function runSync(hexo, opts) {
   } else {
     result.music = existing.music || [];
   }
+  } /* end else !_ipBlocked */
 
   // 补全缺失评分 + 电影类型：从豆瓣条目页抓取
   var allNew = [].concat(result.books || [], result.movies || [], result.music || []);
@@ -528,6 +687,21 @@ async function runSync(hexo, opts) {
   }
 
   // 保存
+  /* 如果所有分类都抓取失败且无新数据，不覆盖已有文件（保留旧数据）*/
+  var totalNew = (result.books || []).length + (result.movies || []).length + (result.music || []).length;
+  var totalOld = (existing.books || []).length + (existing.movies || []).length + (existing.music || []).length;
+  if (!anySuccess && totalOld > 0 && totalNew === totalOld) {
+    /* 全部回退到旧数据，不写文件（避免无意义覆写）*/
+    console.log('⚠ 本次同步未获取新数据，保留已有文件不变');
+    if (_ipBlocked) {
+      console.log('🚫 IP 被 douban 封禁（004），请稍后重试或：');
+      console.log('   1. 设置环境变量 DOUBAN_PROXY=http://127.0.0.1:7890 后重试');
+      console.log('   2. 或在 themes/moeMac/_config.yml 的 douban.cookie 中填入登录 Cookie');
+      console.log('   3. 或临时关闭 auto_sync，使用 _config.yml 中的手动数据\n');
+    }
+    return;
+  }
+
   var dataDir = path.join(hexo.base_dir, 'source/_data');
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
@@ -548,6 +722,10 @@ async function runSync(hexo, opts) {
   console.log('   🎬 电影: ' + result._meta.total.movies + ' 条');
   console.log('   🎵 音乐: ' + result._meta.total.music + ' 条');
   console.log('   📁 保存至: source/_data/douban.json\n');
+  if (_ipBlocked) {
+    console.log('⚠ IP 被 douban 封禁，部分数据可能不完整');
+    console.log('   设置 DOUBAN_PROXY 环境变量后重试可获取完整数据\n');
+  }
 }
 
 /**
@@ -655,6 +833,12 @@ hexo.extend.filter.register('before_generate', async function () {
         if (elapsedHours < intervalHours) {
           hexo.log.debug('豆瓣数据上次同步于 ' + lastSync.toISOString() +
             '（不足 ' + intervalHours + 'h），跳过自动同步');
+          return;
+        }
+        /* 如果上次同步结果为空（0 条），说明之前就失败了，间隔 6h 再试 */
+        var totalItems = (data._meta.total ? (data._meta.total.books + data._meta.total.movies + data._meta.total.music) : 0);
+        if (totalItems === 0 && elapsedHours < 6) {
+          hexo.log.info('豆瓣数据上次同步为空（可能 IP 被封），6h 内不再重试');
           return;
         }
       }

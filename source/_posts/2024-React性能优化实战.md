@@ -1,6 +1,7 @@
----
+﻿---
 title: React 性能优化实战
 date: 2024-01-18 14:00:00
+cover: https://picsum.photos/seed/react-perf/600/400
 categories:
   - 技术
 tags:

@@ -1,6 +1,7 @@
----
+﻿---
 title: 你好，这是 moeMac 主题的第一篇文章
 date: 2026-07-03 20:00:00
+cover: https://picsum.photos/seed/hello-moemac/600/400
 tags:
   - 日记
   - 生活

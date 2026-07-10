@@ -1,6 +1,7 @@
----
+﻿---
 title: JavaScript 异步编程进阶
 date: 2023-02-14 09:10:00
+cover: https://picsum.photos/seed/js-async/600/400
 categories:
   - 技术
 tags:

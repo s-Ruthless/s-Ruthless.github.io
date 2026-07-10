@@ -36,7 +36,7 @@ keywords: "博客,生活,技术,随笔"
 twitter: ""
 
 # ====== 主题色 ======
-accent_color: "#c0504d"
+accent_color: "#00665d"
 
 # ====== 静态资源 CDN ======
 # 所有静态资源按类型统一放在 source/assets/ 下：

@@ -577,42 +577,6 @@ window.__moeMacMainLoaded = true;
     }
   };
 
-  /* ====== Masonry Layout (Grid + JS span) ====== */
-  /* CSS columns 会打乱 DOM 顺序，改用 Grid + grid-auto-rows + JS 计算 span
-     保持文章按时间从左到右、从上到下排列，同时填充高度差产生的空白 */
-  var MasonryLayout = {
-    _timer: null,
-    layout: function () {
-      var grid = document.getElementById('posts-wall-grid');
-      if (!grid) return;
-      var cards = grid.querySelectorAll('.wall-card:not(.hidden)');
-      if (!cards.length) return;
-      /* 移动端用 auto rows，不需要 span 计算 */
-      if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-        cards.forEach(function (c) { c.style.gridRow = ''; c.style.marginBottom = '12px'; });
-        return;
-      }
-      var rowUnit = 2;
-      var gapRows = 8; /* 8 rows × 2px = 16px 间距 */
-      /* 清除旧 span，让卡片以自然高度参与计算 */
-      cards.forEach(function (card) { card.style.gridRow = ''; });
-      /* 强制重排，获取实际高度 */
-      void grid.offsetHeight;
-      /* 测量并设置 span */
-      cards.forEach(function (card) {
-        var h = card.getBoundingClientRect().height;
-        var span = Math.ceil(h / rowUnit) + gapRows;
-        if (span < 1) span = 1;
-        card.style.gridRow = 'span ' + span;
-      });
-    },
-    schedule: function () {
-      var self = this;
-      clearTimeout(this._timer);
-      this._timer = setTimeout(function () { self.layout(); }, 50);
-    }
-  };
-
   /* ====== Wall Filter ====== */
   function WallFilter() {
     var btns = document.querySelectorAll('.filter-btn');
@@ -624,22 +588,8 @@ window.__moeMacMainLoaded = true;
         b.classList.add('active');
         var cat = b.getAttribute('data-cat');
         cards.forEach(function (c) { c.classList.toggle('hidden', cat !== 'all' && c.getAttribute('data-cat') !== cat); });
-        /* 筛选后重新布局 */
-        MasonryLayout.schedule();
       });
     });
-    /* 初始布局 + resize 监听 */
-    MasonryLayout.layout();
-    /* 字体加载后高度可能变化，延迟重算 */
-    setTimeout(function () { MasonryLayout.layout(); }, 300);
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () { MasonryLayout.layout(); });
-    }
-    var _resizeTimer = null;
-    window.addEventListener('resize', function () {
-      clearTimeout(_resizeTimer);
-      _resizeTimer = setTimeout(function () { MasonryLayout.layout(); }, 150);
-    }, { passive: true });
   }
 
   /* ====== 文章目录 TOC ====== */
@@ -1405,9 +1355,8 @@ window.__moeMacMainLoaded = true;
       syncDockGlass();
     // 窗口最小化/恢复后 dock 宽度变化，同步 glass
     window.addEventListener('resize', syncDockGlass);
-    // 入场动画需在 Drag.init() 定位窗口之后执行
+    // 入场动画 — animations.js 已在 main.js 之前加载，可直接调用
     if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
-    // UI 增强效果（粒子拖尾只初始化一次，其余每次 AJAX 都重新初始化）
     if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }
 
     /* ====== 响应式断点监听：跨越 768px 时刷新页面 ====== */

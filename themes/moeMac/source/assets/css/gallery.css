@@ -1,18 +1,17 @@
 /* ====== 相册页面 ====== */
 
-/* 瀑布流容�?�?CSS columns 实现 */
+/* CSS columns 瓷布流：图片保持原始宽高比，自动填充列 */
 .gallery-masonry{
-  column-count:3;
-  column-gap:12px;
+  column-count:4;
+  column-gap:16px;
 }
-@media (max-width:1024px){.gallery-masonry{column-count:2;}}
-@media (max-width:600px){.gallery-masonry{column-count:1;}}
+@media (max-width:768px){.gallery-masonry{column-count:2;column-gap:8px;}}
 
-/* 单张图片卡片 */
-.gallery-item{
+/* 单张图片卡片 — 仅限相册页面 #galleryMasonry 内的元素 */
+#galleryMasonry .gallery-item{
   break-inside:avoid;
-  margin-bottom:12px;
-  border-radius:var(--radius-md);
+  margin:0 0 16px;
+  border-radius:8px;
   overflow:hidden;
   cursor:pointer;
   position:relative;
@@ -20,26 +19,25 @@
   box-shadow:0 2px 12px rgba(0,0,0,0.06);
   transition:transform 0.3s var(--ease-spring),box-shadow 0.3s ease;
   opacity:0;
-  transform:translateY(20px);
 }
-.gallery-item.loaded{
+#galleryMasonry .gallery-item.loaded{
   opacity:1;
-  transform:translateY(0);
 }
-.gallery-item:hover{
-  transform:translateY(-4px) scale(1.02);
+#galleryMasonry .gallery-item:hover{
+  transform:scale(1.03);
   box-shadow:0 8px 28px rgba(0,0,0,0.15);
   z-index:2;
 }
-.gallery-item img{
+/* 图片保持原始宽高比，高度自适应 */
+#galleryMasonry .gallery-item img{
   width:100%;
   height:auto;
   display:block;
   transition:transform 0.4s ease;
 }
-.gallery-item:hover img{transform:scale(1.05);}
+#galleryMasonry .gallery-item:hover img{transform:translateZ(0) scale(1.05);}
 /* 标题遮罩 */
-.gallery-item .gallery-overlay{
+#galleryMasonry .gallery-item .gallery-overlay{
   position:absolute;bottom:0;left:0;right:0;
   padding:24px 12px 10px;
   background:linear-gradient(transparent,rgba(0,0,0,0.6));
@@ -52,7 +50,7 @@
   text-shadow:0 1px 4px rgba(0,0,0,0.5);
 }
 
-/* 加载指示�?*/
+/* 加载指示器 */
 .gallery-loader{
   display:flex;align-items:center;justify-content:center;gap:8px;
   padding:30px 0;color:var(--accent-soft);font-size:14px;
@@ -106,4 +104,4 @@
 .lightbox-prev:hover,.lightbox-next:hover{background:rgba(255,255,255,0.25);}
 
 /* 暗黑模式 */
-[data-theme="dark"] .gallery-item{background:rgba(50,50,60,0.4);}
+[data-theme="dark"] #galleryMasonry .gallery-item{background:rgba(50,50,60,0.4);}

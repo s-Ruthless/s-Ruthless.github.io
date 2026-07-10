@@ -1,6 +1,7 @@
----
+﻿---
 title: "Git 工作流最佳实践"
 date: 2026-06-05 12:00:00
+cover: https://picsum.photos/seed/git-workflow/600/400
 tags:
   - Git
   - 工具

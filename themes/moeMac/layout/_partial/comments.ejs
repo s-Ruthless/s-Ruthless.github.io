@@ -216,7 +216,7 @@
 </script>
 
 <% } else if (p === 'twikoo' && c.twikoo && c.twikoo.envId) { %>
-<script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js" onerror="window.__commentsShowError&&window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试')"></script>
+<script src="<%= A %>/js/twikoo.all.min.js" onerror="window.__commentsShowError&&window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试')"></script>
 <script>
   (function(){
     function init(){ twikoo.init({ envId: '<%= c.twikoo.envId %>', el: '#comments-mount' }); }

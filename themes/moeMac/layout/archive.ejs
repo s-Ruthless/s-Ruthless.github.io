@@ -1,12 +1,16 @@
 <%
-  var posts = site.posts.sort('date', -1);
+  var posts = site.posts.toArray().sort(function(a, b) {
+    var sd = (b.sticky || 0) - (a.sticky || 0);
+    if (sd !== 0) return sd;
+    return b.date - a.date;
+  });
   var totalPosts = site.posts.length;
   var totalCategories = site.categories.length;
   var totalTags = site.tags.length;
 
   // 按年份统计
   var yearMap = {};
-  posts.each(function(post) {
+  posts.forEach(function(post) {
     var y = date(post.date, 'YYYY');
     yearMap[y] = (yearMap[y] || 0) + 1;
   });
@@ -16,7 +20,7 @@
   // 按年份分组文章（避免在循环中开关 div）
   var yearGroups = {};
   var yearOrder = [];
-  posts.each(function(post) {
+  posts.forEach(function(post) {
     var y = date(post.date, 'YYYY');
     if (!yearGroups[y]) {
       yearGroups[y] = [];

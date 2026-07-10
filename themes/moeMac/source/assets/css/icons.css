@@ -23,12 +23,17 @@
 .fa-chevron-down::before{content:"\f078";}
 .fa-chevron-left::before{content:"\f053";}
 .fa-chevron-right::before{content:"\f054";}
+.fa-circle::before{content:"\f111";}
+.fa-circle-check::before{content:"\f058";}
 .fa-circle-info::before{content:"\f05a";}
 .fa-circle-notch::before{content:"\f1ce";}
+.fa-circle-xmark::before{content:"\f057";}
 .fa-clapperboard::before{content:"\e131";}
+.fa-code::before{content:"\f121";}
 .fa-comments::before{content:"\f086";}
 .fa-compact-disc::before{content:"\f51f";}
 .fa-copy::before{content:"\f0c5";}
+.fa-eye::before{content:"\f06e";}
 .fa-file-lines::before{content:"\f15c";}
 .fa-film::before{content:"\f008";}
 .fa-folder::before{content:"\f07b";}
@@ -38,6 +43,7 @@
 .fa-heart::before{content:"\f004";}
 .fa-house::before{content:"\f015";}
 .fa-images::before{content:"\f302";}
+.fa-lightbulb::before{content:"\f0eb";}
 .fa-link::before{content:"\f0c1";}
 .fa-list-ul::before{content:"\f0ca";}
 .fa-magnifying-glass::before{content:"\f002";}
@@ -49,8 +55,41 @@
 .fa-sun::before{content:"\f185";}
 .fa-tag::before{content:"\f02b";}
 .fa-tags::before{content:"\f02c";}
+.fa-triangle-exclamation::before{content:"\f071";}
 .fa-window-maximize::before{content:"\f2d0";}
 .fa-xmark::before{content:"\f00d";}
+
+/* Font Awesome 5 兼容别名（FA6 重命名了这些图标） */
+.fa-check-circle::before{content:"\f058";}
+.fa-info-circle::before{content:"\f05a";}
+.fa-exclamation-triangle::before{content:"\f071";}
+.fa-exclamation-circle::before{content:"\f06a";}
+.fa-times-circle::before{content:"\f057";}
+.fa-check-square::before{content:"\f14a";}
+.fa-tachometer-alt::before{content:"\f625";}
+.fa-external-link-alt::before{content:"\f08e";}
+.fa-file-alt::before{content:"\f15c";}
+.fa-calendar-alt::before{content:"\f073";}
+.fa-user-circle::before{content:"\f2bd";}
+.fa-question-circle::before{content:"\f059";}
+.fa-plus-circle::before{content:"\f055";}
+.fa-minus-circle::before{content:"\f056";}
+.fa-play-circle::before{content:"\f144";}
+.fa-pause-circle::before{content:"\f28b";}
+.fa-stop-circle::before{content:"\f28d";}
+.fa-arrow-circle-right::before{content:"\f0a9";}
+.fa-arrow-circle-left::before{content:"\f0a8";}
+.fa-arrow-circle-up::before{content:"\f0aa";}
+.fa-arrow-circle-down::before{content:"\f0ab";}
+.fa-shopping-cart::before{content:"\f07a";}
+.fa-shopping-bag::before{content:"\f290";}
+.fa-thumbtack::before{content:"\f08d";}
+.fa-pen-fancy::before{content:"\f5ac";}
+.fa-clock::before{content:"\f017";}
+.fa-shield-halved::before{content:"\f3ed";}
+.fa-pen-to-square::before{content:"\f044";}
+.fa-chart-line::before{content:"\f201";}
+.fa-thumb-tack::before{content:"\f08d";}
 
 /* 动画类 */
 .fa-spin{animation:fa-spin 2s linear infinite;}

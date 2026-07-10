@@ -4,7 +4,7 @@
   var hasToc = tocHtml && tocHtml.replace(/\s/g,'').length > 0 && tocHtml.indexOf('<ol') !== -1;
 } else { var tocHtml = ''; var hasToc = false; } %>
 <% if (showToc && hasToc) { %>
-<aside class="post-toc-wrap" id="post-toc-wrap">
+<aside class="post-toc-wrap" id="post-toc-wrap" data-expand="<%= theme.post && theme.post.toc_expand ? 'true' : 'false' %>">
   <div class="post-toc-inner">
     <div class="post-toc-head">
       <span><i class="fas fa-list-ul"></i> 目录</span>

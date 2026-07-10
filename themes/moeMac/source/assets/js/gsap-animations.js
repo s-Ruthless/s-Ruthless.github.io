@@ -6,8 +6,6 @@
 
   if (typeof gsap === 'undefined') return;
 
-  gsap.config({ force3D: true });
-
   var GSAPAnimations = {
     _master: null,
 
@@ -71,21 +69,21 @@
 
     /** 列表卡片依次滑入 — 文章列表 / 归档行用 ScrollTrigger，文章墙用随机延迟淡入 */
     postListCards: function () {
-      /* 文章墙卡片：column-count 布局下 DOM 顺序 = 视觉列顺序，
-         任何按 DOM 顺序的 stagger 都会变成"一列一列"出现。
-         改为随机延迟淡入，打乱列顺序，视觉效果更自然。 */
+      /* 文章墙卡片：opacity + y(transform) 入场
+         卡片已用 translateZ(0) 预提升合成层，文字渲染模式一致不会闪烁
+         不用 marginTop — 会和 MasonryLayout 的 grid-row span 计算冲突 */
       var wallCards = document.querySelectorAll('.wall-card');
       if (wallCards.length) {
         wallCards.forEach(function (card) {
           gsap.fromTo(card,
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.4, delay: Math.random() * 0.3, ease: 'power2.out',
-              clearProps: 'transform' }
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.4, delay: Math.random() * 0.3, ease: 'power2.out',
+              clearProps: 'opacity,transform' }
           );
         });
       }
 
-      /* 文章列表 / 归档行：正常流布局，ScrollTrigger 批量入场没问题 */
+      /* 文章列表 / 归档行：ScrollTrigger 批量入场 */
       var listCards = document.querySelectorAll('.post-list-item, .archive-row');
       if (!listCards.length) return;
       if (typeof ScrollTrigger !== 'undefined') {
@@ -93,9 +91,9 @@
           start: 'top 90%',
           onEnter: function (batch) {
             gsap.fromTo(batch,
-              { y: 30, opacity: 0 },
-              { y: 0, opacity: 1, duration: 0.4, stagger: 0.06, ease: 'power2.out',
-                clearProps: 'transform' }
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 0.4, stagger: 0.06, ease: 'power2.out',
+                clearProps: 'opacity,transform' }
             );
           }
         });
@@ -103,9 +101,9 @@
         var tl = gsap.timeline();
         listCards.forEach(function (card, i) {
           tl.fromTo(card,
-            { x: -20, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.35, ease: 'power2.out',
-              clearProps: 'transform' },
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out',
+              clearProps: 'opacity,transform' },
             i * 0.06
           );
         });

@@ -78,7 +78,7 @@ sentences:
 # platform: 音乐平台（netease / tencent / kugou / xiami / baidu）
 # playlist_id: 歌单ID
 # show_desktop_lyrics: 是否在 dock 栏上方显示桌面歌词
-meting_api: "https://api.injahow.cn/meting/"
+meting_api: "https://api.moeyao.cn/meting/"
 platform: "netease"
 playlist_id: "18117638485"
 show_desktop_lyrics: true
@@ -139,6 +139,8 @@ post:
   show_toc: true
   show_date: true
   copyright: true
+  # toc_expand: 二级目录是否默认展开（false=点击一级展开二级，true=全部展开）
+  toc_expand: false
 
 # ====== 豆瓣书影音 ======
 # 两种方式二选一：
@@ -225,6 +227,7 @@ comments:
     apiBaseUrl: "https://cwd.moeao.cn/"
     siteId: "blog"
     lang: "auto"
+    customCssUrl: 'https://your-cdn.example.com/cwd-custom.css'
 
 # ====== 搜索 ======
 # 需安装 hexo-generator-searchdb 插件：npm i hexo-generator-searchdb

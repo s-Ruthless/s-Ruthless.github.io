@@ -1,27 +1,22 @@
 <div class="info-list">
   <% if (theme.site_info && theme.site_info.icp) { %>
   <div class="info-item">
-    <i class="fas fa-shield-halved"></i>
     <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><%= theme.site_info.icp %></a>
   </div>
   <% } %>
   <% if (theme.site_info && theme.site_info.psbc) { %>
   <div class="info-item">
-    <i class="fas fa-lock"></i>
     <a href="http://www.beian.gov.cn/" target="_blank" rel="noopener"><%= theme.site_info.psbc %></a>
   </div>
   <% } %>
   <div class="info-item info-item-days">
-    <i class="fas fa-clock-rotate-left"></i>
-    <span>建站天数 <em id="site-days">-</em> 天</span>
+    <span>建站 <em id="site-days">-</em> 天</span>
   </div>
   <div class="info-item">
-    <i class="fas fa-code"></i>
     <span>Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com" target="_blank" rel="noopener">moeMac</a></span>
   </div>
   <% if (theme.site_info && theme.site_info.copyright) { %>
   <div class="info-item">
-    <i class="fas fa-copyright"></i>
     <span><%= theme.site_info.copyright %></span>
   </div>
   <% } %>

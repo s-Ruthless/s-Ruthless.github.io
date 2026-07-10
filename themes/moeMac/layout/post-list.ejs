@@ -1,5 +1,23 @@
 <%
-  var posts = page.posts ? page.posts.sort('date', -1) : site.posts.sort('date', -1).limit(config.per_page || 10);
+  // hexo-generator-index 的 order_by: -date 不含 sticky 排序
+  // 此处手动排序：sticky 优先，日期次之
+  var posts;
+  if (page.posts) {
+    // 分页场景：对当前页数据重新排序
+    var arr = page.posts.toArray();
+    arr.sort(function(a, b) {
+      var sd = (b.sticky || 0) - (a.sticky || 0);
+      if (sd !== 0) return sd;
+      return b.date - a.date;
+    });
+    posts = arr;
+  } else {
+    posts = site.posts.toArray().sort(function(a, b) {
+      var sd = (b.sticky || 0) - (a.sticky || 0);
+      if (sd !== 0) return sd;
+      return b.date - a.date;
+    }).slice(0, config.per_page || 10);
+  }
 %>
 
 <div class="page-container">
@@ -9,8 +27,11 @@
     </div>
     <div class="page-content">
       <div class="list-container">
-      <% posts.each(function(post) { %>
-        <div class="post-list-item ajax-link" data-href="<%- url_for(post.path) %>">
+      <% posts.forEach(function(post) { %>
+        <div class="post-list-item ajax-link<% if (post.sticky) { %> post-sticky<% } %>" data-href="<%- url_for(post.path) %>">
+          <% if (post.sticky) { %>
+            <span class="sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+          <% } %>
           <h3 class="ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></h3>
           <div class="post-meta">
             <i class="fas fa-calendar-days"></i>

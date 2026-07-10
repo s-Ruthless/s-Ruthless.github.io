@@ -90,10 +90,12 @@
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
   <!-- 第三方库 CSS + 组件库 -->
-  <% var V = '?v=20260709q'; %>
-  <link rel="stylesheet" href="<%= A %>/css/icons.css">
+  <% var V = '?v=20260710r7'; %>
+  <link rel="stylesheet" href="<%= A %>/css/icons.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>">
+  <!-- KaTeX 数学公式样式（按需加载） -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" media="print" onload="this.media='all'">
 
   <!-- 主题色注入 -->
   <style>

@@ -573,6 +573,12 @@ body { background: transparent !important; }
 [data-theme="dark"] .theme-toggle{
   background:var(--card-bg)!important;border-color:rgba(255,255,255,0.14)!important;
 }
+[data-theme="dark"] .wall-card{background:rgb(30,30,50)!important;border-color:rgba(255,255,255,0.14)!important;}
+[data-theme="dark"] .wall-card::after{
+border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);
+}
+[data-theme="dark"] .post-list-item{background:rgb(30,30,50)!important;border-color:rgba(255,255,255,0.14)!important;}
+[data-theme="dark"] .post-list-item::after{border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);}
 [data-theme="dark"] .search-modal-box{background:rgba(30,30,42,0.92);border-color:rgba(255,255,255,0.18);}
 [data-theme="dark"] .search-modal-mask{background:rgba(0,0,0,0.6);}
 

@@ -607,7 +607,7 @@ html:not(.is-desktop) .filter-btn{
   padding:5px 12px;font-size:11px;white-space:nowrap;flex-shrink:0;
 }
 html:not(.is-desktop) .wall-grid{
-  column-count:1;column-gap:12px;
+grid-template-columns:1fr;grid-auto-rows:auto;gap:12px;
 }
 /* ====== 文章墙卡片 — 移动端紧凑 ====== */
 html:not(.is-desktop) .wall-card{

@@ -595,6 +595,42 @@ window.__moeMacMainLoaded = true;
     }
   };
 
+  /* ====== Masonry Layout (Grid + JS span) ====== */
+  /* CSS columns 会打乱 DOM 顺序，改用 Grid + grid-auto-rows + JS 计算 span
+     保持文章按时间从左到右、从上到下排列，同时填充高度差产生的空白 */
+  var MasonryLayout = {
+    _timer: null,
+    layout: function () {
+      var grid = document.getElementById('posts-wall-grid');
+      if (!grid) return;
+      var cards = grid.querySelectorAll('.wall-card:not(.hidden)');
+      if (!cards.length) return;
+      /* 移动端用 auto rows，不需要 span 计算 */
+      if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+        cards.forEach(function (c) { c.style.gridRow = ''; c.style.marginBottom = '12px'; });
+        return;
+      }
+      var rowUnit = 2;
+      var gapRows = 8; /* 8 rows × 2px = 16px 间距 */
+      /* 清除旧 span，让卡片以自然高度参与计算 */
+      cards.forEach(function (card) { card.style.gridRow = ''; });
+      /* 强制重排，获取实际高度 */
+      void grid.offsetHeight;
+      /* 测量并设置 span */
+      cards.forEach(function (card) {
+        var h = card.getBoundingClientRect().height;
+        var span = Math.ceil(h / rowUnit) + gapRows;
+        if (span < 1) span = 1;
+        card.style.gridRow = 'span ' + span;
+      });
+    },
+    schedule: function () {
+      var self = this;
+      clearTimeout(this._timer);
+      this._timer = setTimeout(function () { self.layout(); }, 50);
+    }
+  };
+
   /* ====== Wall Filter ====== */
   function WallFilter() {
     var btns = document.querySelectorAll('.filter-btn');
@@ -606,8 +642,22 @@ window.__moeMacMainLoaded = true;
         b.classList.add('active');
         var cat = b.getAttribute('data-cat');
         cards.forEach(function (c) { c.classList.toggle('hidden', cat !== 'all' && c.getAttribute('data-cat') !== cat); });
+        /* 筛选后重新布局 */
+        MasonryLayout.schedule();
       });
     });
+    /* 初始布局 + resize 监听 */
+    MasonryLayout.layout();
+    /* 字体加载后高度可能变化，延迟重算 */
+    setTimeout(function () { MasonryLayout.layout(); }, 300);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { MasonryLayout.layout(); });
+    }
+    var _resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(_resizeTimer);
+      _resizeTimer = setTimeout(function () { MasonryLayout.layout(); }, 150);
+    }, { passive: true });
   }
 
   /* ====== 文章目录 TOC ====== */
@@ -639,6 +689,8 @@ window.__moeMacMainLoaded = true;
       }
 
       /* 点击目录项平滑滚动 */
+      this.tocExpand = wrap.getAttribute('data-expand') !== 'false';
+      var tocExpand = this.tocExpand;
       var links = wrap.querySelectorAll('.post-toc-list a');
       links.forEach(function (a) {
         a.addEventListener('click', function (e) {
@@ -650,6 +702,13 @@ window.__moeMacMainLoaded = true;
             window.scrollTo({ top: top, behavior: 'smooth' });
           }
           wrap.classList.remove('fab-open');
+          /* 二级目录折叠模式：点击一级目录时展开/折叠子项 */
+          if (!tocExpand) {
+            var li = a.parentElement;
+            if (li && li.querySelector('ol')) {
+              li.classList.toggle('toc-expanded');
+            }
+          }
         });
       });
 
@@ -678,6 +737,15 @@ window.__moeMacMainLoaded = true;
           if (headings[i].el.offsetTop <= pos) current = headings[i];
         }
         headings.forEach(function (h) { h.link.classList.toggle('toc-active', h === current); });
+        /* 二级目录折叠模式：自动展开当前阅读位置的父级目录 */
+        if (current && !self.tocExpand) {
+          var parentLi = current.link.closest('.post-toc-list > li');
+          if (parentLi && parentLi.querySelector('ol') && !parentLi.classList.contains('toc-expanded')) {
+            var expanded = wrap.querySelectorAll('.post-toc-list > li.toc-expanded');
+            expanded.forEach(function (li) { if (li !== parentLi) li.classList.remove('toc-expanded'); });
+            parentLi.classList.add('toc-expanded');
+          }
+        }
         /* 当前项滚入 TOC 可视区 */
         if (current) {
           var body = document.getElementById('post-toc-body');
@@ -1029,6 +1097,8 @@ window.__moeMacMainLoaded = true;
               if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
               // UI 增强效果重新初始化
               if (typeof UIEnhance !== "undefined") UIEnhance.init();
+              // 标签外挂重新初始化（Tabs/Folding/KaTeX/Mermaid 等）
+              if (window.TagPlugins) window.TagPlugins.init();
               } catch(e2) { console.warn('AJAX init error:', e2); }
             }
           }

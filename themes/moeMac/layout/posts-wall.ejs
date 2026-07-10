@@ -1,5 +1,10 @@
 <%
-  var posts = site.posts.sort('date', -1);
+  // 按 sticky 优先、日期次之排序（单一排序函数，避免两次 sort 互相覆盖）
+  var posts = site.posts.toArray().sort(function(a, b) {
+    var sd = (b.sticky || 0) - (a.sticky || 0);
+    if (sd !== 0) return sd;
+    return b.date - a.date;
+  });
   var cats = site.categories;
   var _icon = 'fas fa-newspaper';
   var _path = (page.path || '').replace(/\/index\.html$/, '').replace(/^\/|\/$/g, '');
@@ -21,19 +26,25 @@
       <% }); %>
     </div>
     <div class="wall-grid" id="posts-wall-grid">
-    <% var sizes = ['card-sm','card-md','card-lg','card-md','card-sm','card-xl','card-md','card-sm','card-lg','card-md','card-sm','card-lg']; %>
+    <% var sizes = [30, 80, 150, 60, 120, 40, 100, 180, 50, 90, 140, 70]; %>
     <% var idx = 0; %>
-    <% posts.each(function(post) { %>
+    <% posts.forEach(function(post) { %>
       <%
-        var size = sizes[idx % sizes.length];
         var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : '';
         var fullText = strip_html(post.excerpt || post.content || '');
-        var maxLen = size === 'card-sm' ? 20 : size === 'card-md' ? 60 : size === 'card-lg' ? 120 : 180;
+        var maxLen = sizes[idx % sizes.length];
         var summary = fullText.substring(0, maxLen);
         var showTags = true;
+        /* 预估卡片高度：基础100px + 摘要行数×18px + 标签24px + gap 16px */
+        var summaryLines = Math.ceil(maxLen / 22);
+        var estimatedHeight = 100 + summaryLines * 18 + (showTags ? 24 : 0);
+        var estimatedSpan = Math.ceil(estimatedHeight / 2) + 8;
       %>
-      <div class="wall-card ajax-link" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-color-idx="<%= idx % 8 %>">
+      <div class="wall-card ajax-link<% if (post.sticky) { %> wall-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-color-idx="<%= idx % 8 %>" style="grid-row: span <%= estimatedSpan %>">
         <div class="card-top">
+          <% if (post.sticky) { %>
+            <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+          <% } %>
           <% if (catName) { %>
             <span class="card-cat badge badge-xs"><%= catName %></span>
           <% } %>
@@ -53,7 +64,7 @@
     <% }); %>
 
     <% if (site.posts.length === 0) { %>
-      <div class="list-empty" style="column-span:all;">还没有文章哦，快去写一篇吧～</div>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
     <% } %>
     </div>
     </div>

@@ -1,8 +1,12 @@
 <% var count = theme.recent_posts_count || 3; %>
-<% var posts = site.posts.sort('date', -1).limit(count); %>
-<% posts.each(function(post) { %>
+<% var _posts = site.posts.toArray().sort(function(a, b) {
+  var sd = (b.sticky || 0) - (a.sticky || 0);
+  if (sd !== 0) return sd;
+  return b.date - a.date;
+}).slice(0, count); %>
+<% _posts.forEach(function(post) { %>
   <div class="art-item">
-    <h4 class="ajax-link" data-href="<%- url_for(post.path) %>"><%= post.title %></h4>
+    <h4 class="ajax-link" data-href="<%- url_for(post.path) %>"><% if (post.sticky) { %><i class="fas fa-thumbtack sticky-icon"></i> <% } %><%= post.title %></h4>
     <span><%= date(post.date, 'YYYY-MM-DD') %></span>
   </div>
 <% }); %>

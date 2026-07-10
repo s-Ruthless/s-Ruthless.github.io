@@ -53,11 +53,11 @@
   --glass-shadow:0 8px 32px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.65),inset 0 -1px 0 rgba(0,0,0,0.03);
   --glass-shadow-hover:0 20px 60px rgba(0,0,0,0.14),0 8px 24px color-mix(in srgb,var(--accent-color) 10%,transparent),inset 0 1px 0 rgba(255,255,255,0.75),inset 0 -1px 0 rgba(0,0,0,0.04);
 
-  /* 模糊级别 — 高饱和度增强色彩还原 */
-  --blur-strong:blur(30px) saturate(180%) brightness(1.08);
-  --blur-medium:blur(20px) saturate(160%) brightness(1.05);
-  --blur-light:blur(12px) saturate(150%) brightness(1.05);
-  --blur-dock:blur(40px) saturate(180%) brightness(1.08);
+  /* 模糊级别 — 适中值，避免过度模糊导致字体渲染异常 */
+  --blur-strong:blur(16px) saturate(140%);
+  --blur-medium:blur(12px) saturate(130%);
+  --blur-light:blur(8px) saturate(120%);
+  --blur-dock:blur(20px) saturate(140%);
 
   /* 圆角 */
   --radius-sm:8px;
@@ -114,13 +114,13 @@ a{color:inherit;text-decoration:none;font-family:inherit;}
    桌面端通过 html.is-desktop 覆盖为 position:absolute */
 .app-window{
   position:relative;
-  backdrop-filter:var(--blur-strong);-webkit-backdrop-filter:var(--blur-strong);
-  background:var(--glass-bg-window);
+  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  background:var(--card-bg);
   border:1px solid var(--glass-border);
   border-radius:var(--radius-xl);
   box-shadow:var(--glass-shadow);
   transition:box-shadow var(--duration-slow) ease,border-color var(--duration-slow) ease;
-  will-change:transform,box-shadow;z-index:10;
+  z-index:10;
   overflow:hidden;
 }
 /* 桌面端：覆盖为绝对定位，JS 负责排列 */
@@ -137,8 +137,6 @@ html.is-desktop .app-window{
     linear-gradient(135deg,rgba(255,255,255,0.12) 0%,transparent 30%,transparent 70%,rgba(255,255,255,0.06) 100%);
   background-size:200px 200px,100% 100%,100% 100%;
   background-repeat:repeat,no-repeat,no-repeat;
-  /* 混合模式让噪点与背景融合 */
-  mix-blend-mode:overlay;
 }
 /* 伪元素 ::after — 边缘光泽 + 内发光 */
 .app-window::after{
@@ -223,11 +221,10 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;padding:0;font-size:0;line-height:1;
   position:relative;flex-shrink:0;transition:transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
-  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
 @media (hover:hover){
-  .win-traffic-btn:hover{transform:scale(1.3) translateZ(0);}
-  .win-traffic-btn:active{transform:scale(1.15) translateZ(0);}
+  .win-traffic-btn:hover{transform:scale(1.3);}
+  .win-traffic-btn:active{transform:scale(1.15);}
 }
 .win-traffic-btn svg{width:10px;height:10px;opacity:0;pointer-events:none;transition:opacity 0.15s ease;}
 .app-window:hover .win-traffic-btn svg,
@@ -259,17 +256,17 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 .page-window .win-body{padding:0;}
 .page-window .post-list-item{padding:12px 20px;}
 
-/* GSAP 动画辅助 */
-.gsap-animating .app-window,
-.gsap-animating .post-list-item,
-.gsap-animating .wall-card,
-.gsap-animating .archive-row,
-.gsap-animating .archive-year-header,
-.gsap-animating .article-header,
-.gsap-animating .article-content,
-.gsap-animating .article-nav,
-.gsap-animating .page-header,
-.gsap-animating .dock-bar{transition:none!important;}
+/* 动画辅助 — 动画期间禁用 transition 避免冲突 */
+.animating .app-window,
+.animating .post-list-item,
+.animating .wall-card,
+.animating .archive-row,
+.animating .archive-year-header,
+.animating .article-header,
+.animating .article-content,
+.animating .article-nav,
+.animating .page-header,
+.animating .dock-bar{transition:none!important;}
 
 /* ====== Dock 栏（全局组件） ====== */
 .dock-bar{
@@ -297,14 +294,13 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   width:42px;height:42px;border-radius:12px;transform-origin:bottom center;
   transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
-  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
 .dock-icon{font-size:20px;color:#444;transition:color 0.2s ease,filter 0.2s ease;}
 .dock-item.active .dock-icon{color:var(--accent-medium);filter:drop-shadow(0 2px 8px color-mix(in srgb,var(--accent-color) 30%,transparent));}
 .dock-item:hover .dock-icon{color:var(--accent-soft);}
 @media (hover:hover){
-  .dock-item:hover .dock-item-inner{transform:translateY(-8px) scale(1.25) translateZ(0);}
-  .dock-item:active .dock-item-inner{transform:translateY(-4px) scale(1.1) translateZ(0);}
+  .dock-item:hover .dock-item-inner{transform:translateY(-8px) scale(1.25);}
+  .dock-item:active .dock-item-inner{transform:translateY(-4px) scale(1.1);}
 }
 .dock-text{
   position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);z-index:20;
@@ -329,12 +325,11 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   width:42px;height:42px;border-radius:12px;transform-origin:bottom center;
   transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
-  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
 .dock-minimized-item:hover .dock-icon{color:var(--accent-soft);}
 @media (hover:hover){
-  .dock-minimized-item:hover .dock-item-inner{transform:translateY(-8px) scale(1.25) translateZ(0);}
-  .dock-minimized-item:active .dock-item-inner{transform:translateY(-4px) scale(1.1) translateZ(0);}
+  .dock-minimized-item:hover .dock-item-inner{transform:translateY(-8px) scale(1.25);}
+  .dock-minimized-item:active .dock-item-inner{transform:translateY(-4px) scale(1.1);}
 }
 @media (hover:none){
   .dock-item:hover .dock-item-inner,
@@ -367,9 +362,8 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   color:#444;font-size:15px;cursor:pointer;
   box-shadow:var(--card-shadow);
   display:flex;align-items:center;justify-content:center;transition:color 0.25s ease,background 0.25s ease,transform 0.25s ease,box-shadow 0.25s ease;
-  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
-.search-trigger:hover{color:var(--accent-color);background:rgba(255,255,255,0.6);transform:translateY(-2px) translateZ(0);box-shadow:0 8px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
+.search-trigger:hover{color:var(--accent-color);background:rgba(255,255,255,0.6);transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
 .search-modal{position:fixed;inset:0;z-index:10001;display:none;align-items:flex-start;justify-content:center;padding-top:12vh;}
 .search-modal.open{display:flex;}
 .search-modal-mask{
@@ -428,9 +422,8 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   box-shadow:var(--card-shadow);
   display:flex;align-items:center;justify-content:center;
   transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.25s ease,color 0.25s ease;
-  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
-.back-top-btn:hover{transform:translateY(-4px) translateZ(0);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 25%,transparent);color:var(--accent-color);}
+.back-top-btn:hover{transform:translateY(-4px);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 25%,transparent);color:var(--accent-color);}
 @media(max-width:768px){ .back-top-btn{bottom:14px;} }
 
 /* ====== 主题切换按钮（全局组件） ====== */
@@ -443,9 +436,8 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:transform var(--duration-normal) ease,box-shadow var(--duration-normal) ease;
   font-size:16px;color:var(--accent-soft);
-  transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;
 }
-.theme-toggle:hover{transform:translateY(-3px) translateZ(0);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
+.theme-toggle:hover{transform:translateY(-3px);box-shadow:0 6px 20px color-mix(in srgb,var(--accent-color) 20%,transparent);}
 
 /* ====== 壁纸适配（全局） ====== */
 .wallpaper-bg{position:fixed;inset:0;z-index:-3;overflow:hidden;pointer-events:none;}
@@ -471,6 +463,11 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 .mesh-blob-2{width:450px;height:450px;background:radial-gradient(circle,var(--accent-color),transparent 70%);top:20%;right:-8%;}
 .mesh-blob-3{width:400px;height:400px;background:radial-gradient(circle,#60a5fa,transparent 70%);bottom:-5%;left:30%;}
 .mesh-blob-4{width:350px;height:350px;background:radial-gradient(circle,#fbbf24,transparent 70%);bottom:10%;right:20%;opacity:0.25;}
+/* mesh blob 浮动动画 — CSS 驱动，无需 GSAP */
+@keyframes mesh-float-1{from{transform:translate(0,0) scale(1);}to{transform:translate(60px,-40px) scale(1.1);}}
+@keyframes mesh-float-2{from{transform:translate(0,0) scale(1);}to{transform:translate(-80px,60px) scale(1.15);}}
+@keyframes mesh-float-3{from{transform:translate(0,0) scale(1);}to{transform:translate(70px,50px) scale(1.1);}}
+@keyframes mesh-float-4{from{transform:translate(0,0) scale(1);}to{transform:translate(-50px,-30px) scale(1.05);}}
 #sparkle-canvas{position:fixed;inset:0;z-index:9998;pointer-events:none;}
 .motion-num{display:inline-block;font-variant-numeric:tabular-nums;}
 .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);transform:scale(0);animation:ripple-anim 0.6s ease-out;pointer-events:none;}
@@ -488,20 +485,34 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   animation:shimmer 3s linear infinite;
 }
 @keyframes shimmer{to{background-position:200% center;}}
-.glass-shine{
-  position:absolute;inset:0;border-radius:inherit;
-  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.15) 50%,transparent 60%);
-  background-size:200% 100%;background-position:200% 0;pointer-events:none;opacity:0;transition:opacity 0.3s ease;
-}
-.app-window:hover .glass-shine{opacity:1;animation:shine-sweep 1.2s ease;}
-@keyframes shine-sweep{to{background-position:-200% 0;}}
+/* glass-shine 已移除 — hover 时的扫光动画会创建额外合成层，导致字体模糊 */
+/* .glass-shine 效果由 box-shadow hover 变化替代 */
 @media (prefers-reduced-motion:reduce){
   .mesh-blob,.shimmer-text{animation:none!important;}
   .clip-reveal{clip-path:none!important;transition:none!important;}
+  .anim-fade-up,.anim-fade-in,.anim-scale-in{animation:none!important;opacity:1!important;transform:none!important;}
+}
+
+/* ====== CSS 入场动画（替代 GSAP） ====== */
+@keyframes anim-fade-up{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+@keyframes anim-fade-in{from{opacity:0;}to{opacity:1;}}
+@keyframes anim-scale-in{from{opacity:0;transform:scale(0.93);}to{opacity:1;transform:scale(1);}}
+@keyframes anim-slide-left{from{opacity:0;transform:translateX(-18px);}to{opacity:1;transform:translateX(0);}}
+@keyframes anim-dock-up{from{opacity:0;transform:translateY(60px);}to{opacity:1;transform:translateY(0);}}
+
+.anim-fade-up{animation:anim-fade-up 0.5s cubic-bezier(0.4,0,0.2,1) both;}
+.anim-fade-in{animation:anim-fade-in 0.4s ease both;}
+.anim-scale-in{animation:anim-scale-in 0.5s cubic-bezier(0.34,1.4,0.64,1) both;}
+.anim-slide-left{animation:anim-slide-left 0.35s cubic-bezier(0.4,0,0.2,1) both;}
+.anim-dock-up{animation:anim-dock-up 0.5s cubic-bezier(0.34,1.4,0.64,1) both;}
+
+/* 桌面端：未定位的拖拽窗口默认隐藏，定位后由 JS 添加 .anim-scale-in */
+@media (min-width:769px) and (min-device-width:769px){
+  html.is-desktop .drag-win:not([data-pos]){opacity:0;}
+  html.is-desktop .drag-win[data-pos] .app-window{animation:anim-scale-in 0.5s cubic-bezier(0.34,1.4,0.64,1) both;}
 }
 
 /* ====== 性能优化 ====== */
-.dock-bar,.app-window{will-change:transform;transform:translateZ(0);}
 .chart-bars,.chart-bars-full{contain:layout style;}
 .stat-hero-row{contain:layout style;}
 
@@ -541,7 +552,6 @@ body { background: transparent !important; }
     linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 30%,transparent 70%,rgba(255,255,255,0.03) 100%);
   background-size:200px 200px,100% 100%,100% 100%;
   background-repeat:repeat,no-repeat,no-repeat;
-  mix-blend-mode:overlay;
 }
 [data-theme="dark"] .app-window::after{
   box-shadow:inset 0 1px 1px rgba(255,255,255,0.15),inset 0 -1px 1px rgba(0,0,0,0.15),inset 1px 0 0.5px rgba(255,255,255,0.06),inset -1px 0 0.5px rgba(255,255,255,0.06);

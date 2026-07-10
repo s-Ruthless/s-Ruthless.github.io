@@ -476,9 +476,7 @@ themes/moeMac/
         ├── js/              # 所有脚本
         │   ├── main.js      # 主脚本
         │   ├── ui-enhance.js       # UI 增强
-        │   ├── gsap-animations.js  # GSAP 动画
-        │   ├── gsap.min.js
-        │   ├── ScrollTrigger.min.js
+        │   ├── animations.js        # CSS动画+IntersectionObserver+Web Animations API
         │   ├── APlayer.min.js
         │   ├── Meting.min.js
         │   ├── busuanzi.pure.mini.js
@@ -495,7 +493,7 @@ themes/moeMac/
 - **Hexo** + EJS 模板引擎
 - **CSS** — 原生 CSS + CSS 变量，无构建步骤
 - **DaisyUI** — 组件样式（本地化，不依赖 CDN）
-- **GSAP** — 入场动画 + 滚动触发
+- **原生动画** — CSS @keyframes + IntersectionObserver + Web Animations API，零外部依赖
 - **APlayer + Meting** — 音乐播放器
 - **Font Awesome** — 图标（精简版，仅含 Solid 样式）
 - **内联 SVG** — 社交链接图标（不依赖外部字体）

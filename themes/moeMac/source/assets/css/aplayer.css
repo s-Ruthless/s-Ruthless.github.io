@@ -15,8 +15,8 @@
 .aplayer .aplayer-played{background:linear-gradient(90deg,var(--accent-color),#ec4899)!important;height:3px!important;border-radius:2px!important;}
 .aplayer .aplayer-thumb{background:#fff!important;width:10px!important;height:10px!important;border:2px solid var(--accent-color)!important;box-shadow:0 0 4px color-mix(in srgb,var(--accent-color) 30%,transparent);}
 .aplayer .aplayer-time{color:rgba(0,0,0,0.35)!important;font-size:10px!important;padding:0 6px!important;}
-.aplayer .aplayer-icon{color:rgba(0,0,0,0.4)!important;transition:color 0.15s ease,transform 0.15s ease;transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;}
-.aplayer .aplayer-icon:hover{color:var(--accent-color)!important;transform:scale(1.15) translateZ(0);}
+.aplayer .aplayer-icon{color:rgba(0,0,0,0.4)!important;transition:color 0.15s ease,transform 0.15s ease;}
+.aplayer .aplayer-icon:hover{color:var(--accent-color)!important;transform:scale(1.15);}
 .aplayer .aplayer-icon-play,.aplayer .aplayer-icon-pause{color:var(--accent-color)!important;}
 
 /* APlayer list */

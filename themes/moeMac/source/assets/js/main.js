@@ -184,14 +184,12 @@ window.__moeMacMainLoaded = true;
       if (win.classList.contains('win-minimized') || win.style.display === 'none') return;
       var id = this.winId(win);
       var zone = document.getElementById('dock-mini-zone');
-      if (!zone) { win.style.display = 'none'; return; }
-      if (typeof gsap === 'undefined') { win.style.display = 'none'; win.classList.add('win-minimized'); return; }
+      if (!zone) { win.style.display = 'none'; win.classList.add('win-minimized'); return; }
       var icon = this.iconMap[id] || 'fas fa-window-maximize';
       var name = this.nameMap[id] || '';
       var item = document.createElement('div');
       item.className = 'dock-minimized-item';
       item.setAttribute('data-win-id', id);
-      gsap.set(item, { scale: 0, y: 16, opacity: 0 });
       item.innerHTML = '<div class="dock-text">' + name + '</div><div class="dock-item-inner"><i class="' + icon + ' dock-icon"></i></div>';
       if (!zone.querySelector('.dock-mini-sep')) {
         var sep = document.createElement('div');
@@ -199,19 +197,17 @@ window.__moeMacMainLoaded = true;
         zone.appendChild(sep);
       }
       zone.appendChild(item);
-      /* 动态创建的最小化图标也绑定 tooltip */
       DockTip.init();
 
-      /* 先让 zone 可测量，然后获取目标宽度，再用 GSAP 动画宽度展开 */
-      /* 动画期间 overflow:hidden 防止内容溢出；动画完成后加 expanded 切换 overflow:visible */
+      /* 测量目标宽度 */
       zone.style.width = '0px';
       zone.classList.remove('expanded');
-      /* 强制布局同步，确保 scrollWidth 计算准确 */
       void zone.offsetWidth;
       var targetWidth = zone.scrollWidth;
 
-      /* 保存当前位置，动画结束后清除 GSAP transform 并恢复 Drag 的 left/top */
       var savedLeft = win.style.left, savedTop = win.style.top;
+      win.dataset.savedLeft = savedLeft;
+      win.dataset.savedTop = savedTop;
 
       var iconRect = item.getBoundingClientRect();
       var winRect = win.getBoundingClientRect();
@@ -219,38 +215,39 @@ window.__moeMacMainLoaded = true;
       var dy = (iconRect.top + iconRect.height / 2) - (winRect.top + winRect.height / 2);
       var targetScale = Math.max(iconRect.width / winRect.width, 0.06);
 
-      /* GSAP timeline：窗口 Genie 吸入 → dock 图标弹入 + dock-mini-zone 宽度展开 */
-      var tl = gsap.timeline({
-        onComplete: function () {
-          gsap.set(win, { clearProps: 'all' });
-          win.classList.add('win-minimized');
-          win.style.display = 'none';
-          win.style.left = savedLeft; win.style.top = savedTop;
+      /* 持续同步 dock-glass 宽度 */
+      syncDockGlassForDuration(450);
+
+      /* 窗口 Genie 吸入 — Web Animations API */
+      var winAnim = win.animate([
+        { transform: 'translate(0px,0px) scale(1) scaleY(1)', opacity: 1 },
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + targetScale + ') scaleY(0.6)', opacity: 0 }
+      ], { duration: 420, easing: 'cubic-bezier(0.4,0,0.2,1)', fill: 'forwards' });
+
+      /* dock-mini-zone 宽度展开 — CSS transition */
+      zone.style.transition = 'width 0.35s cubic-bezier(0.4,0,0.2,1)';
+      requestAnimationFrame(function() { zone.style.width = targetWidth + 'px'; });
+
+      /* dock 图标弹入 — Web Animations API */
+      item.animate([
+        { transform: 'scale(0) translateY(16px)', opacity: 0 },
+        { transform: 'scale(1) translateY(0)', opacity: 1 }
+      ], { duration: 280, easing: 'cubic-bezier(0.34,1.56,0.64,1)', delay: 320, fill: 'forwards' });
+
+      /* 动画完成后的清理 */
+      winAnim.onfinish = function () {
+        win.style.transform = '';
+        win.style.opacity = '';
+        win.classList.add('win-minimized');
+        win.style.display = 'none';
+        win.style.left = savedLeft; win.style.top = savedTop;
+        setTimeout(function () {
+          zone.style.transition = '';
           zone.style.width = 'auto';
-          zone.classList.add('expanded'); /* 动画完成，切换 overflow:visible 让 hover 不被裁切 */
+          zone.classList.add('expanded');
           syncDockGlass();
-        }
-      });
-      tl.to(win, {
-        x: dx, y: dy,
-        scale: targetScale, scaleY: 0.6,
-        opacity: 0, filter: 'blur(2px)',
-        duration: 0.42, ease: 'power2.in'
-      });
-      /* dock-mini-zone 宽度展开 + 玻璃背景实时同步 */
-      tl.to(zone, {
-        width: targetWidth,
-        duration: 0.35, ease: 'power2.out',
-        onUpdate: syncDockGlass
-      }, 0);
-      /* dock图标弹入动画 */
-      tl.to(item, {
-        scale: 1, y: 0, opacity: 1,
-        duration: 0.28, ease: 'back.out(1.6)'
-      }, '-=0.1');
-      /* 保存位置到 dataset（clearProps 后仍能恢复） */
-      win.dataset.savedLeft = savedLeft;
-      win.dataset.savedTop = savedTop;
+        }, 60);
+      };
     },
 
     restore: function (win, miniItem) {
@@ -260,19 +257,9 @@ window.__moeMacMainLoaded = true;
       }
       win.classList.remove('win-minimized');
       win.style.display = '';
-      /* 恢复动画期间隐藏红绿灯（窗口从 dock 弹出时不应显示） */
       win.classList.add('win-restoring');
-      /* 读取最小化前保存的位置 */
       var savedLeft = win.dataset.savedLeft || win.style.left;
       var savedTop  = win.dataset.savedTop  || win.style.top;
-      /* GSAP 不可用时降级为直接显示 */
-      if (typeof gsap === 'undefined') {
-        win.classList.remove('win-restoring');
-        if (miniItem && miniItem.parentNode) miniItem.remove();
-        var zone0 = document.getElementById('dock-mini-zone');
-        if (zone0 && !zone0.querySelector('.dock-minimized-item')) { zone0.classList.remove('expanded'); zone0.style.width = '0px'; var s0 = zone0.querySelector('.dock-mini-sep'); if (s0) s0.remove(); }
-        Drag.focus(win); return;
-      }
 
       var zone = document.getElementById('dock-mini-zone');
       var sep = zone ? zone.querySelector('.dock-mini-sep') : null;
@@ -286,82 +273,77 @@ window.__moeMacMainLoaded = true;
         startScale = Math.max(iconRect.width / winRect.width, 0.06);
       }
 
-      /* 判断 zone 里是否只剩这一个 miniItem（restore 后就空了） */
       var otherItems = zone ? zone.querySelectorAll('.dock-minimized-item:not([data-win-id="' + this.winId(win) + '"])') : [];
       var shouldCollapseZone = zone && zone.classList.contains('expanded') && otherItems.length === 0;
 
-      /* GSAP timeline：窗口从 dock 位置展开 + dock 图标缩小消失 + zone 宽度收起，同步进行 */
-      gsap.set(win, { x: dx, y: dy, scale: startScale, scaleY: 0.6, opacity: 0, filter: 'blur(2px)' });
-      var tl = gsap.timeline({
-        onComplete: function () {
-          if (!shouldCollapseZone) zone.style.width = 'auto';
-          syncDockGlass();
-        }
-      });
+      /* 持续同步 dock-glass 宽度 */
+      syncDockGlassForDuration(450);
 
-      /* 窗口展开动画 */
-      tl.to(win, {
-        x: 0, y: 0, scale: 1, scaleY: 1, opacity: 1, filter: 'blur(0px)',
-        duration: 0.4, ease: 'back.out(1.4)'
-      });
+      /* 设置初始状态 */
+      win.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + startScale + ') scaleY(0.6)';
+      win.style.opacity = '0';
 
-      /* dock 图标缩小消失（与窗口展开同时进行）*/
+      /* 窗口展开动画 — Web Animations API */
+      var winAnim = win.animate([
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + startScale + ') scaleY(0.6)', opacity: 0 },
+        { transform: 'translate(0px,0px) scale(1) scaleY(1)', opacity: 1 }
+      ], { duration: 400, easing: 'cubic-bezier(0.34,1.4,0.64,1)', fill: 'forwards' });
+
+      /* dock 图标缩小消失 */
       if (miniItem) {
-        tl.to(miniItem, {
-          scale: 0.3, y: -8, opacity: 0,
-          duration: 0.25, ease: 'power2.in'
-        }, 0);
+        miniItem.animate([
+          { transform: 'scale(1) translateY(0)', opacity: 1 },
+          { transform: 'scale(0.3) translateY(-8px)', opacity: 0 }
+        ], { duration: 250, easing: 'cubic-bezier(0.4,0,0.2,1)', fill: 'forwards' });
       }
 
-      /* zone 宽度收起动画（仅当最后一个 icon 被 restore 时）*/
+      /* zone 宽度收起/调整 */
       if (shouldCollapseZone) {
-        zone.classList.remove('expanded'); /* 动画期间 overflow:hidden */
-        /* 强制布局同步，确保当前宽度计算准确 */
+        zone.classList.remove('expanded');
         void zone.offsetWidth;
         var currentWidth = zone.scrollWidth;
         zone.style.width = currentWidth + 'px';
-        tl.to(zone, {
-          width: 0,
-          duration: 0.32, ease: 'power2.inOut',
-          onUpdate: syncDockGlass
-        }, 0);
-        tl.call(function () {
-          if (miniItem && miniItem.parentNode) miniItem.remove();
-          if (sep && sep.parentNode) sep.remove();
-          zone.style.width = '0px';
-          syncDockGlass();
-        });
-      } else {
-        /* 还有其他 icon，窗口展开完成后移除当前 icon 并自适应宽度 */
-        tl.call(function () {
-          if (miniItem && miniItem.parentNode) miniItem.remove();
-          if (sep && sep.parentNode && !zone.querySelector('.dock-minimized-item')) sep.remove();
-          if (zone && zone.querySelector('.dock-minimized-item')) {
-            zone.classList.remove('expanded'); /* 动画期间 overflow:hidden */
-            /* 强制布局同步，确保新宽度计算准确 */
-            void zone.offsetWidth;
-            var newW = zone.scrollWidth;
-            zone.style.width = zone.offsetWidth + 'px';
-            gsap.to(zone, { width: newW, duration: 0.28, ease: 'power2.out',
-              onUpdate: syncDockGlass,
-              onComplete: function () {
-                zone.style.width = 'auto';
-                zone.classList.add('expanded'); /* 恢复 overflow:visible */
-                syncDockGlass();
-              }
-            });
-          }
-        }, null, 0.4);
+        zone.style.transition = 'width 0.32s cubic-bezier(0.4,0,0.2,1)';
+        requestAnimationFrame(function() { zone.style.width = '0px'; });
       }
 
-      /* 动画完成后清除 GSAP transform，并恢复 Drag 的原始 left/top */
-      tl.set(win, { clearProps: 'all' }, '>');
-      tl.call(function () {
+      /* 动画完成后的清理 */
+      winAnim.onfinish = function () {
+        win.style.transform = '';
+        win.style.opacity = '';
         win.style.left = win.dataset.savedLeft || savedLeft || win.style.left;
         win.style.top  = win.dataset.savedTop  || savedTop  || win.style.top;
         win.classList.remove('win-restoring');
-        Drag.focus(win); /* 动画完成后才 focus（避免 restore 中途弹出红绿灯） */
-      }, null, '>');
+
+        if (shouldCollapseZone) {
+          if (miniItem && miniItem.parentNode) miniItem.remove();
+          if (sep && sep.parentNode) sep.remove();
+          zone.style.transition = '';
+          zone.style.width = '0px';
+          syncDockGlass();
+        } else if (zone) {
+          if (miniItem && miniItem.parentNode) miniItem.remove();
+          if (sep && sep.parentNode && !zone.querySelector('.dock-minimized-item')) sep.remove();
+          if (zone.querySelector('.dock-minimized-item')) {
+            zone.classList.remove('expanded');
+            void zone.offsetWidth;
+            var newW = zone.scrollWidth;
+            zone.style.transition = 'width 0.28s cubic-bezier(0.4,0,0.2,1)';
+            zone.style.width = newW + 'px';
+            setTimeout(function () {
+              zone.style.transition = '';
+              zone.style.width = 'auto';
+              zone.classList.add('expanded');
+              syncDockGlass();
+            }, 300);
+          } else {
+            if (!shouldCollapseZone) zone.style.width = 'auto';
+            syncDockGlass();
+          }
+        }
+
+        Drag.focus(win);
+      };
     },
 
     togglePin: function (win) {
@@ -377,7 +359,7 @@ window.__moeMacMainLoaded = true;
     }
   };
 
-  /* ====== Dock Tooltip — 独立于 GSAP，确保始终可用 ====== */
+  /* ====== Dock Tooltip ====== */
   var DockTip = {
     init: function () {
       document.querySelectorAll('.dock-item, .dock-minimized-item').forEach(function (item) {
@@ -1093,7 +1075,7 @@ window.__moeMacMainLoaded = true;
               /* 重新触发卜算子访客统计（脚本在 head 中，AJAX 不会自动重新加载） */
               refreshBusuanzi();
               window.scrollTo(0, 0);
-              // GSAP 动画需在 AJAX 加载完成后重新执行
+              // 动画需在 AJAX 加载完成后重新执行
               if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
               // UI 增强效果重新初始化
               if (typeof UIEnhance !== "undefined") UIEnhance.init();
@@ -1153,6 +1135,15 @@ window.__moeMacMainLoaded = true;
         glass.style.width = inner.offsetWidth + 'px';
       }
     });
+  }
+  /* 动画期间持续同步 dock-glass 宽度 */
+  function syncDockGlassForDuration(ms) {
+    var start = performance.now();
+    function tick(now) {
+      syncDockGlass();
+      if (now - start < ms) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 
   /* ====== 卜算子访客统计 — AJAX 导航后重新触发 ====== */
@@ -1414,7 +1405,7 @@ window.__moeMacMainLoaded = true;
       syncDockGlass();
     // 窗口最小化/恢复后 dock 宽度变化，同步 glass
     window.addEventListener('resize', syncDockGlass);
-    // GSAP 动画需在 Drag.init() 定位窗口之后执行
+    // 入场动画需在 Drag.init() 定位窗口之后执行
     if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
     // UI 增强效果（粒子拖尾只初始化一次，其余每次 AJAX 都重新初始化）
     if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }

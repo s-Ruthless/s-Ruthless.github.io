@@ -90,7 +90,7 @@
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
   <!-- 第三方库 CSS + 组件库 -->
-  <% var V = '?v=20260710r7'; %>
+  <% var V = '?v=20260710r8'; %>
   <link rel="stylesheet" href="<%= A %>/css/icons.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>">
@@ -155,8 +155,6 @@
   <link rel="stylesheet" href="<%= A %>/css/aplayer.css<%= V %>">
 
   <!-- 关键 JS 预加载：defer 脚本默认下载优先级低，preload 提前高优先级拉取
-       gsap + main.js 是桌面端布局的核心依赖，提前下载可缩短窗口渲染等待时间 -->
-  <link rel="preload" href="<%= A %>/js/gsap.min.js" as="script">
+       main.js 是桌面端布局的核心依赖，提前下载可缩短窗口渲染等待时间 -->
   <link rel="preload" href="<%= A %>/js/main.js<%= V %>" as="script">
-  <link rel="preload" href="<%= A %>/js/ScrollTrigger.min.js" as="script">
 </head>

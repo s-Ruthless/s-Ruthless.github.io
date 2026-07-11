@@ -36,6 +36,79 @@ function md(content) {
   }
 }
 
+/* =================== Postcard 辅助函数 =================== */
+
+function renderSinglePostcard(raw) {
+  var parts = raw.split(',').map(function (s) { return s.trim(); });
+  var postPath = parts[0] || '';
+  if (!postPath) return '';
+
+  /* 规范化路径 */
+  if (postPath.charAt(0) !== '/') postPath = '/' + postPath;
+  if (postPath.charAt(postPath.length - 1) !== '/') postPath = postPath + '/';
+
+  /* 从 Hexo site 数据中查找文章 */
+  var post = null;
+  try {
+    var posts = hexo.locals.get('posts');
+    posts.forEach(function (p) {
+      var pPath = '/' + (p.path || '').replace(/^\/+|\/+$/g, '') + '/';
+      if (pPath === postPath) post = p;
+    });
+  } catch (e) { /* ignore */ }
+
+  var title = parts[1] || (post ? post.title : '') || '文章';
+  var desc = parts[2] || '';
+  var cover = parts[3] || (post ? (post.cover || '') : '');
+
+  /* 自动提取摘要 */
+  if (!desc && post) {
+    var excerpt = post.excerpt || post.description || '';
+    if (!excerpt && post._content) {
+      var moreIdx = post._content.indexOf('<!-- more -->');
+      if (moreIdx !== -1) {
+        excerpt = post._content.substring(0, moreIdx);
+      } else {
+        excerpt = post._content.substring(0, 200);
+      }
+    }
+    excerpt = excerpt.replace(/<[^>]+>/g, '').replace(/[#*`~>\-]/g, '').replace(/\n+/g, ' ').trim();
+    if (excerpt.length > 80) excerpt = excerpt.substring(0, 80) + '...';
+    desc = excerpt;
+  }
+  if (!desc) desc = '点击阅读全文';
+
+  /* 文章日期 */
+  var dateStr = '';
+  if (post && post.date) {
+    try {
+      var d = post.date;
+      if (typeof d === 'object' && d.format) {
+        dateStr = d.format('YYYY-MM-DD');
+      } else {
+        dateStr = String(d).substring(0, 10);
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  /* 紧凑横向卡片：缩略图在左，信息在右 */
+  var html = '<a class="post-card ajax-link" data-href="' + postPath + '">';
+  if (cover) {
+    html += '<div class="post-card-thumb">';
+    html += '<img src="' + cover + '" alt="' + escapeHtml(title) + '" loading="lazy" decoding="async">';
+    html += '</div>';
+  }
+  html += '<div class="post-card-info">';
+  html += '<div class="post-card-title">' + escapeHtml(title) + '</div>';
+  html += '<div class="post-card-excerpt">' + escapeHtml(desc) + '</div>';
+  html += '<div class="post-card-meta">';
+  if (dateStr) html += '<span class="post-card-date"><i class="fas fa-calendar-day"></i> ' + dateStr + '</span>';
+  html += '<span class="post-card-read"><i class="fas fa-arrow-right"></i> 阅读</span>';
+  html += '</div>';
+  html += '</div></a>';
+  return html;
+}
+
 /* =================== 标签渲染函数 ===================
  * 每个函数接收 (args, content)，返回 HTML
  * content 对于块级标签是已经递归渲染过的 HTML */
@@ -345,78 +418,26 @@ var TAG_RENDERERS = {
   },
 
   /* --- Postcard 文章卡片（站内文章引用卡片，AJAX 跳转） --- */
+  /* 支持多种语法：
+     {% postcard /path/ %}                          单卡片
+     {% postcard /path/, 标题, 描述, 封面URL %}      单卡片自定义
+     {% postcard /path1/ | /path2/ | /path3/ %}     多卡片横排
+  */
   postcard: function (args) {
     var raw = args.join(' ').trim();
-    var parts = raw.split(',').map(function (s) { return s.trim(); });
-    var postPath = parts[0] || '';
-    if (!postPath) return '';
+    if (!raw) return '';
 
-    /* 规范化路径：确保以 / 开头，以 / 结尾 */
-    if (postPath.charAt(0) !== '/') postPath = '/' + postPath;
-    if (postPath.charAt(postPath.length - 1) !== '/') postPath = postPath + '/';
-
-    /* 从 Hexo site 数据中查找文章 */
-    var post = null;
-    try {
-      var posts = hexo.locals.get('posts');
-      posts.forEach(function (p) {
-        var pPath = '/' + (p.path || '').replace(/^\/+|\/+$/g, '') + '/';
-        if (pPath === postPath) post = p;
-      });
-    } catch (e) { /* ignore */ }
-
-    var title = parts[1] || (post ? post.title : '') || '文章';
-    var desc = parts[2] || '';
-    var cover = parts[3] || (post ? (post.cover || '') : '');
-
-    /* 如果没有手动指定描述，尝试从文章多个字段提取摘要 */
-    if (!desc && post) {
-      var excerpt = post.excerpt || post.description || '';
-      /* 如果 excerpt 为空，尝试从 _content 中提取 more 之前的内容 */
-      if (!excerpt && post._content) {
-        var moreIdx = post._content.indexOf('<!-- more -->');
-        if (moreIdx !== -1) {
-          excerpt = post._content.substring(0, moreIdx);
-        } else {
-          excerpt = post._content.substring(0, 200);
-        }
-      }
-      /* 去除 HTML 标签和 Markdown 语法 */
-      excerpt = excerpt.replace(/<[^>]+>/g, '').replace(/[#*`~>\-]/g, '').replace(/\n+/g, ' ').trim();
-      if (excerpt.length > 100) excerpt = excerpt.substring(0, 100) + '...';
-      desc = excerpt;
-    }
-    if (!desc) desc = '点击阅读全文 →';
-
-    /* 文章日期 */
-    var dateStr = '';
-    if (post && post.date) {
-      try {
-        var d = post.date;
-        if (typeof d === 'object' && d.format) {
-          dateStr = d.format('YYYY-MM-DD');
-        } else {
-          dateStr = String(d).substring(0, 10);
-        }
-      } catch (e) { /* ignore */ }
+    /* 判断是否为多卡片模式（包含 | 分隔符） */
+    if (raw.indexOf('|') !== -1) {
+      var paths = raw.split('|').map(function (s) { return s.trim(); }).filter(function (s) { return s; });
+      if (paths.length === 0) return '';
+      if (paths.length === 1) return renderSinglePostcard(paths[0]);
+      var grid = '<div class="post-card-grid">';
+      paths.forEach(function (p) { grid += renderSinglePostcard(p); });
+      return grid + '</div>';
     }
 
-    /* 生成卡片 HTML — 使用 ajax-link 类实现 AJAX 跳转 */
-    var html = '<a class="post-card ajax-link" data-href="' + postPath + '">';
-    if (cover) {
-      html += '<div class="post-card-cover" style="background-image:url(' + cover + ')">';
-      html += '<img src="' + cover + '" alt="' + escapeHtml(title) + '" loading="lazy" decoding="async">';
-      html += '</div>';
-    }
-    html += '<div class="post-card-body">';
-    html += '<div class="post-card-title">' + escapeHtml(title) + '</div>';
-    html += '<div class="post-card-excerpt">' + escapeHtml(desc) + '</div>';
-    html += '<div class="post-card-meta">';
-    if (dateStr) html += '<span class="post-card-date"><i class="fas fa-calendar-day"></i> ' + dateStr + '</span>';
-    html += '<span class="post-card-read"><i class="fas fa-arrow-right"></i> 阅读全文</span>';
-    html += '</div>';
-    html += '</div></a>';
-    return html;
+    return renderSinglePostcard(raw);
   },
 
   radio: function (args) {

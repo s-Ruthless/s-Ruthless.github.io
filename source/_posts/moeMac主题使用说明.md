@@ -186,12 +186,25 @@ comments:
 
 ### Waline
 
+> 官方文档：[https://waline.js.org/](https://waline.js.org/)
+
 ```yaml
 waline:
   serverURL: "https://your-waline.vercel.app"
 ```
 
+### Twikoo
+
+> 官方文档：[https://twikoo.js.org/](https://twikoo.js.org/)
+
+```yaml
+twikoo:
+  envId: ""               # 腾讯云环境ID 或自建地址
+```
+
 ### Giscus（基于 GitHub Discussions）
+
+> 官方文档：[https://giscus.app/](https://giscus.app/)
 
 ```yaml
 giscus:
@@ -204,6 +217,30 @@ giscus:
   reactionsEnabled: 0
   theme_light: "noborder_light"
   theme_dark: "noborder_dark"
+```
+
+### Gitalk（基于 GitHub Issues）
+
+> 官方文档：[https://github.com/gitalk/gitalk](https://github.com/gitalk/gitalk)
+
+```yaml
+gitalk:
+  clientID: ""
+  clientSecret: ""
+  repo: ""
+  owner: ""
+  admin: [""]
+```
+
+### CWD（基于 Cloudflare Workers）
+
+> 官方文档：[https://cwd.js.org/](https://cwd.js.org/)
+
+```yaml
+cwd:
+  apiBaseUrl: "https://your-cwd-api.workers.dev"
+  siteId: "blog"
+  lang: "auto"
 ```
 
 ### 页面级控制
@@ -385,7 +422,7 @@ cdn: "https://your-cdn.com/moemac/assets"
 
 moeMac 内置丰富的标签外挂，包括提示容器、标签页、折叠面板、轮播图、画廊、时间线、步骤条、文章引用卡片等。
 
-详细的语法教程和效果演示请查看下方文章卡片：
+详细的语法教程和效果演示请查看下方文章：
 
 {% postcard /2026/06/30/moeMac主题标签外挂演示/ %}
 

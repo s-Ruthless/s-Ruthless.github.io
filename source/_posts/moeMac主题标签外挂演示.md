@@ -16,7 +16,6 @@ categories:
 
 <!-- more -->
 
----
 
 ## Note 提示容器
 
@@ -84,7 +83,6 @@ note 容器内部也**支持 Markdown** 语法：
 - 列表项三
 {% endnote %}
 
----
 
 ## Checkbox 待办事项
 
@@ -110,7 +108,6 @@ note 容器内部也**支持 Markdown** 语法：
 {% checkbox checked, blue, 蓝色已完成 %}
 {% checkbox checked, purple, 紫色已完成 %}
 
----
 
 ## Tabs 标签页
 
@@ -172,7 +169,6 @@ greet('moeMac');
 
 {% endtabs %}
 
----
 
 ## Folding 折叠面板
 
@@ -208,7 +204,6 @@ greet('moeMac');
 红色边框的折叠面板，适合警告类内容。
 {% endfolding %}
 
----
 
 ## Hide 隐藏文本
 
@@ -246,7 +241,6 @@ print("Hello, Hidden World!")
 类似折叠面板，但视觉风格不同。适合用于 FAQ 或答案展示。
 {% endhideToggle %}
 
----
 
 ## Badge 徽章
 
@@ -267,7 +261,6 @@ print("Hello, Hidden World!")
 
 {% badge 推荐, orange %} {% badge Beta, purple, pill %} {% badge Deprecated, gray %} {% badge Updated, cyan, pill %}
 
----
 
 ## Label 行内标签
 
@@ -287,7 +280,6 @@ print("Hello, Hidden World!")
 
 也支持{% label 紫色@purple %}、{% label 橙色@orange %}、{% label 绿色@green %}、{% label 粉色@pink %}等颜色。
 
----
 
 ## Mark 文本高亮
 
@@ -308,7 +300,6 @@ print("Hello, Hidden World!")
 
 还可以{% mark 蓝色标记@blue %}和{% mark 绿色标记@green %}。
 
----
 
 ## Button 按钮链接
 
@@ -338,7 +329,6 @@ print("Hello, Hidden World!")
 
 {% btn https://github.com, GitHub, fa-star, orange, center %}
 
----
 
 ## Btns 按钮组
 
@@ -366,7 +356,6 @@ print("Hello, Hidden World!")
 {% btn https://react.dev, React, fa-star, cyan %}
 {% endbtns %}
 
----
 
 ## Quot 带作者引用
 
@@ -387,7 +376,6 @@ print("Hello, Hidden World!")
 
 {% quot 简单是可靠的先决条件。, Edsger Dijkstra %}
 
----
 
 ## Flink 友链卡片
 
@@ -429,7 +417,6 @@ print("Hello, Hidden World!")
   desc: JavaScript 运行时
 {% endflink %}
 
----
 
 ## Gallery 图片画廊
 
@@ -469,7 +456,6 @@ print("Hello, Hidden World!")
 {% endgallery %}
 
 
----
 
 ## Timeline 时间线
 
@@ -517,7 +503,6 @@ print("Hello, Hidden World!")
 
 {% endtimeline %}
 
----
 
 ## Copy 行内复制
 
@@ -537,7 +522,6 @@ print("Hello, Hidden World!")
 
 配置文件路径：{% copy _config.yml %}
 
----
 
 ## inlineImg 行内图片
 
@@ -555,7 +539,6 @@ print("Hello, Hidden World!")
 
 > 由于演示文章没有本地图片资源，此处仅展示语法。实际使用时请替换为有效图片地址。
 
----
 
 ## 数学公式（KaTeX）
 
@@ -596,7 +579,6 @@ $$
 \frac{\partial f}{\partial x} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
 $$
 
----
 
 ## Mermaid 图表
 
@@ -661,7 +643,6 @@ gantt
     测试与部署   :2026-06-25, 5d
 ```
 
----
 
 ## Linkcard 链接卡片
 
@@ -679,7 +660,6 @@ gantt
 
 {% linkcard https://github.com, GitHub, 全球最大的代码托管平台 %}
 
----
 
 ## Postcard 文章引用卡片
 
@@ -704,7 +684,6 @@ gantt
 
 {% postcard /2026/06/18/css-grid-布局实战笔记/ %}
 
----
 
 ## Poem 诗词排版
 
@@ -729,7 +708,6 @@ gantt
 低头思故乡
 {% endpoem %}
 
----
 
 ## Radio 单选按钮
 
@@ -751,7 +729,6 @@ gantt
 {% radio checked, blue, 蓝色已选中 %}
 {% radio checked, red, 红色已选中 %}
 
----
 
 ## Divider 分割线
 
@@ -773,7 +750,6 @@ gantt
 
 {% divider fa-heart, 分割线也可以很美 %}
 
----
 
 ## Detail 详情展开
 
@@ -802,7 +778,6 @@ gantt
 适合放置技术文档中的补充说明，默认折叠不占空间。
 {% enddetail %}
 
----
 
 ## Kbd 键盘按键
 
@@ -823,7 +798,6 @@ gantt
 
 按 {% kbd Enter %} 确认，{% kbd Esc %} 取消。
 
----
 
 ## Span 自定义样式
 
@@ -848,7 +822,6 @@ gantt
 
 {% span orange strike, 删除线效果 %} 也可以用 span 实现。
 
----
 
 ## Icon 行内图标
 
@@ -868,7 +841,6 @@ gantt
 
 在句子中使用：请注意{% icon fa-exclamation-triangle, orange %} 这个警告图标。
 
----
 
 ## U 下划线
 
@@ -884,7 +856,6 @@ gantt
 
 这句话中{% u 关键内容 %}被加上了下划线，{% u 用于强调重要信息 %}。
 
----
 
 ## Abbr 缩写提示
 
@@ -903,7 +874,6 @@ gantt
 
 前端开发常用 {% abbr JS, JavaScript %}、{% abbr TS, TypeScript %} 和 {% abbr API, Application Programming Interface %}。
 
----
 
 ## Aside 旁注
 
@@ -924,7 +894,6 @@ gantt
 
 {% aside right, 右侧旁注也可以使用，适合对称排版。 %}
 
----
 
 ## Sub/Sup 上下标
 
@@ -943,7 +912,6 @@ E = mc{% sup 2 %}          上标
 
 质能方程：E = mc{% sup 2 %}，面积单位：m{% sup 2 %}、体积单位：m{% sup 3 %}。
 
----
 
 ## Bubble 气泡注释
 
@@ -961,7 +929,6 @@ E = mc{% sup 2 %}          上标
 
 也可以{% bubble 简单标注 %}一下某个概念。
 
----
 
 ## Progress 进度条
 
@@ -985,7 +952,6 @@ E = mc{% sup 2 %}          上标
 
 {% progress 100, purple, 文档编写 %}
 
----
 
 ## Steps 步骤条
 
@@ -1048,7 +1014,6 @@ hexo server
 
 {% endsteps %}
 
----
 
 ## Carousel 轮播图
 
@@ -1072,7 +1037,6 @@ hexo server
 ![冬日雪景](/images/douban/movie/p2814949620.jpg)
 {% endcarousel %}
 
----
 
 ## Card 卡片容器
 
@@ -1107,7 +1071,6 @@ hexo server
 请确保 Node.js 版本 >= 14，否则部分功能可能无法正常使用。
 {% endcard %}
 
----
 
 ## 功能总结
 

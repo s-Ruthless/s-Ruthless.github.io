@@ -37,10 +37,10 @@ theme: moeMac
 
 ### 必装插件
 
-moeMac 依赖以下 Hexo 插件，请在博客根目录安装：
+moeMac 额外依赖以下 Hexo 插件（`hexo init` 自带的不在此列）：
 
 ```bash
-npm install hexo-generator-searchdb hexo-generator-index hexo-generator-archive hexo-generator-category hexo-generator-tag hexo-renderer-marked hexo-renderer-ejs hexo-renderer-stylus
+npm install hexo-generator-searchdb hexo-generator-archive hexo-generator-category hexo-generator-tag
 ```
 
 ### 启动预览

@@ -86,7 +86,7 @@ window.TagPlugins = (function () {
       if (mermaidLoaded) return; // 脚本加载中，等 onload 回调会处理
       mermaidLoaded = true;
       var script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+      script.src = (window.__ASSETS__ || '/assets') + '/js/mermaid.min.js';
       script.onload = function () {
         try {
           mermaid.initialize({

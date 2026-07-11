@@ -1047,8 +1047,6 @@ hexo server
 ![冬日雪景](/images/douban/movie/p2814949620.jpg)
 {% endcarousel %}
 
----
-
 ## Card 卡片容器
 
 带标题和颜色的卡片容器，适合突出展示重要内容。

@@ -38,7 +38,7 @@ categories:
 
 支持的类型：`tip` / `info` / `warning` / `danger` / `success` / `note` / `primary` / `default`
 
-**方式二：`&#123;% note %&#125;` 标签语法**
+**方式二：`{% note %}` 标签语法**
 
 ```markdown
 {% note [type] [title] %}
@@ -512,7 +512,7 @@ print("Hello, Hidden World!")
 {% endtimenode %}
 
 {% timenode 2026-06-30 %}
-完成标签外挂功能移植，支持 18 种标签外挂。
+完成标签外挂功能移植，支持 30+ 种标签外挂。
 {% endtimenode %}
 
 {% endtimeline %}
@@ -551,7 +551,7 @@ print("Hello, Hidden World!")
 
 ### 效果
 
-在行内插入小图片：`&#123;% inlineImg /img/avatar.png 40px %&#125;`（将地址替换为有效图片即可显示）。
+在行内插入小图片：`{% inlineImg /img/avatar.png 40px %}`（将地址替换为有效图片即可显示）。
 
 > 由于演示文章没有本地图片资源，此处仅展示语法。实际使用时请替换为有效图片地址。
 
@@ -1072,6 +1072,8 @@ hexo server
 ![冬日雪景](/images/douban/movie/p2814949620.jpg)
 {% endcarousel %}
 
+---
+
 ## Card 卡片容器
 
 带标题和颜色的卡片容器，适合突出展示重要内容。
@@ -1109,7 +1111,7 @@ hexo server
 
 ## 功能总结
 
-moeMac 主题已支持以下 **多种** 标签外挂功能：
+moeMac 主题已支持以下 **38 种** 标签外挂功能：
 
 | 功能 | 语法 | 说明 |
 |------|------|------|

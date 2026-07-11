@@ -385,18 +385,9 @@ cdn: "https://your-cdn.com/moemac/assets"
 
 moeMac 内置丰富的标签外挂，包括提示容器、标签页、折叠面板、轮播图、画廊、时间线、步骤条、文章引用卡片等。
 
-详细语法请参考 [moeMac 标签外挂演示](/2026/06/30/moeMac主题标签外挂演示/) 一文。
+详细的语法教程和效果演示请查看下方文章卡片：
 
-### 文章引用卡片（Postcard）
-
-在文章中引用站内其他文章，自动获取标题、摘要和封面图，点击通过 AJAX 无刷新跳转：
-
-```markdown
-{% postcard /2026/07/11/moeMac主题使用说明/ %}
-{% postcard /文章路径/, 自定义标题, 自定义描述, 封面图URL %}
-```
-
-> 不指定标题和描述时会自动从文章的 front-matter 中获取 `title`、`excerpt` 和 `cover`。
+{% postcard /2026/06/30/moeMac主题标签外挂演示/ %}
 
 ---
 

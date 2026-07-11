@@ -37,10 +37,10 @@ theme: moeMac
 
 ### 必装插件
 
-moeMac 额外依赖以下 Hexo 插件（`hexo init` 自带的不在此列）：
+moeMac 的搜索功能依赖 `hexo-generator-searchdb`（`hexo init` 不会自动安装）：
 
 ```bash
-npm install hexo-generator-searchdb hexo-generator-archive hexo-generator-category hexo-generator-tag
+npm install hexo-generator-searchdb
 ```
 
 ### 启动预览

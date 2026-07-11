@@ -277,11 +277,11 @@ width:100%;border-collapse:collapse;border-spacing:0;table-layout:fixed;position
 .article-content figure.highlight tr{background:transparent;}
 .article-content figure.highlight td{padding:0;border:none;vertical-align:top;}
 .article-content figure.highlight .gutter{
-width:44px;white-space:nowrap;user-select:none;
+width:40px;white-space:nowrap;user-select:none;
 background:#f0f2f5;border-right:1px solid #d0d7de;
 }
 .article-content figure.highlight .gutter pre{
-background:none!important;padding:14px 8px 14px 12px;margin:0;text-align:right;
+background:none!important;padding:14px 6px 14px 0;margin:0;text-align:right;
 font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
 font-size:13px;line-height:1.6;color:#afb8c1;
 }

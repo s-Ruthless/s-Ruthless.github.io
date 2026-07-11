@@ -51,7 +51,7 @@ accent_color: "#cf0226"
 #   2. 在此填写 CDN 中 assets 目录的完整 URL
 #   例如: cdn: "https://your-cdn.com/moemac/assets"
 #   或:   cdn: "https://cdn.jsdelivr.net/gh/user/repo/assets"
-cdn: "https://cdn.jsdelivr.net/gh/s-Ruthless/s-Ruthless.github.io@master/themes/moeMac/source/assets"
+cdn: ""
 
 # ====== 一言 / 每日一句 ======
 # hitokoto: true 启用一言 API，首页实时获取；false 使用下方 sentences 列表随机显示

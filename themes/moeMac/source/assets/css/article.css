@@ -192,8 +192,8 @@ background:color-mix(in srgb,var(--accent-color) 8%,transparent);transition:back
 .article-content code{
   background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--accent-color);
 }
-.article-content pre{background:#1e1e2e;border-radius:12px;padding:16px;overflow-x:auto;margin:12px 0;border:1px solid rgba(255,255,255,0.08);}
-.article-content pre code{background:none;color:#cdd6f4;padding:0;}
+.article-content pre{background:#f6f8fa;border-radius:12px;padding:16px;overflow-x:auto;margin:12px 0;border:1px solid rgba(0,0,0,0.08);}
+.article-content pre code{background:none;color:#24292e;padding:0;}
 .article-content a{color:var(--accent-color);text-decoration:underline;text-underline-offset:3px;}
 .article-content ul,.article-content ol{padding-left:24px;margin:8px 0;}
 .article-content ul li{list-style:disc;}
@@ -252,12 +252,12 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
 /* ====== 濠电偛顕刊瀵稿緤閸ф鍋夋繝濠傚濞堟淇婇婊勫殌闁?====== */
 .article-content figure.highlight{
 margin:16px 0;border-radius:12px;overflow:hidden;
-background:#1e1e2e;border:1px solid rgba(255,255,255,0.08);position:relative;
+background:#f6f8fa;border:1px solid rgba(0,0,0,0.08);position:relative;
 }
 .article-content figure.highlight::before{
 content:'';position:absolute;top:0;left:0;right:0;height:30px;
-background:linear-gradient(180deg,rgba(255,255,255,0.06),transparent);
-border-bottom:1px solid rgba(255,255,255,0.06);pointer-events:none;
+background:linear-gradient(180deg,rgba(0,0,0,0.03),transparent);
+border-bottom:1px solid rgba(0,0,0,0.06);pointer-events:none;
 }
 .article-content figure.highlight > table{
   width:100%;border-collapse:collapse;border-spacing:0;table-layout:fixed;position:relative;z-index:1;
@@ -266,46 +266,46 @@ border-bottom:1px solid rgba(255,255,255,0.06);pointer-events:none;
 .article-content figure.highlight td{padding:0;border:none;vertical-align:top;}
 .article-content figure.highlight .gutter{
 width:1%;white-space:nowrap;user-select:none;
-background:rgba(255,255,255,0.04);border-right:1px solid rgba(255,255,255,0.06);
+background:rgba(0,0,0,0.03);border-right:1px solid rgba(0,0,0,0.06);
 }
 .article-content figure.highlight .gutter pre{
 background:none!important;padding:14px 10px 14px 14px;margin:0;
 font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
-font-size:13px;line-height:1.6;color:rgba(255,255,255,0.35);
+font-size:13px;line-height:1.6;color:rgba(0,0,0,0.35);
 }
 .article-content figure.highlight .code pre{
 background:none!important;padding:14px 16px;margin:0;overflow-x:auto;
 font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
-font-size:13px;line-height:1.6;color:#cdd6f4;
+font-size:13px;line-height:1.6;color:#24292e;
 }
 .article-content figure.highlight .line{display:block;}
 
-/* token 高亮色 — 深色背景上的 Catppuccin Mocha 配色 */
+/* token 高亮色 — 浅色背景 GitHub Light 配色 */
 .article-content .highlight .keyword,
 .article-content .highlight .selector,
-.article-content .highlight .built_in{color:#cba6f7;font-weight:600;}
+.article-content .highlight .built_in{color:#d73a49;font-weight:600;}
 .article-content .highlight .string,
 .article-content .highlight .attr,
-.article-content .highlight .symbol{color:#a6e3a1;}
+.article-content .highlight .symbol{color:#032f62;}
 .article-content .highlight .number,
-.article-content .highlight .literal{color:#fab387;}
+.article-content .highlight .literal{color:#005cc5;}
 .article-content .highlight .comment,
-.article-content .highlight .quote{color:#6c7086;font-style:italic;}
+.article-content .highlight .quote{color:#6a737d;font-style:italic;}
 .article-content .highlight .function .title,
 .article-content .highlight .title,
-.article-content .highlight .section{color:#89b4fa;font-weight:600;}
-.article-content .highlight .params{color:#cdd6f4;}
+.article-content .highlight .section{color:#6f42c1;font-weight:600;}
+.article-content .highlight .params{color:#24292e;}
 .article-content .highlight .meta,
-.article-content .highlight .tag{color:#89dceb;}
-.article-content .highlight .name{color:#f38ba8;}
-.article-content .highlight .attribute{color:#fab387;}
-.article-content .highlight .regexp{color:#fab387;}
+.article-content .highlight .tag{color:#22863a;}
+.article-content .highlight .name{color:#22863a;}
+.article-content .highlight .attribute{color:#005cc5;}
+.article-content .highlight .regexp{color:#032f62;}
 .article-content .highlight .variable,
-.article-content .highlight .template-variable{color:#f38ba8;}
+.article-content .highlight .template-variable{color:#e36209;}
 .article-content .highlight .type,
-.article-content .highlight .class .title{color:#a6e3a1;font-weight:600;}
+.article-content .highlight .class .title{color:#6f42c1;font-weight:600;}
 .article-content .highlight .bullet,
-.article-content .highlight .link{color:#89b4fa;}
+.article-content .highlight .link{color:#005cc5;}
 .article-content .highlight .emphasis{font-style:italic;}
 .article-content .highlight .strong{font-weight:700;}
 
@@ -568,8 +568,7 @@ min-height:120px;
 [data-theme="dark"] .post-list-item .post-meta{color:#c8c8c8;}
 
 [data-theme="dark"] .article-content blockquote{background:color-mix(in srgb,var(--accent-color) 10%,transparent);color:#d8d8d8;}
-[data-theme="dark"] .article-content pre{background:rgba(0,0,0,0.5);}
-[data-theme="dark"] .article-content pre code{color:#e0e0e0;}
+/* 暗色模式代码块样式在后面统一管理 — Catppuccin Mocha */
 [data-theme="dark"] .article-header{border-bottom-color:rgba(255,255,255,0.1);}
 [data-theme="dark"] .article-nav{border-top-color:rgba(255,255,255,0.1);}
 [data-theme="dark"] .post-list-item{ 
@@ -1525,19 +1524,16 @@ border-left:3px solid var(--accent-color);
   box-shadow:0 4px 16px rgba(0,0,0,0.08);
 }
 .article-content .carousel-track{
-  position:relative;overflow:hidden;min-height:200px;background:#1a1a2e;
+  position:relative;overflow:hidden;min-height:200px;background:#f5f5f5;
 }
 .article-content .carousel-slide{
   display:none;position:relative;
 }
 .article-content .carousel-slide.active{display:block;}
-.article-content .carousel-slide.active::before{
-  content:'';position:absolute;inset:0;background:#1a1a2e;z-index:0;
-}
 @keyframes carousel-fade{from{opacity:0;}to{opacity:1;}}
 .article-content .carousel-slide img{
   width:100%;display:block;object-fit:cover;
-  max-height:420px;min-height:200px;position:relative;z-index:1;
+  max-height:420px;min-height:200px;
 }
 .article-content .carousel-caption{
   position:absolute;bottom:0;left:0;right:0;
@@ -1598,6 +1594,7 @@ border-left:3px solid var(--accent-color);
 [data-theme="dark"] .article-content .step-label{color:#ccc;}
 [data-theme="dark"] .article-content .step-label.active{background:rgba(255,255,255,0.06);}
 [data-theme="dark"] .article-content .carousel-container{box-shadow:0 4px 16px rgba(0,0,0,0.3);}
+[data-theme="dark"] .article-content .carousel-track{background:#1a1a2e;}
 [data-theme="dark"] .article-content .card-box{
   background:color-mix(in srgb,var(--card-color,var(--accent-color)) 6%,rgba(255,255,255,0.03));
   border-color:color-mix(in srgb,var(--card-color,var(--accent-color)) 25%,transparent);
@@ -1606,3 +1603,41 @@ border-left:3px solid var(--accent-color);
   background:color-mix(in srgb,var(--card-color,var(--accent-color)) 12%,rgba(255,255,255,0.03));
   border-bottom-color:color-mix(in srgb,var(--card-color,var(--accent-color)) 15%,transparent);
 }
+/* ====== 代码块暗黑模式 — Catppuccin Mocha ====== */
+[data-theme="dark"] .article-content pre{background:#1e1e2e;border-color:rgba(255,255,255,0.08);}
+[data-theme="dark"] .article-content pre code{color:#cdd6f4;}
+[data-theme="dark"] .article-content figure.highlight{background:#1e1e2e;border-color:rgba(255,255,255,0.08);}
+[data-theme="dark"] .article-content figure.highlight::before{
+  background:linear-gradient(180deg,rgba(255,255,255,0.06),transparent);
+  border-bottom-color:rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .article-content figure.highlight .gutter{
+  background:rgba(255,255,255,0.04);border-right-color:rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.35);}
+[data-theme="dark"] .article-content figure.highlight .code pre{color:#cdd6f4;}
+[data-theme="dark"] .article-content .highlight .keyword,
+[data-theme="dark"] .article-content .highlight .selector,
+[data-theme="dark"] .article-content .highlight .built_in{color:#cba6f7;}
+[data-theme="dark"] .article-content .highlight .string,
+[data-theme="dark"] .article-content .highlight .attr,
+[data-theme="dark"] .article-content .highlight .symbol{color:#a6e3a1;}
+[data-theme="dark"] .article-content .highlight .number,
+[data-theme="dark"] .article-content .highlight .literal{color:#fab387;}
+[data-theme="dark"] .article-content .highlight .comment,
+[data-theme="dark"] .article-content .highlight .quote{color:#6c7086;}
+[data-theme="dark"] .article-content .highlight .function .title,
+[data-theme="dark"] .article-content .highlight .title,
+[data-theme="dark"] .article-content .highlight .section{color:#89b4fa;}
+[data-theme="dark"] .article-content .highlight .params{color:#cdd6f4;}
+[data-theme="dark"] .article-content .highlight .meta,
+[data-theme="dark"] .article-content .highlight .tag{color:#89dceb;}
+[data-theme="dark"] .article-content .highlight .name{color:#f38ba8;}
+[data-theme="dark"] .article-content .highlight .attribute{color:#fab387;}
+[data-theme="dark"] .article-content .highlight .regexp{color:#fab387;}
+[data-theme="dark"] .article-content .highlight .variable,
+[data-theme="dark"] .article-content .highlight .template-variable{color:#f38ba8;}
+[data-theme="dark"] .article-content .highlight .type,
+[data-theme="dark"] .article-content .highlight .class .title{color:#a6e3a1;}
+[data-theme="dark"] .article-content .highlight .bullet,
+[data-theme="dark"] .article-content .highlight .link{color:#89b4fa;}

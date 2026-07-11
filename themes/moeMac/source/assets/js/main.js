@@ -1139,18 +1139,24 @@ window.__moeMacMainLoaded = true;
               /* 重新触发卜算子访客统计（脚本在 head 中，AJAX 不会自动重新加载） */
               refreshBusuanzi();
               window.scrollTo(0, 0);
-              // 动画需在 AJAX 加载完成后重新执行
+              } catch(e2) { console.warn('AJAX init error:', e2); }
+              /* 动画必须在 Drag.init 之后执行，且不受其他 init 错误影响
+                 否则 Drag.init 设置的 opacity:0 无人清除，窗口永久不可见 */
+              try {
               if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
               else { document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; }); }
+              } catch(eAnim) {
+                console.warn('Animation error:', eAnim);
+                document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; });
+              }
               // UI 增强效果重新初始化
-              if (typeof UIEnhance !== "undefined") UIEnhance.init();
+              if (typeof UIEnhance !== "undefined") { try { UIEnhance.init(); } catch(e) { console.warn('UIEnhance error:', e); } }
               // 标签外挂重新初始化（Tabs/Folding/KaTeX/Mermaid/Gallery 等）
-              if (window.TagPlugins) window.TagPlugins.init();
+              if (window.TagPlugins) { try { window.TagPlugins.init(); } catch(e) { console.warn('TagPlugins error:', e); } }
               // 延迟重试：确保图片加载后画廊布局正确
               setTimeout(function() {
-                if (window.TagPlugins) window.TagPlugins.init();
+                if (window.TagPlugins) { try { window.TagPlugins.init(); } catch(e) {} }
               }, 300);
-              } catch(e2) { console.warn('AJAX init error:', e2); }
             }
           }
           } catch(e3) { console.warn('AJAX load error:', e3); }

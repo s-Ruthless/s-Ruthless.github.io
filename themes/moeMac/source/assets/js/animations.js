@@ -246,6 +246,7 @@
         if (img.closest('.flink-card')) return;
         if (img.closest('.link-card')) return;
         if (img.closest('.carousel-container')) return;
+        if (img.closest('.post-card')) return;
         observe(img, 'anim-zoom-in', 0);
       });
     },

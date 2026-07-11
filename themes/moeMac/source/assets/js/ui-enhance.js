@@ -186,6 +186,7 @@
         if (img.closest('.flink-card')) return;    /* 跳过友链头像 */
         if (img.closest('.card-cover')) return;    /* 跳过文章封面图（已有点击跳转，不需揭示动画） */
         if (img.closest('.carousel-container')) return;  /* 跳过轮播图 */
+        if (img.closest('.post-card')) return;  /* 跳过文章引用卡片 */
         img.dataset.clipInit = '1';
         img.classList.add('clip-reveal');
         if (typeof IntersectionObserver !== 'undefined') {

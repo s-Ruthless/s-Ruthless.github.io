@@ -1,9 +1,9 @@
 {
   "name": "hexo-theme-moemac",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "macOS 风格 Hexo 主题 — Dock 导航 + 浮动窗口 + 毛玻璃质感",
   "main": "README.md",
-  "keywords": ["hexo", "theme", "macos", "dock", "giscus"],
+  "keywords": ["hexo", "theme", "macos", "dock", "giscus", "rss", "sitemap", "katex", "mermaid"],
   "license": "MIT",
   "dependencies": {},
   "peerDependencies": {

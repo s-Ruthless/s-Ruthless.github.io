@@ -1,4 +1,4 @@
-﻿---
+---
 title: React 性能优化实战
 date: 2024-01-18 14:00:00
 cover: https://picsum.photos/seed/react-perf/600/400
@@ -7,6 +7,7 @@ categories:
 tags:
   - 前端
   - React
+abbrlink: "eddf724d"
 ---
 
 从 `useMemo`、`useCallback` 到虚拟列表，从代码分割到懒加载。

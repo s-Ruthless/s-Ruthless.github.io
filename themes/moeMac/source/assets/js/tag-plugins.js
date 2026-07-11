@@ -290,16 +290,19 @@ function initCopyInline() {
         itemsEl.style.height = (topOffset - gap) + 'px';
       }
 
-      /* 等待所有图片加载后布局 */
+      /* 先做一次初始布局（即使图片未加载，用默认 ratio=1 先撑开容器） */
+      layout();
+
+      /* 等待所有图片加载后重新布局 */
       var loaded = 0;
       var total = items.length;
-      var hasLaidOut = false;
+      var layoutCount = 0;
 
       function checkAllLoaded() {
         loaded++;
-        if (loaded >= total && !hasLaidOut) {
-          hasLaidOut = true;
+        if (loaded >= total) {
           layout();
+          layoutCount++;
         }
       }
 
@@ -314,9 +317,14 @@ function initCopyInline() {
         }
       });
 
-      /* 兜底：1.5 秒后强制布局 */
+      /* 兜底：500ms 后强制重新布局（缩短等待时间，适配 AJAX 导航） */
       setTimeout(function () {
-        if (!hasLaidOut) { hasLaidOut = true; layout(); }
+        if (layoutCount === 0) { layout(); layoutCount++; }
+      }, 500);
+
+      /* 二次兜底：1.5s 后再检查一次（确保慢速网络下也能正确布局） */
+      setTimeout(function () {
+        layout();
       }, 1500);
 
       /* 响应式重排 */

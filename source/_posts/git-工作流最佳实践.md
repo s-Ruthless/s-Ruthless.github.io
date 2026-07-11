@@ -1,4 +1,4 @@
-﻿---
+---
 title: "Git 工作流最佳实践"
 date: 2026-06-05 12:00:00
 cover: https://picsum.photos/seed/git-workflow/600/400
@@ -8,6 +8,7 @@ tags:
   - 协作
 categories:
   - 技术
+abbrlink: "d6da257e"
 ---
 
 团队协作中 Git Flow 和 Trunk-Based Development 各有优劣。小团队推荐轻量分支策略：main + feature 分支，PR review 后合并。

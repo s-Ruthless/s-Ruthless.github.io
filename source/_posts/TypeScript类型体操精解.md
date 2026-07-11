@@ -1,4 +1,4 @@
-﻿---
+---
 title: TypeScript 类型体操精解
 date: 2025-09-28 11:00:00
 cover: https://picsum.photos/seed/ts-types/600/400
@@ -7,6 +7,7 @@ categories:
 tags:
   - TypeScript
   - 前端
+abbrlink: "2fa20112"
 ---
 
 从 `Partial<T>` 到 `DeepReadonly<T>`，从条件类型到模板字面量类型。

@@ -1044,8 +1044,14 @@ window.__moeMacMainLoaded = true;
       if (src) {
         newScript.onload = function () { _loadedScripts[src] = true; };
         if (onerr) {
+          /* CSP 友好：解析 onerror 字符串中的函数调用，避免使用 new Function / eval */
           newScript.onerror = function () {
-            try { new Function(onerr)(); } catch (e) { console.warn('[execScripts] onerror:', e); }
+            var m = onerr.match(/window\.(\w+)\s*&&\s*window\.\w+\(\s*['"](.+?)['"]\s*\)/);
+            if (m && window[m[1]] && typeof window[m[1]] === 'function') {
+              window[m[1]](m[2]);
+            } else {
+              console.warn('[execScripts] script load failed:', src);
+            }
           };
         }
       }
@@ -1116,6 +1122,10 @@ window.__moeMacMainLoaded = true;
               if (push) history.pushState(null, null, u);
               var t = doc.querySelector('title'); if (t) document.title = t.textContent;
               box.innerHTML = nc.innerHTML;
+              /* 立即移除 fade-out 并添加 fade-in，让容器平滑过渡到可见状态
+                 这样 GSAPAnimations 的窗口入场动画在容器淡入的同时被用户看到 */
+              box.classList.remove('fade-out');
+              box.classList.add('fade-in');
               /* 立即将窗口设为透明，防止 innerHTML 替换后到 Drag.init 之间的闪烁 */
               box.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity = '0'; });
               /* 关键：innerHTML 不执行 <script>，需手动重建执行
@@ -1153,10 +1163,14 @@ window.__moeMacMainLoaded = true;
               if (typeof UIEnhance !== "undefined") { try { UIEnhance.init(); } catch(e) { console.warn('UIEnhance error:', e); } }
               // 标签外挂重新初始化（Tabs/Folding/KaTeX/Mermaid/Gallery 等）
               if (window.TagPlugins) { try { window.TagPlugins.init(); } catch(e) { console.warn('TagPlugins error:', e); } }
-              // 延迟重试：确保图片加载后画廊布局正确
+              // 延迟重试：确保图片加载后画廊/轮播等布局正确
               setTimeout(function() {
                 if (window.TagPlugins) { try { window.TagPlugins.init(); } catch(e) {} }
-              }, 300);
+              }, 500);
+              // 二次延迟：慢速网络下图片可能需要更长时间加载
+              setTimeout(function() {
+                if (window.TagPlugins) { try { window.TagPlugins.init(); } catch(e) {} }
+              }, 1200);
             }
           }
           } catch(e3) { console.warn('AJAX load error:', e3); }
@@ -1493,10 +1507,32 @@ window.__moeMacMainLoaded = true;
       syncDockGlass();
     // 窗口最小化/恢复后 dock 宽度变化，同步 glass
     window.addEventListener('resize', syncDockGlass);
-    // 入场动画 — animations.js 已在 main.js 之前加载，可直接调用
-    if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
-    else { document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; }); }
-    if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }
+    // 入场动画 — 确保所有 CSS 已加载完毕后再执行，避免样式未就绪导致动画重放
+    function runAnimations() {
+      if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
+      else { document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; }); }
+      if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }
+    }
+    /* 检查所有 CSS link 是否已加载完成 */
+    function checkCSSAndAnimate() {
+      var allLoaded = true;
+      document.querySelectorAll('link[rel="stylesheet"]').forEach(function(link) {
+        if (!link.sheet) { allLoaded = false; }
+      });
+      if (allLoaded) {
+        runAnimations();
+      } else {
+        /* CSS 尚未加载完，等待 load 事件 */
+        window.addEventListener('load', runAnimations, { once: true });
+        /* 兜底：2s 后强制执行动画 */
+        setTimeout(function() {
+          if (!document.body.classList.contains('animating') && !document.querySelector('.anim-fade-up, .anim-zoom-in, .anim-scale-in')) {
+            runAnimations();
+          }
+        }, 2000);
+      }
+    }
+    checkCSSAndAnimate();
 
     /* ====== 响应式断点监听：跨越 768px 时刷新页面 ====== */
     var _prevMobile = isMobile();

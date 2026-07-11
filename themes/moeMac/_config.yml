@@ -1,17 +1,17 @@
 # moeMac 主题配置
 
 # ====== 基本信息 ======
-blog_name: "山野自愈 · 人间理想"
+blog_name: "晚风携夜色 · 幽梦赴长空"
 blog_description: "随心记录生活碎片，收纳日常热爱<br>一隅小窗，藏尽平凡美好"
-author: "屿"
+author: "梦繁星"
 
 # ====== 头像 ======
 # avatar_type: "image" 显示图片头像，"text" 显示文字头像
 # avatar_url: 图片地址，支持网络URL或本地路径（如 /images/avatar.png）
 # avatar_text: 文字头像显示的文字（仅 avatar_type 为 text 时生效）
 avatar_type: "image"
-avatar_url: "https://q1.qlogo.cn/g?b=qq&nk=2502393029&s=100"
-avatar_text: "屿"
+avatar_url: "/assets/img/avatar.png"
+avatar_text: "梦繁星"
 
 # ====== 社交链接 ======
 # 在首页"我的主页"窗口显示的社交按钮，留空则不显示
@@ -29,7 +29,7 @@ social:
 # og_image: 默认社交分享图（留空用头像）
 # keywords: 站点关键词
 # twitter: 推特账号（@xxx），可选
-favicon: ""
+favicon: "/assets/img/favicon.ico"
 favicon_emoji: "🌿"
 og_image: ""
 keywords: "博客,生活,技术,随笔"
@@ -96,6 +96,39 @@ dock:
   - { icon: "fas fa-book", label: "豆瓣", page: "/douban/", type: "page" }
   - { icon: "fas fa-link", label: "友链", page: "/links/", type: "page" }
   - { icon: "fas fa-heart", label: "关于", page: "/about/", type: "page" }
+
+# ====== SEO 短链接（abbrlink） ======
+# 根据 title 自动生成 CRC32 哈希短链接
+# 例如：title: 夏天的正确打开方式 → /posts/b8e72f3a.html
+# 同一 title 永远生成相同哈希，URL 稳定不变
+# 启用步骤：
+#   1. 此处设为 true
+#   2. 站点 _config.yml 中 permalink 设为 posts/:abbrlink.html
+# 关闭：设为 false，并将 permalink 改回 :year/:month/:day/:title/
+abbrlink: true
+
+# ====== RSS 订阅 ======
+# 启用后自动生成 atom.xml（标准 RSS 2.0 格式），无需安装任何插件
+# 读者可通过 RSS 阅读器订阅你的博客
+# enable: true 开启 / false 关闭
+# path: 输出文件名（默认 atom.xml）
+# limit: 输出文章数量（0 = 全部）
+# content: true 包含全文 / false 仅摘要
+rss:
+  enable: true
+  path: atom.xml
+  limit: 20
+  content: true
+  show_in_home: true    # true: 主页社交图标区自动显示 RSS 按钮
+
+# ====== 站点地图（Sitemap） ======
+# 启用后自动生成 sitemap.xml，供搜索引擎抓取
+# 提交到 Google Search Console / 百度站长平台等
+# enable: true 开启 / false 关闭
+# path: 输出文件名（默认 sitemap.xml）
+sitemap:
+  enable: true
+  path: sitemap.xml
 
 # ====== 首页 ======
 # home_windows: 首页显示的浮动窗口（按顺序排列，可随意增删和调整顺序）
@@ -168,7 +201,7 @@ douban:
   movies:
     - { name: "你好，李焕英", cover: "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2626524982.jpg", rating: 9, date: "2026-05-01", note: "笑着笑着就哭了" }
   music:
-    - { name: "山野自愈", cover: "https://p1.music.126.net/img.jpg", rating: 8, date: "2026-06-01", note: "治愈系歌单循环一整天" }
+    - { name: "晚风携夜色", cover: "https://p1.music.126.net/img.jpg", rating: 8, date: "2026-06-01", note: "治愈系歌单循环一整天" }
 
 # ====== 壁纸设置 ======
 # wallpaper_path: 自定义壁纸图片路径，为空则使用默认渐变

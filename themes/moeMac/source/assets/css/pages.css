@@ -42,7 +42,7 @@
 }
 .wall-search-clear:hover{background:color-mix(in srgb,var(--accent-color) 12%,transparent);color:var(--accent-color);}
 
-.wall-filter{display:flex;flex-wrap:wrap;gap:8px;flex:1;justify-content:flex-start;}
+.wall-filter{display:flex;flex-wrap:wrap;gap:8px;flex:1;justify-content:center;}
 .filter-btn{
   display:inline-flex;align-items:center;gap:4px;
   padding:6px 14px;border-radius:10px;border:none;cursor:pointer;
@@ -58,6 +58,9 @@
   background:color-mix(in srgb,var(--accent-color) 10%,transparent);
   color:var(--accent-color);margin-left:2px;
 }
+/* 分类筛选按钮内的图标 */
+.filter-btn i{font-size:11px;opacity:0.7;}
+.filter-btn.active i{opacity:1;}
 .filter-btn:hover .badge{
   background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);
 }
@@ -67,7 +70,7 @@
 /* ====== 文章墙：Masonry 瀑布流布局 ====== */
 .wall-grid{position:relative;width:100%;margin-bottom:20px;}
 /* 每张卡片宽度按百分比，Masonry 负责定位 */
-.wall-card{width:calc(25% - 12px);margin-bottom:16px;min-width:0;}
+.wall-card{width:calc(33.333% - 11px);margin-bottom:16px;min-width:0;}
 /* 响应式 */
 @media(max-width:1200px){.wall-card{width:calc(33.333% - 11px);}}
 @media(max-width:768px){.wall-card{width:calc(50% - 8px);}}
@@ -114,9 +117,11 @@ transform:translateY(-3px);
 }
 .wall-search-empty i{font-size:36px;color:color-mix(in srgb,var(--accent-color) 25%,transparent);margin-bottom:12px;display:block;}
 .wall-search-empty p{font-size:14px;color:#666;}
-.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;position:relative;z-index:1;}
-.card-cat{font-size:11px;color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:2px 8px;border-radius:6px;}
-.card-date{font-size:11px;color:#444;}
+.card-top{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow:hidden;margin-bottom:4px;position:relative;z-index:1;min-width:0;}
+.card-sticky-badge{flex-shrink:0;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-cat{font-size:11px;color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:2px 8px;border-radius:6px;flex-shrink:0;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-cat i{margin-right:3px;font-size:10px;}
+.card-date{font-size:12px;color:#444;flex-shrink:0;margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .card-title{font-size:14px;font-weight:600;color:#111;margin-bottom:2px;line-height:1.4;position:relative;z-index:1;}
 .card-summary{font-size:12px;color:#444;line-height:1.5;margin-bottom:4px;position:relative;z-index:1;}
 .card-tags{display:flex;flex-wrap:wrap;gap:4px;position:relative;z-index:1;}

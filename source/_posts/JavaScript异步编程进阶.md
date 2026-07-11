@@ -1,4 +1,4 @@
-﻿---
+---
 title: JavaScript 异步编程进阶
 date: 2023-02-14 09:10:00
 cover: https://picsum.photos/seed/js-async/600/400
@@ -7,6 +7,7 @@ categories:
 tags:
   - JavaScript
   - 前端
+abbrlink: "bba74432"
 ---
 
 从回调地狱到 async/await，JavaScript 的异步编程经历了漫长的演进。

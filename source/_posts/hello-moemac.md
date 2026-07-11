@@ -1,4 +1,4 @@
-﻿---
+---
 title: 你好，这是 moeMac 主题的第一篇文章
 date: 2026-07-03 20:00:00
 cover: https://picsum.photos/seed/hello-moemac/600/400
@@ -7,6 +7,7 @@ tags:
   - 生活
 categories:
   - 随笔
+abbrlink: "b38560d7"
 ---
 
 欢迎使用 moeMac 主题！这是一个 Mac 桌面风格的 Hexo 博客主题。

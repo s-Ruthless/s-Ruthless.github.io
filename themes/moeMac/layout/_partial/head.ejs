@@ -89,8 +89,13 @@
   <% if (ogImage) { %><meta name="twitter:image" content="<%= ogImage %>"><% } %>
   <% if (theme.twitter) { %><meta name="twitter:site" content="<%= theme.twitter %>"><% } %>
 
+  <!-- RSS 自动发现：浏览器和 RSS 阅读器通过此标签自动找到订阅地址 -->
+  <% if (theme.rss && theme.rss.enable !== false) { %>
+  <link rel="alternate" type="application/rss+xml" title="<%= config.title %>" href="<%= config.url %>/<%= theme.rss.path || 'atom.xml' %>">
+  <% } %>
+
   <!-- 第三方库 CSS + 组件库 -->
-  <% var V = '?v=20260711r6'; %>
+  <% var V = '?v=20260711r10'; %>
   <link rel="stylesheet" href="<%= A %>/css/icons.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>">
@@ -154,8 +159,8 @@
   <link rel="stylesheet" href="<%= A %>/css/mobile.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/aplayer.css<%= V %>">
 
-  <!-- 关键 JS 预加载：defer 脚本默认下载优先级低，preload 提前高优先级拉取
-       main.js 是桌面端布局的核心依赖，提前下载可缩短窗口渲染等待时间 -->
+  <!-- 关键 JS 预加载：提前高优先级拉取核心脚本，缩短首屏渲染等待 -->
   <link rel="preload" href="<%= A %>/js/main.js<%= V %>" as="script">
+  <link rel="preload" href="<%= A %>/js/animations.js<%= V %>" as="script">
   <link rel="preload" href="<%= A %>/js/masonry.pkgd.min.js" as="script">
 </head>

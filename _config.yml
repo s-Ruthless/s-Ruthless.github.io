@@ -3,18 +3,21 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 山野自愈 · 人间理想
+title: 晚风携夜色 · 幽梦赴长空
 subtitle: ''
 description: ''
 keywords:
-author: 屿
+author: 梦繁星
 language: zh-CN
 timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: https://moeao.cn
-permalink: :year/:month/:day/:title/
+## SEO 优化：使用 abbrlink 哈希短链接
+## 同一 title 永远生成相同哈希，URL 稳定不变
+## 由主题内置 abbrlink.js 根据 title 自动生成
+permalink: posts/:abbrlink.html
 permalink_defaults:
 pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
@@ -46,7 +49,7 @@ future: true
 syntax_highlighter: highlight.js
 highlight:
   line_number: true
-  auto_detect: false
+  auto_detect: true
   tab_replace: ''
   wrap: true
   hljs: false

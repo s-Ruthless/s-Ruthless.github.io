@@ -1,4 +1,4 @@
-﻿---
+---
 title: moeMac标签外挂演示
 date: 2026-06-30 12:00:00
 cover: https://picsum.photos/seed/moemac-tags/600/400
@@ -8,6 +8,7 @@ tags:
   - 工具
 categories:
   - 技术
+abbrlink: "75bba892"
 ---
 
 本文是 moeMac 主题所有标签外挂（Tag Plugins）的**完整语法教程**与**效果演示**。所有功能开箱即用，无需额外安装插件。

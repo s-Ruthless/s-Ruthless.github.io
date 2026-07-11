@@ -10,6 +10,8 @@
   (theme.dock || []).forEach(function(item){
     if ((item.page || "").replace(/^\/|\/$/g, "") === _path) _icon = item.icon;
   });
+  /* 分类图标统一使用文件夹样式 */
+  var catIcon = 'fas fa-folder';
 %>
 
 <div class="page-container">
@@ -20,9 +22,9 @@
     <div class="page-content">
     <div class="wall-toolbar">
       <div class="wall-filter">
-        <button class="filter-btn active" data-cat="all">全部</button>
+        <button class="filter-btn active" data-cat="all"><i class="fas fa-folder"></i> 全部</button>
         <% cats.sort("name").each(function(cat) { %>
-          <button class="filter-btn" data-cat="<%= cat.name %>"><%= cat.name %> <span class="badge badge-xs"><%= cat.posts.length %></span></button>
+          <button class="filter-btn" data-cat="<%= cat.name %>"><i class="<%= catIcon %>"></i> <%= cat.name %> <span class="badge badge-xs"><%= cat.posts.length %></span></button>
         <% }); %>
       </div>
     </div>
@@ -41,24 +43,26 @@
               <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.parentElement.style.display='none'">
             </div>
           <% } %>
-          <div class="card-top">
-            <% if (post.sticky) { %>
-              <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
-            <% } %>
-            <% if (catName) { %>
-              <span class="card-cat badge badge-xs"><%= catName %></span>
-            <% } %>
-            <span class="card-date"><%= date(post.date, "YYYY-MM-DD") %></span>
-          </div>
-          <h3 class="card-title"><%= post.title %></h3>
-          <p class="card-summary"><%= summary %><%= fullText.length > 120 ? "..." : "" %></p>
-          <% if (post.tags && post.tags.length > 0) { %>
-            <div class="card-tags">
-              <% post.tags.forEach(function(tag) { %>
-                <span class="badge badge-ghost badge-xs">#<%= tag.name %></span>
-              <% }); %>
+          <div class="card-body">
+            <div class="card-top">
+              <% if (post.sticky) { %>
+                <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+              <% } %>
+              <% if (catName) { %>
+                <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= catName %></span>
+              <% } %>
+              <span class="card-date"><%= date(post.date, "YYYY-MM-DD") %></span>
             </div>
-          <% } %>
+            <h3 class="card-title"><%= post.title %></h3>
+            <p class="card-summary"><%= summary %><%= fullText.length > 120 ? "..." : "" %></p>
+            <% if (post.tags && post.tags.length > 0) { %>
+              <div class="card-tags">
+                <% post.tags.forEach(function(tag) { %>
+                  <span class="badge badge-ghost badge-xs">#<%= tag.name %></span>
+                <% }); %>
+              </div>
+            <% } %>
+          </div>
         </div>
     <% }); %>
     <% if (posts.length === 0) { %>

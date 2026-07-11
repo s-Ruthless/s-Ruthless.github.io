@@ -1,13 +1,13 @@
-/* ====== 鐩稿唽椤甸潰 ====== */
+/* ====== 相册页面 ====== */
 
-/* CSS columns 鐡峰竷娴侊細鍥剧墖淇濇寔鍘熷瀹介珮姣旓紝鑷姩濉厖鍒?*/
+/* CSS columns 瀑布流：图片保持原始宽高比，自动填充列 */
 .gallery-masonry{
   column-count:4;
   column-gap:16px;
 }
 @media (max-width:768px){.gallery-masonry{column-count:2;column-gap:8px;}}
 
-/* 鍗曞紶鍥剧墖鍗＄墖 鈥?浠呴檺鐩稿唽椤甸潰 #galleryMasonry 鍐呯殑鍏冪礌 */
+/* 单张图片卡片 — 仅限相册页面 #galleryMasonry 内的元素 */
 #galleryMasonry .gallery-item{
   break-inside:avoid;
   margin:0 0 16px;
@@ -28,7 +28,7 @@
   box-shadow:0 8px 28px rgba(0,0,0,0.15);
   z-index:2;
 }
-/* 鍥剧墖淇濇寔鍘熷瀹介珮姣旓紝楂樺害鑷€傚簲 */
+/* 图片保持原始宽高比，高度自适应 */
 #galleryMasonry .gallery-item img{
   width:100%;
   height:auto;
@@ -103,5 +103,5 @@
 .lightbox-next{right:20px;}
 .lightbox-prev:hover,.lightbox-next:hover{background:rgba(255,255,255,0.25);}
 
-/* 鏆楅粦妯″紡 */
+/* 暗黑模式 */
 [data-theme="dark"] #galleryMasonry .gallery-item{background:rgba(50,50,60,0.4);}

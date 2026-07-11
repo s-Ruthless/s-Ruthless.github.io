@@ -1,18 +1,18 @@
 /* ============================================
-   article.css 闂?闂備礁鎼崐绋棵洪妸鈺傚仧闂佸灝顑冩禍婊堟煕韫囨挻鎲搁柣鐔叉櫊閺岋綁锝為鈧俊浠嬫煟濡も偓瀹曨剟顢?   闂備礁鎲￠悧鏇㈠箠鎼淬劌绠氶柛顐犲劜閺咁剚鎱ㄥ鍡楀箺闁诲寒鍠氱槐鎺楀籍閸屾銏ゆ煕閻愬樊鍤熼柍褜鍓涢幊鎾剁不瀹ュ鐒垫い鎴炲椤︾兘鏌涢悜鍡楀⒋闁诡垰绉电粭鐔煎焵椤掑嫭鍋熸い鏃傛櫕椤╁弶銇勯弮鍥モ偓鈧柛瀣尰缁嬪﹪鍩€閻炲瓔闂備胶鍎甸弲鈺呭窗閺嶎偆绀婄€广儱顦繚?         闂佽崵濮村ú銈団偓姘煎灦椤㈡瑩骞嬮悩鎻掝嚙闂佺厧顫曢崐妤呭春閻樼粯鐓忛柛鈩冩礈閸斿秹鏌＄€ｎ亜鏆熺紒顔规櫊閹晠骞撻幒鏂剧泊闂佽崵鍋炵粙蹇涘礉婵犲洤鐒垫い鎴ｆ硶椤︼箓鏌涢妸銉ヮ劉闁?   ============================================ */
-
-/* ====== 闂備礁鎼崐绋棵洪妸鈺傚仧闁绘垼妫勭粈鍡樹繆閵堝懎顏ラ柍褜鍓欓崯浼村焵椤掆偓濠€閬嶅箠閹炬枼鏋?====== */
+   article.css 文章页面样式 — 文章布局、代码块、标签外挂、评论区等
+   ============================================ */
+/* ====== 文章窗口容器 ====== */
 .post-window{
   backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
   background:var(--card-bg);border:var(--card-border);border-radius:20px;
   box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,0.5);
   overflow:hidden;
 }
-/* 闂備礁鎼崐绋棵洪妸鈺傚仧闁绘垼妫勭粈鍡樹繆閵堝懎顏ラ柍?/ 闂備礁鎲＄敮鎺懳涘☉姘仏?/ 闂備礁鎼粔鏉懨洪妸鈺婃晢闁绘垼妫勭粈鍡樹繆閵堝懎顏ラ柍褜鍓欓崯鎾蓟閸涱収娼╅弶鍫涘妽濞堛垽鏌ｆ惔鈩冭础闁硅櫕鎸搁埢?*/
+/* 列表容器 / 列表卡片 / 分页 */
 .list-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;align-items:start;}
 @media(max-width:600px){.list-container{grid-template-columns:1fr;}}
 
-/* 闂傚倷绶￠崑鍛潩閵娾晛鏋侀柕鍫濐槸缁€鍡樹繆閵堝懎顏ラ柍褜鍓欓崯鏉戠暦閿熺姵鏅柛鏇ㄥ亽閺?*/
+/* 列表卡片 */
 .list-card{ 
 position:relative;
 background:var(--card-bg);border:var(--card-border);border-radius:14px;
@@ -44,10 +44,10 @@ background:color-mix(in srgb,var(--accent-color) 3%,var(--card-bg));
 .list-card-title:hover{color:var(--accent-color);}
 .list-card .badge-ghost{flex-shrink:0;}
 
-/* 缂傚倷绀侀惌浣糕枍閿濆棙鍙忛柟闂寸缁犳垵霉閿濆洦鍤€缂佹彃婀辩槐鎺楀焵?*/
+/* 空列表提示 */
 .list-empty{text-align:center;padding:40px 10px;color:#999;font-size:14px;}
 
-/* 闂備礁鎲＄敮鎺懳涘┑瀣?*/
+/* 分页按钮 */
 .list-pagination{display:flex;justify-content:center;gap:8px;margin-top:24px;}
 .list-pagination .page-btn{
   padding:6px 16px;border-radius:10px;font-size:13px;color:#666;
@@ -57,7 +57,7 @@ background:color-mix(in srgb,var(--accent-color) 3%,var(--card-bg));
 .list-pagination .page-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);}
 .list-pagination .page-info{padding:6px 16px;font-size:13px;color:#999;}
 
-/* ====== 闂備礁鎼崐绋棵洪妸鈺傚仧闁绘垼妫勭粈鍡樹繆閵堝懎顏ラ柍褜鍓欓崯鎾极?====== */
+/* ====== 文章列表项 ====== */
 .post-list-item{ 
 position:relative;padding:0;
 background:var(--card-bg);border:1px solid rgba(0,0,0,0.06);border-radius:14px;
@@ -92,16 +92,16 @@ border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
 .post-list-item .post-meta a:hover{text-decoration:underline;}
 .post-excerpt{ font-size:13px;color:#444;line-height:1.5;margin-top:6px;}
 
-/* 闂備礁鎼崐绋棵洪妸鈺傚仧闁绘垼妫勭粈鍡樹繆閵堝懎顏ラ柍褜鍓欓崯鐗堢閸涘﹦鐟归柍褜鍓欓…鍥ㄥ閺夋垹鍊為梺鍛婃寙閸愮偓姣?*/
+/* 文章列表封面图 */
 .post-list-cover{width:100%;height:140px;overflow:hidden;position:relative;border-radius:14px 14px 0 0;}
 .post-list-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);}
 .post-list-item:hover .post-list-cover img{filter:brightness(1.08);}
-/* 闂備礁鎼崐绋棵洪妸鈺傚仧闁绘垼妫勭粈鍡樹繆閵堝懎顏ラ柍褜鍓欓崯鏉戠暦濮椻偓瀹曘劑顢樿閺咃綁姊洪崨濠勫ⅹ闁圭⒈鍋婂畷顒傗偓娑櫳戠紞鍥╃棯椤撶偞鍣介柣?*/
+/* 文章列表内容区内边距 */
 .post-list-item h3,.post-list-item .post-meta,.post-list-item .post-excerpt{ padding-left:22px;padding-right:20px;}
 .post-list-item h3{ padding-top:8px;}
 .post-list-item .post-excerpt{ padding-bottom:16px;}
 
-/* 缂傚倸鍊搁崰姘跺闯閿濆违濠电姴娲ゅΛ姗€鏌涢妷銏℃珖鐟滄澘娼￠弻鈥愁吋閸涱喚鈹涢梺?*/
+/* 置顶文章样式 */
 .post-list-item.post-sticky{
   border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);
   background:color-mix(in srgb,var(--accent-color) 3%,var(--card-bg));
@@ -123,7 +123,7 @@ border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
   background:color-mix(in srgb,var(--accent-color) 5%,var(--card-bg));
 }
 
-/* 闂備礁鎼崐绋棵洪妸鈺傚仧闁绘垼妫勭粈鍡樹繆閵堝懎顏ラ柍褜鍓欓崯鏉戭嚕娴犲鐐婇柍鍝勶工婵?*/
+/* 文章列表标签 */
 .post-list-tags{margin-top:6px;padding-left:22px;padding-right:20px;padding-bottom:16px;}
 .post-list-tag{
   display:inline-flex;align-items:center;gap:3px;
@@ -134,7 +134,7 @@ border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
 .post-list-tag i{font-size:9px;opacity:0.6;}
 .post-list-tag:hover{background:color-mix(in srgb,var(--accent-color) 20%,transparent);color:var(--accent-color);}
 
-/* ====== 闂備礁鎲＄敮鎺懳涘┑瀣?====== */
+/* ====== 分页导航 ====== */
 .pagination{
   display:flex;justify-content:center;align-items:center;gap:16px;
   padding:16px 20px;border-top:1px solid rgba(0,0,0,0.04);
@@ -146,7 +146,7 @@ background:color-mix(in srgb,var(--accent-color) 8%,transparent);transition:back
 .page-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);}
 .page-info{font-size:13px;color:#444;}
 
-/* ====== 闂備礁鎼崐绋棵洪妸鈺傚仧濡炲瀛╃€氭岸鏌ㄩ弮鍥棄闁告挷鍗抽弻?====== */
+/* ====== 通用页面容器 ====== */
 .page-container{max-width:900px;margin:0 auto;padding:20px 16px 100px;}
 .page-body{
   backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
@@ -180,11 +180,11 @@ background:color-mix(in srgb,var(--accent-color) 8%,transparent);transition:back
 }
 .article-body{padding:0 24px 24px;}
 
-/* ====== 闂備礁鎼崐绋棵洪妸鈺傚仧鐎瑰嫰鍋婂浼存煥濠靛棙顥為柣?====== */
+/* ====== 文章正文内容 ====== */
 .article-content{font-size:15px;line-height:1.8;color:#111;word-break:break-word;}
 .article-content h1,.article-content h2,.article-content h3{margin:24px 0 12px;color:#111;}
 .article-content p{margin:12px 0;}
-.article-content img{max-width:100%;border-radius:12px;margin:12px 0;}
+.article-content img{max-width:100%;}
 .article-content blockquote{
   border-left:3px solid var(--accent-color);padding:8px 16px;margin:12px 0;
   background:color-mix(in srgb,var(--accent-color) 6%,transparent);border-radius:0 12px 12px 0;color:#444;
@@ -192,16 +192,16 @@ background:color-mix(in srgb,var(--accent-color) 8%,transparent);transition:back
 .article-content code{
   background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--accent-color);
 }
-.article-content pre{background:#f6f8fa;border-radius:12px;padding:16px;overflow-x:auto;margin:12px 0;border:1px solid rgba(0,0,0,0.08);}
+.article-content pre{background:#f6f8fa;padding:16px;overflow-x:auto;margin:12px 0;}
 .article-content pre code{background:none;color:#24292e;padding:0;}
 .article-content a{color:var(--accent-color);text-decoration:underline;text-underline-offset:3px;}
 .article-content ul,.article-content ol{padding-left:24px;margin:8px 0;}
 .article-content ul li{list-style:disc;}
 .article-content ol li{list-style:decimal;}
 .article-content li{margin:4px 0;}
-/* 闂佽崵鍋炵粙蹇涘礉瀹ュ鍋?*/
+/* 表格样式 */
 .article-content table{
-  width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;
+  width:100%;border-collapse:collapse;font-size:13px;
   border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);
 }
 .article-content table th{
@@ -211,12 +211,12 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
 .article-content table td{padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
 .article-content table tr:last-child td{border-bottom:none;}
 .article-content table tr:hover td{background:color-mix(in srgb,var(--accent-color) 4%,transparent);}
-/* 闂備礁鎲＄敮鎺懳涘Δ浣虹彾濠电姴娲﹂弲?*/
+/* 分割线 */
 .article-content hr{
   border:none;height:1px;margin:24px 0;
   background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent-color) 30%,transparent),transparent);
 }
-/* 闂備礁鎼粔鏉懨洪顫偓鍌炴偩鐏炴儳鏅抽梺鍛婄⊕閻ｎ亪宕戝鈧弻?*/
+/* 标题与锚点链接 */
 .article-content h2,.article-content h3{position:relative;padding-left:14px;}
 .article-content h2::before,.article-content h3::before{
   content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
@@ -224,7 +224,7 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
 }
 .article-content h2::before{height:22px;}
 .article-content h3::before{height:16px;}
-/* 闂備礁鎼粔鏉懨洪顫偓鍌涚鐎ｎ偆鍙嗗┑顔矫畷顒佺?*/
+/* headerlink 锚点图标 */
 .article-content .headerlink{
   float:right;margin-left:8px;color:color-mix(in srgb,var(--accent-color) 40%,transparent);font-size:14px;
   opacity:0;transition:opacity 0.2s ease;text-decoration:none;
@@ -234,7 +234,7 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
 .back-link{color:var(--accent-color);font-size:13px;display:inline-flex;align-items:center;gap:4px;}
 .back-link i{font-size:11px;}
 
-/* 闂備礁鎼崐绋棵洪妸鈺傚仧濡炲绨堕崑鎾存媴閸愵煈妫堥梺?*/
+/* 文章导航（上一篇/下一篇） */
 .article-nav{
   display:flex;justify-content:space-between;gap:16px;
   padding:16px 24px;border-top:1px solid rgba(0,0,0,0.05);
@@ -249,27 +249,29 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
 .nav-prev:hover,.nav-next:hover{color:var(--accent-color);}
 .nav-next{margin-left:auto;}
 
-/* ====== 濠电偛顕刊瀵稿緤閸ф鍋夋繝濠傚濞堟淇婇婊勫殌闁?====== */
+/* ====== 代码高亮块（Mac 风格） ====== */
 .article-content figure.highlight{
-margin:16px 0;border-radius:12px;overflow:hidden;
-background:#f6f8fa;border:1px solid #d0d7de;position:relative;
+margin:16px 0;border-radius:8px;overflow:hidden;
+background:#fff;border:1px solid rgba(0,0,0,0.06);position:relative;
+box-shadow:0 2px 8px rgba(0,0,0,0.06);
 }
 /* mac window top bar */
 .article-content figure.highlight::before{
-content:'';display:block;height:32px;
-background:#eaeef2;border-bottom:1px solid #d0d7de;
+content:'';display:block;height:36px;
+background:#fafafa;
 background-image:
-radial-gradient(circle at 12px 16px,#ff5f57 5px,transparent 6px),
-radial-gradient(circle at 32px 16px,#febc2e 5px,transparent 6px),
-radial-gradient(circle at 52px 16px,#28c840 5px,transparent 6px);
+radial-gradient(circle at 14px 18px,#ff5f57 5px,transparent 6px),
+radial-gradient(circle at 34px 18px,#ffbd2e 5px,transparent 6px),
+radial-gradient(circle at 54px 18px,#28c840 5px,transparent 6px);
 background-repeat:no-repeat;
+border-bottom:1px solid rgba(0,0,0,0.05);
 }
-/* language label centered in mac top bar */
+/* language label next to traffic lights */
 .article-content figure.highlight .code-lang-label{
-position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:3;
-height:32px;line-height:32px;padding:0 12px;font-size:12px;font-weight:600;
+position:absolute;top:0;left:76px;z-index:3;
+height:36px;line-height:36px;padding:0;font-size:12px;font-weight:500;
 font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-color:#57606a;text-transform:uppercase;letter-spacing:0.5px;
+color:#888;letter-spacing:0.5px;
 }
 .article-content figure.highlight > table{
 width:100%;border-collapse:collapse;border-spacing:0;table-layout:fixed;position:relative;z-index:1;
@@ -277,20 +279,23 @@ width:100%;border-collapse:collapse;border-spacing:0;table-layout:fixed;position
 .article-content figure.highlight tr{background:transparent;}
 .article-content figure.highlight td{padding:0;border:none;vertical-align:top;}
 .article-content figure.highlight .gutter{
-width:40px;white-space:nowrap;user-select:none;
-background:#f0f2f5;border-right:1px solid #d0d7de;
+width:30px;white-space:nowrap;user-select:none;
 }
 .article-content figure.highlight .gutter pre{
-background:none!important;padding:14px 6px 14px 0;margin:0;text-align:right;
+background:none!important;padding:14px 10px 14px 0;margin:0;text-align:right;
 font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
-font-size:13px;line-height:1.6;color:#afb8c1;
+font-size:13px;line-height:1.65;color:#c2c2c2;white-space:pre;
 }
 .article-content figure.highlight .code pre{
-background:none!important;padding:14px 16px;margin:0;overflow-x:auto;
+background:none!important;padding:14px 10px;margin:0;overflow-x:auto;
 font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
-font-size:13px;line-height:1.6;color:#24292e;
+font-size:13px;line-height:1.65;color:#333;white-space:pre;
 }
-.article-content figure.highlight .line{display:block;}
+.article-content figure.highlight .code pre code{
+font-family:inherit;font-size:inherit;line-height:inherit;background:none;padding:0;
+}
+.article-content figure.highlight br{display:none;}
+.article-content figure.highlight .line{display:block;min-height:1.65em;}
 
 /* token 高亮色 — 浅色背景 GitHub Light 配色 */
 .article-content .highlight .keyword,
@@ -320,14 +325,26 @@ font-size:13px;line-height:1.6;color:#24292e;
 .article-content .highlight .link{color:#005cc5;}
 .article-content .highlight .emphasis{font-style:italic;}
 .article-content .highlight .strong{font-weight:700;}
+.article-content .highlight .property,
+.article-content .highlight .constant,
+.article-content .highlight .parent{color:#005cc5;}
+.article-content .highlight .punctuation{color:#24292e;}
+.article-content .highlight .operator{color:#d73a49;}
+.article-content .highlight .doctype,
+.article-content .highlight .pi{color:#6a737d;font-style:italic;}
+.article-content .highlight .deletion{color:#b31d28;background-color:#ffeef0;}
+.article-content .highlight .addition{color:#22863a;background-color:#f0fff4;}
+.article-content .highlight .formula{color:#005cc5;}
+.article-content .highlight .template-tag{color:#d73a49;}
+.article-content .highlight .cdata{color:#6a737d;}
 
-/* 闂佽崵鍋炵粙鎴︽嚐椤栫偛鑸?code */
+/* 行内代码 code */
 .article-content code:not(pre code){
   background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:2px 6px;border-radius:4px;
   font-size:13px;color:var(--accent-color);font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,monospace;
 }
 
-/* 濠电偛顕刊瀵稿緤閸ф鍋夋繝濠傜墕闁裤倖淇婇妶鍛伌闁搞倖妫冮幃椋庝焊娴ｉ晲澹曢梻浣告惈缁夋潙煤閵娾晩鏁?*/
+/* 代码块右上角语言标签 */
 .article-content figure.highlight[data-lang]::after,
 .article-content figure.highlight.highlight::after{
   content:attr(data-lang);position:absolute;top:7px;right:12px;z-index:2;
@@ -338,20 +355,20 @@ font-size:13px;line-height:1.6;color:#24292e;
 
 /* 濠电姰鍨煎▔娑氱矓閹绢喖鏄ユ俊銈呮噹缁犳澘顭块懜闈涘閻?*/
 .code-copy-btn{
-  position:absolute;top:6px;right:6px;z-index:3;
+  position:absolute;top:4px;right:8px;z-index:3;
   width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;
-  background:#eaeef2;color:#57606a;font-size:12px;padding:0;
+  background:transparent;color:#999;font-size:13px;padding:0;
   display:flex;align-items:center;justify-content:center;
   opacity:0;transition:opacity 0.2s ease,background 0.2s ease,color 0.2s ease,transform 0.2s ease;
 }
 .article-content figure.highlight:hover .code-copy-btn{opacity:1;}
-.code-copy-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);}
-.code-copy-btn.copied{background:rgba(34,197,94,0.18);color:#16a34a;}
+.code-copy-btn:hover{background:rgba(0,0,0,0.06);color:var(--accent-color);}
+.code-copy-btn.copied{background:rgba(34,197,94,0.15);color:#16a34a;}
 .article-content > pre{position:relative;}
 .article-content > pre .code-copy-btn{opacity:0.6;}
 .article-content > pre:hover .code-copy-btn{opacity:1;}
 
-/* ====== 闂備礁鎼崐绋棵洪妸鈺傚仧闁绘垼濮ら崕搴亜閺冨洤浜圭紒?TOC ====== */
+/* ====== 文章目录 TOC ====== */
 .post-toc-wrap{
   position:fixed;top:90px;right:24px;z-index:900;width:220px;max-height:calc(100vh - 180px);
   display:flex;flex-direction:column;
@@ -398,20 +415,20 @@ transition:max-height 0.3s ease,opacity 0.2s ease;
 .post-toc-wrap[data-expand="false"] .post-toc-list li.toc-expanded > ol{
 max-height:500px;opacity:1;
 }
-/* 闂佽绻掗崑鐐裁洪弽顐ｎ潟闁硅揪绠戠粻浼存煕閵夈垺鏉哄ù鐘崇洴閺?*/
-.post-toc-wrap[data-expand="false"] .post-toc-list li > a{
+/* TOC 折叠状态 */
+.post-toc-wrap[data-expand="false"] .post-toc-list li:has(> ol) > a{
 position:relative;padding-right:20px;
 }
-.post-toc-wrap[data-expand="false"] .post-toc-list li a::after{
+.post-toc-wrap[data-expand="false"] .post-toc-list li:has(> ol) > a::after{
 content:'\f054';font-family:"Font Awesome 6 Free";font-weight:900;
 font-size:8px;position:absolute;right:20px;top:50%;
 transform:translateY(-50%) rotate(0deg);
 transition:transform 0.2s ease;color:#999;
 }
-.post-toc-wrap[data-expand="false"] .post-toc-list li.toc-expanded a::after{
+.post-toc-wrap[data-expand="false"] .post-toc-list li.toc-expanded:has(> ol) > a::after{
 transform:translateY(-50%) rotate(90deg);color:var(--accent-color);
 }
-/* FAB 闂備礁婀遍…鍫ニ囬悽绋跨?*/
+/* FAB 浮动目录按钮 */
 .post-toc-fab{
   position:fixed;right:20px;bottom:96px;z-index:901;
   width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,0.55);
@@ -429,7 +446,7 @@ transform:translateY(-50%) rotate(90deg);color:var(--accent-color);
 }
 @keyframes toc-pop{0%{transform:scale(0.8);opacity:0;}100%{transform:scale(1);opacity:1;}}
 
-/* ====== 闂備礁鎼崐绋棵洪妸鈺傚仧濡炲瀛╃€氭岸鏌ㄩ弮鍥棄闁告挻婢橀—鍐Χ閸涱垯绮甸梺缁樼壄缁茶法鍒?hover ====== */
+/* ====== 文章头部徽章 / 文章墙卡片分类标签 ====== */
 .article-header .badge-outline.badge-primary{
   transition:background 0.2s ease,color 0.2s ease,border-color 0.2s ease;cursor:pointer;
 }
@@ -437,7 +454,7 @@ transform:translateY(-50%) rotate(90deg);color:var(--accent-color);
   background:var(--accent-color)!important;
   color:#fff!important;
 }
-/* 闂備礁鎼崐绋棵洪妸鈺傚仧闂佸灝顑嗗▍鐘崇箾閸℃绠版鐐灲閺岋絽螖閳ь剙煤閿曞倹鍋夐柨婵嗘川妞?*/
+/* 文章墙卡片分类标签样式 */
 .wall-card .card-cat{
   color:var(--accent-color)!important;
   background:color-mix(in srgb,var(--accent-color) 10%,transparent)!important;
@@ -446,7 +463,7 @@ transform:translateY(-50%) rotate(90deg);color:var(--accent-color);
   background:color-mix(in srgb,var(--accent-color) 18%,transparent)!important;
 }
 
-/* 缂傚倸鍊搁崰姘跺闯閿濆违濠电姴娲ゅΛ姗€鏌涢妷銏℃珖鐟滄澘娼￠弻娑樜旂€ｎ剛锛熸繝鈷€鍕⒌鐎殿喛妫勯悾锟犲箥椤旂虎鏀?*/
+/* 文章墙置顶卡片样式 */
 .wall-card.wall-card-sticky{
   border-color:color-mix(in srgb,#f97316 30%,transparent);
   box-shadow:0 2px 12px color-mix(in srgb,#f97316 8%,transparent),var(--card-shadow);
@@ -466,7 +483,7 @@ transform:translateY(-50%) rotate(90deg);color:var(--accent-color);
   border-color:color-mix(in srgb,#f97316 25%,transparent);
 }
 
-/* ====== 闂佽崵濮村ú銈団偓姘煎灦椤㈡瑩骞嬮敃鈧粈?====== */
+/* ====== 评论区容器 ====== */
 .comments-wrap{
 position:relative;
 min-height:120px;
@@ -510,44 +527,44 @@ min-height:120px;
   font-size:12px;
 }
 
-/* Giscus iframe 闂佽楠稿﹢閬嶅箠閹炬枼鏋?闂?CSS 闂備胶鍎甸弲娑㈡偤閵娧勬殰閻庨潧鎲℃刊?opacity:0闂備焦瀵х粙鎴︽儔婵傜鐏虫俊顖濆吹閳瑰秵绻濋棃娑氬⒈闁稿孩鍨甸埥澶愬箻椤栨矮澹曢梺姹囧焺閸ㄥ酣宕橀埡鍐╊吇闂傚倸鍊搁幊蹇涘礉濡綍?iframe闂?
-   闂傚倷绶￠崜娆撴倶濠靛鍌?Giscus 闂備礁鎲￠…鍥窗閹捐鏋侀柟鎹愵嚙缁€澶愭煟濡厧鍔嬬紒浣峰嵆閺屾盯寮拠鎻掝瀷闂佽桨绶氱粻鏍ь潖婵犳凹鏁傞柛鈩冾殘閻も偓闂備線娼уΛ鏃堟閺?闂備線娼荤拹鐔煎礉韫囨稒鍎婇幖杈剧稻婵ジ鏌涘┑鍡楊仼妞ゎ偓缍佸鍫曟倷閼告妫勯梺浼欑秵閸撶喖鐛€ｎ喖绠涙い鎺嶇閳ь剛鏁婚幃瑙勬媴缁嬭法绋忛柣?opacity:1 婵犵數鍎戠徊娲焵椤掆偓閸熷灝顕ｉ幎鑺ョ厪?*/
+/* Giscus iframe 加载占位 — 通过 CSS 控制 opacity:0 防止闪烁
+   Giscus 加载完成后自动恢复可见，无需额外 JS 干预 */
 .comments-mount-giscus{
   opacity:0;
   transition:opacity 0.4s ease;
   position:relative;
   z-index:1;
-  /* 婵犵數鍋為崹鐢告偋閹炬枼鏋?Giscus iframe 闂佸湱鍘ч悺銊ッ洪悢鐓庣？閻庢稒锚缁剁偞鎱ㄥ鍡椾簽缂佸娲濠氬磼濞戞瑥鍞夊┑?*/
+  /* Giscus iframe 加载完成后的过渡动画 */
   display:flex;
   flex-direction:column;
 }
 .comments-wrap iframe.giscus-frame{
   width:100%!important;min-height:200px;
   border:none;border-radius:0;
-  /* 缂備胶铏庨崣搴ㄥ窗閺囩姵宕?iframe 濠电偞鍨堕幐鍝ョ矓閻㈢绠繛宸簻缁€鍕煕濠靛棗顏撮柛鐔锋喘閺?*/
+  /* Gitalk/Twikoo iframe 同样处理 */
   display:block;
 }
 
-/* Gitalk 闂佽楠稿﹢閬嶅箠閹炬枼鏋嶉柟鐑樻⒒缁€鍐箹缁厜鍋撻幇浣告 */
+/* Gitalk 评论样式覆盖 */
 .comments-wrap .gt-container{margin-top:8px;}
 .comments-wrap .gt-header-controls-tip,
 .comments-wrap .gt-comment-content{border-radius:10px;}
 .comments-wrap .gt-btn{border-radius:8px;}
 .comments-wrap .gt-meta{border-radius:8px;}
 
-/* Twikoo 闂佽楠稿﹢閬嶅箠閹炬枼鏋嶉柟鐑樻⒒缁€鍐箹缁厜鍋撻幇浣告 */
+/* Twikoo 评论样式覆盖 */
 .comments-wrap .tk-comment{border-radius:12px;}
 .comments-wrap .tk-input{border-radius:10px;}
 .comments-wrap .tk-row .tk-submit{border-radius:8px;}
 
-/* Waline 闂佽楠稿﹢閬嶅箠閹炬枼鏋嶉柟鐑樻⒒缁€鍐箹缁厜鍋撻幇浣告 */
+/* Waline 评论样式覆盖 */
 .comments-wrap .wl-panel{border-radius:12px;}
 .comments-wrap .wl-card{border-radius:12px;}
 
-/* 闂佽崵濮村ú銈団偓姘煎灦椤㈡瑩骞嬮悩顐壕闁革富鍘介崵鈧┑鐐叉噺鐢帟褰侀梺鐐藉劚閸熷灝顕ｉ幎鑺ョ厱闁哄倽顕ф俊鍧楁煛娓氣偓缁犳牠寮鍛瀻缂?闂佽崵濮崇粈浣规櫠娴犲鍋?opacity:0 + translateY(8px)闂備焦瀵х粙鎴︽嚐椤栫偞鍋╂い鎺戝缁狅綁鏌熼柇锕€澧柛濠勬暩缁辨帗寰勬繝搴ｅ悑濠电偛鎳庨柊锝咁嚕閽樺鏆嬮柟娈垮枤椤㈠懘鏌ｉ悢鍝ユ嚂缂佺姵鍨奸妵?CSS transition */
+/* 评论区挂载点过渡动画 */
 #comments-mount{transition:opacity 0.4s ease,transform 0.4s ease;}
 
-/* ====== 闂備礁鎼崐绋棵洪妸鈺傚仧闂佸灝顑冩禍婊堟煕椤垵浜濇い鏂垮€搁～妤€鈽夊▎蹇曚桓闁煎灈鏅犻弻?====== */
+/* ====== 暗黑模式 — 全局基础变量 ====== */
 [data-theme="dark"] .article-content,
 [data-theme="dark"] .article-content pre code,
 [data-theme="dark"] .article-header h1,
@@ -604,7 +621,7 @@ min-height:120px;
 [data-theme="dark"] .article-content table td{border-bottom-color:rgba(255,255,255,0.1);}
 [data-theme="dark"] .article-content table tr:hover td{background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
 [data-theme="dark"] .toc-active{background:color-mix(in srgb,var(--accent-color) 18%,transparent)!important;}
-/* ====== 闂備礁鎲＄敮妤呫€冩径鎰ラ柛鎰靛枛绾偓闂佹寧绋戠€氼剟銆傛繝姘厸闁糕剝锕╁▓婊呯磼椤曞棛鐣遍摶锝夋煃閵夈儳锛嶇痪顓涘亾 ====== */
+/* ====== 暗黑模式 — 列表卡片 / 页面容器 / 文章窗口 ====== */
 [data-theme="dark"] .list-card{ 
   background:rgba(255,255,255,0.03);
   border-color:rgba(255,255,255,0.08)!important;
@@ -618,12 +635,12 @@ min-height:120px;
 [data-theme="dark"] .list-pagination .page-btn{color:#ccc;}
 [data-theme="dark"] .list-pagination .page-info{color:#888;}
 
-/* ====== 闂備礁鎲＄敮鎺懳涘☉姘仏?闂備礁鎼粔鏉懨洪妸鈺婃晢濡炲瀛╃€氭岸鏌ㄩ弮鍥棄闁告挻婢橀—鍐Χ閸ヨ埖娈扮紓浣戒含婢ф濡甸崟顖涘仺闁告稑锕ラ妴鍐⒑閸濆嫮孝婵炲樊鍙冮妴鍌炴嚍閵壯€鏋?badge ====== */
+/* ====== 暗黑模式 — 页面头部徽章 / 版权信息 ====== */
 .page-header .badge{
   vertical-align:middle;
 }
 
-/* ====== 闂備礁鎼崐绋棵洪妸鈺傚仧闁绘垼濮ら崑瀣煕椤愩倕鏋戠紓宥佸亾濠电姰鍨瑰﹢杈ㄦ櫠濡も偓鍗?====== */
+/* ====== 暗黑模式 — 文章版权声明 ====== */
 .post-copyright{
   margin:24px 0 0;
   border-radius:14px;
@@ -653,7 +670,7 @@ min-height:120px;
   border-bottom-style:solid;border-bottom-color:var(--accent-color);
 }
 
-/* 闂備礁鎼Λ娆撱€冩繝鍕灊闁挎洍鍋撻摶锝夋煃閵夈儳锛嶇痪顓涘亾 */
+/* 暗黑模式 — 代码块整体 */
 [data-theme="dark"] .post-copyright{
   background:color-mix(in srgb,var(--accent-color) 8%,transparent);
   border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
@@ -665,67 +682,38 @@ min-height:120px;
 [data-theme="dark"] .post-copyright-body{color:#d0d0d0;}
 [data-theme="dark"] .post-copyright-body strong{color:#fff;}
 
-/* ====== 闂備礁鎼Λ娆撱€冩繝鍕灊闁挎洍鍋撻摶锝夋煃閵夈儳锛嶇痪顓涘亾闂備焦瀵х粙鎺楁儗椤曗偓瀹曨剟顢楅崟顒€鍓烘繛鎾村焹閸嬫捇鏌ｅ┑鎰灍缂佸倸绉归、娆撳礂閻撳簼娣?====== */
+/* ====== 暗黑模式 — 代码块（Mac 风格 + Tokyo Night 配色） ====== */
 [data-theme="dark"] .article-content figure.highlight{
-  background:rgba(20,20,35,0.6);
-  border-color:rgba(255,255,255,0.1);
+  background:#1a1b26;
+  border-color:rgba(255,255,255,0.08);
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
 }
 [data-theme="dark"] .article-content figure.highlight::before{
-  background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));
-  border-bottom-color:rgba(255,255,255,0.08);
+  background:#16171f;
+  border-bottom-color:rgba(255,255,255,0.06);
 }
-[data-theme="dark"] .article-content figure.highlight .gutter{
-  background:rgba(255,255,255,0.04);
-  border-right-color:rgba(255,255,255,0.08);
-}
-[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.4);}
-[data-theme="dark"] .article-content figure.highlight .code pre{color:#e0e0e0;}
-/* token 闂備礁鎼Λ娆撱€冩繝鍕灊闁挎洍鍋撻摶锝夋煃閵夈儳锛嶇痪顓涘亾闂傚倷鐒﹀妯肩矓闁垮鐝?*/
-[data-theme="dark"] .article-content .highlight .keyword,
-[data-theme="dark"] .article-content .highlight .selector,
-[data-theme="dark"] .article-content .highlight .built_in{color:#c084fc;}
-[data-theme="dark"] .article-content .highlight .string,
-[data-theme="dark"] .article-content .highlight .attr,
-[data-theme="dark"] .article-content .highlight .symbol{color:#f472b6;}
-[data-theme="dark"] .article-content .highlight .number,
-[data-theme="dark"] .article-content .highlight .literal{color:#fbbf24;}
-[data-theme="dark"] .article-content .highlight .comment,
-[data-theme="dark"] .article-content .highlight .quote{color:#8b949e;}
-[data-theme="dark"] .article-content .highlight .function .title,
-[data-theme="dark"] .article-content .highlight .title,
-[data-theme="dark"] .article-content .highlight .section{color:#60a5fa;}
-[data-theme="dark"] .article-content .highlight .params{color:#d0d0e0;}
-[data-theme="dark"] .article-content .highlight .meta,
-[data-theme="dark"] .article-content .highlight .tag{color:#22d3ee;}
-[data-theme="dark"] .article-content .highlight .name{color:#c084fc;}
-[data-theme="dark"] .article-content .highlight .attribute{color:#f472b6;}
-[data-theme="dark"] .article-content .highlight .regexp{color:#fbbf24;}
-[data-theme="dark"] .article-content .highlight .variable,
-[data-theme="dark"] .article-content .highlight .template-variable{color:#f472b6;}
-[data-theme="dark"] .article-content .highlight .type,
-[data-theme="dark"] .article-content .highlight .class .title{color:#34d399;}
-[data-theme="dark"] .article-content .highlight .bullet,
-[data-theme="dark"] .article-content .highlight .link{color:#c084fc;}
-[data-theme="dark"] .article-content .highlight .emphasis{font-style:italic;}
-[data-theme="dark"] .article-content .highlight .strong{font-weight:700;}
-/* 闂佽崵鍋炵粙鎴︽嚐椤栫偛鑸?code 闂備礁鎼Λ娆撱€冩繝鍕灊闁挎洍鍋撻摶锝夋煃閵夈儳锛嶇痪顓涘亾 */
+[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.3);}
+[data-theme="dark"] .article-content figure.highlight .code pre{color:#c0caf5;}
+/* token 颜色定义在下方 Tokyo Night 暗黑模式区块 */
+/* token colors are defined in the Tokyo Night dark mode section below */
+/* 暗黑模式 — 行内代码 */
 [data-theme="dark"] .article-content code:not(pre code){
   background:color-mix(in srgb,var(--accent-color) 18%,rgba(255,255,255,0.08));
   color:var(--accent-soft);
 }
 /* 濠电姰鍨煎▔娑氱矓閹绢喖鏄ユ俊銈呮噹缁犳澘顭块懜闈涘閻忓骏绠撻弻锟犲幢濮楀棙鐤佺紓渚囧櫙缁犳垼鐏掗梺鐐藉劚绾绢厾娑甸埀?*/
 [data-theme="dark"] .code-copy-btn{
-  background:rgba(255,255,255,0.15);
-  color:rgba(255,255,255,0.7);
+  background:transparent;
+  color:rgba(255,255,255,0.5);
 }
-[data-theme="dark"] .code-copy-btn:hover{color:var(--accent-color);}
+[data-theme="dark"] .code-copy-btn:hover{color:var(--accent-color);background:rgba(255,255,255,0.08);}
 
 /* ============================================================
-   闂備礁鎼粔鏉懨洪妸鈺婃晢闂佸灝顑呯欢鐐烘煛瀹ュ啫濡奸柣锔诲灦閺屻劌鈽夊Ο缁樼煛ag Plugins闂備焦瀵х粙鎴λ囨导瀛樺亱闁告鍎愰崵?
-   闂備礁鎲￠悷銉╁磹娴犲鐒?Butterfly 濠电偞鍨堕幐鎼佲€﹂悜濮愨偓鍌涚鐎ｎ亞顦梺缁樻椤曆囧储閹绢喗鐓ユ繛鎴烆焽閻掓悂鏌嶈閸撴瑩宕愰崸妤€鍌?moeMac 闂佽崵鍠愰悷銉ノ涘鍫稏閹兼番鍩勫Σ褰掑箹濞ｎ剙鐏?
+   标签外挂样式 — 参考 Butterfly 主题设计，适配 moeMac 毛玻璃风格
+   所有标签外挂均支持浅色/暗黑模式自动切换
    ============================================================ */
 
-/* ====== Custom Blocks / Note 闂佽楠稿﹢閬嶅箠閹炬枼鏋嶉柟鐑橆殔闁?====== */
+/* ====== Custom Blocks / Note 提示容器 ====== */
 .article-content .custom-block{
   margin:16px 0;border-radius:12px;overflow:hidden;
   border:1px solid transparent;
@@ -744,7 +732,7 @@ min-height:120px;
 .article-content .custom-block-body p:last-child{margin-bottom:0;}
 .article-content .custom-block-body p:first-child{margin-top:0;}
 
-/* 闂備礁鎲￠懝鍓р偓姘煎枤閹噣顢曢敃鈧崹鍌炴倵閿濆骸鏋涢悽顖涘▕閺?*/
+/* Note 容器各类型颜色 */
 .article-content .cb-tip,
 .article-content .cb-note,
 .article-content .note-default{
@@ -801,7 +789,7 @@ min-height:120px;
   border-bottom-color:rgba(239,68,68,0.15);
 }
 
-/* ====== Tabs 闂備礁鎼粔鏉懨洪妸鈺婃晢闂佸灝顑冩禍?====== */
+/* ====== Tabs 标签页 ====== */
 .article-content .tabs-container{
   margin:16px 0;border-radius:12px;overflow:hidden;
   border:1px solid rgba(0,0,0,0.08);
@@ -832,7 +820,7 @@ min-height:120px;
 .article-content .tab-content.active{display:block;animation:tab-fade 0.3s ease;}
 @keyframes tab-fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
-/* ====== Folding / HideToggle 闂備胶顢婇崺鏍晪閻熸粎澧楀Λ鍐ㄎ涢崘顔碱潊闁斥晛鍟伴崙?====== */
+/* ====== Folding / HideToggle 折叠面板 ====== */
 .article-content .folding-panel,
 .article-content .hide-toggle-panel{
   margin:12px 0;border-radius:10px;overflow:hidden;
@@ -869,7 +857,7 @@ min-height:120px;
 .article-content .folding-red{border-left:3px solid #ef4444;}
 .article-content .folding-default{border-left:3px solid var(--accent-color);}
 
-/* ====== Badge 闁诲骸鐏氭竟鍡涘疾椤愶附鍋?====== */
+/* ====== Badge 徽章 ====== */
 .article-content .inline-badge{
   display:inline-flex;align-items:center;
   padding:2px 8px;border-radius:6px;
@@ -886,7 +874,7 @@ min-height:120px;
   color:#fff;
 }
 
-/* ====== Label 闂佽崵鍋炵粙鎴︽嚐椤栫偛鑸归柟缁㈠枛閸愨偓闂佹悶鍎弲鈺呭礉?====== */
+/* ====== Label 彩色标签 ====== */
 .article-content .inline-label{
   display:inline;padding:2px 8px;border-radius:4px;
   font-size:0.88em;font-weight:500;
@@ -894,7 +882,7 @@ min-height:120px;
   color:var(--label-color,var(--accent-color));
 }
 
-/* ====== Hide 闂傚倸鍊搁幊蹇涘礉濡綍娑樼暆閸曨偅顥濋梺鎼炲劘閸斿秹骞?====== */
+/* ====== Hide 隐藏文字 ====== */
 .article-content .hide-text{
   background:#333;color:#333;border-radius:4px;
   padding:0 4px;cursor:pointer;transition:color 0.2s ease;
@@ -905,7 +893,7 @@ min-height:120px;
   color:#fff;
 }
 
-/* ====== HideBlock 闂傚倸鍊搁幊蹇涘礉濡綍娑樼暆閸曨偊鏁?====== */
+/* ====== HideBlock 隐藏区块 ====== */
 .article-content .hide-block{
   margin:12px 0;border-radius:10px;overflow:hidden;
 }
@@ -925,7 +913,7 @@ min-height:120px;
   border:1px solid rgba(0,0,0,0.06);
 }
 
-/* ====== Button 闂備礁婀遍…鍫ニ囬悽绋跨闁规儼濮ら悡锝夋煟閹伴潧澧?====== */
+/* ====== Button 按钮 ====== */
 .article-content .tag-btn{
   display:inline-flex;align-items:center;gap:6px;
   padding:8px 18px;border-radius:10px;
@@ -941,7 +929,7 @@ min-height:120px;
   box-shadow:0 4px 12px color-mix(in srgb,var(--accent-color) 30%,transparent);
 }
 .article-content .tag-btn.center{display:flex;justify-content:center;margin:8px auto;width:fit-content;}
-/* 闁荤喐绮嶆竟瀣疾閻愬鐝跺┑鐘叉搐缁犳澘顭块懜闈涘閻?*/
+/* 彩色按钮变体 */
 .article-content .tag-btn-colored{
 color:var(--btn-color,var(--accent-color));
 background:color-mix(in srgb,var(--btn-color,var(--accent-color)) 10%,transparent);
@@ -952,13 +940,13 @@ background:var(--btn-color,var(--accent-color));color:#fff;
 box-shadow:0 4px 12px color-mix(in srgb,var(--btn-color,var(--accent-color)) 30%,transparent);
 }
 
-/* ====== InlineImg 闂佽崵鍋炵粙鎴︽嚐椤栫偛鑸归柟缁㈠枛閻愬﹪鏌涢幘妤€鍠氶弳?====== */
+/* ====== InlineImg 行内图片 ====== */
 .article-content .inline-img{
   display:inline;border-radius:6px;vertical-align:middle;
   box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
 
-/* ====== Timeline 闂備礁鎼崯顐︽偉閻撳宫娑氭崉閵娧勶紡?====== */
+/* ====== Timeline 时间线 ====== */
 .article-content .timeline-container{
   margin:16px 0;padding-left:8px;
   border-left:2px solid color-mix(in srgb,var(--accent-color) 25%,transparent);
@@ -983,7 +971,7 @@ box-shadow:0 4px 12px color-mix(in srgb,var(--btn-color,var(--accent-color)) 30%
   padding:10px 14px;border-radius:8px;
 }
 
-/* ====== Copy 闂佽崵鍋炵粙鎴︽嚐椤栫偛鑸归悗娑櫭欢鐐碘偓骞垮劚閹冲酣鎮?====== */
+/* ====== Copy 行内复制 ====== */
 .article-content .copy-inline{
   display:inline-flex;align-items:center;gap:4px;
   border-radius:6px;padding:1px 4px;
@@ -1001,7 +989,7 @@ box-shadow:0 4px 12px color-mix(in srgb,var(--btn-color,var(--accent-color)) 30%
 }
 .article-content .copy-inline-btn.copied{color:#16a34a;}
 
-/* ====== Mermaid 闂備焦鎮堕崕鎻掔暦濮椻偓婵?====== */
+/* ====== Mermaid 流程图 ====== */
 .article-content .mermaid{
   display:flex;justify-content:center;margin:16px 0;
   padding:20px;border-radius:12px;
@@ -1011,14 +999,14 @@ box-shadow:0 4px 12px color-mix(in srgb,var(--btn-color,var(--accent-color)) 30%
 }
 .article-content .mermaid svg{max-width:100%;height:auto;}
 
-/* ====== KaTeX 闂備浇妗ㄩ悞锕€顭垮鈧、妤呮偄閻撳海顦у銈嗗坊閸嬫挾绱?====== */
+/* ====== KaTeX 数学公式 ====== */
 .article-content .math-block{
   margin:16px 0;overflow-x:auto;padding:8px 0;text-align:center;
 }
 .article-content .math-inline{display:inline;}
 .article-content .katex-display{margin:0!important;}
 
-/* ====== Checkbox 闁诲骸鐏氬姗€骞婃惔銏″弿婵炲棙鍔楅々鏌ユ倵閿濆骸鏋旈柍?====== */
+/* ====== Checkbox 待办事项 ====== */
 .article-content .todo-item{
   display:flex;align-items:flex-start;gap:8px;
   padding:4px 0;font-size:14px;line-height:1.7;
@@ -1049,13 +1037,13 @@ box-shadow:0 4px 12px color-mix(in srgb,var(--btn-color,var(--accent-color)) 30%
   text-decoration:line-through;color:#999;
 }
 
-/* ====== Mark 闂備礁鎼崐绋棵洪敃鈧敃銏ゆ偋閸偅鐣诲┑鈽嗗灣閹虫捇鎯?====== */
+/* ====== Mark 文本高亮 ====== */
 .article-content .text-mark{
   padding:1px 4px;border-radius:3px;
   font-weight:500;color:inherit;
 }
 
-/* ====== Quot 闂佹眹鍩勯崹鐣岀磽濮樿京绀婇柡鍐ㄧ墛閸も偓闂佸憡渚楅崢鍓х矚閸ф鐓?====== */
+/* ====== Quot 带作者引用 ====== */
 .article-content .quot-block{
   margin:16px 0;padding:16px 20px;
   border-left:4px solid var(--accent-color);
@@ -1070,7 +1058,7 @@ box-shadow:0 4px 12px color-mix(in srgb,var(--btn-color,var(--accent-color)) 30%
   color:var(--accent-color);
 }
 
-/* ====== Btns 闂備礁婀遍…鍫ニ囬悽绋跨鐎规洖娲ㄧ壕?====== */
+/* ====== Btns 按钮组 ====== */
 .article-content .btn-group{
   display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;
 }
@@ -1090,7 +1078,7 @@ box-shadow:0 4px 12px color-mix(in srgb,var(--btn-color,var(--accent-color)) 30%
   box-shadow:0 4px 12px color-mix(in srgb,var(--accent-color) 30%,transparent);
 }
 .article-content .btn-group-rounded .btn-group-item{border-radius:24px;}
-/* 闁荤喐绮嶆竟瀣疾閻愬鐝跺┑鐘叉搐缁犳澘顭块懜闈涘閻忓骏濡囩槐?*/
+/* 彩色按钮组变体 */
 .article-content .btn-group-colored{
 color:var(--btn-color,var(--accent-color));
 background:color-mix(in srgb,var(--btn-color,var(--accent-color)) 10%,transparent);
@@ -1101,7 +1089,7 @@ background:var(--btn-color,var(--accent-color));color:#fff;
 box-shadow:0 4px 12px color-mix(in srgb,var(--btn-color,var(--accent-color)) 30%,transparent);
 }
 
-/* ====== Flink 闂備礁鎲￠悷銉╊敄婢舵劕绠哄┑鍌滎焾绾偓闂佹寧绋戠€氼剟銆?====== */
+/* ====== Flink 友情链接 ====== */
 .article-content .flink-list{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
@@ -1136,7 +1124,7 @@ border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 
-/* ====== Gallery 闂備焦鎮堕崕杈ㄦ櫠閼恒儲娅犻柡宥庡幗閸嬨劑鎮归崶顏勭毢闁活厽娲熼弻銊モ槈濡厧顣哄┑鐐插级閹瑰洤鐣峰顑╂棃宕橀敐鍛闂佺懓鐡ㄧ换鍕敂鐎涙绠剧紓鍫㈠Х缁涘繒绱掓潏銊х畺缂佸苯宕埞鎴﹀炊瑜忓Σ鐑芥⒑閸涘鐒介柛鐘查叄閿濈偤骞囬顐ｅ浮瀵剟宕滆缁憋綁姊?====== */
+/* ====== Gallery 画廊（标签外挂版，等高对齐布局） ====== */
 .article-content .gallery-container{
   width:100%;max-width:1000px;margin:20px auto;
 }
@@ -1222,9 +1210,10 @@ border-left:3px solid var(--accent-color);
   border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
 }
 .article-content .post-card-thumb{
-  width:100px;min-width:100px;height:auto;
+  width:100px;min-width:100px;
   overflow:hidden;flex-shrink:0;
   background:#f0f0f0;
+  display:flex;align-items:stretch;
 }
 .article-content .post-card-thumb img{
   width:100%;height:100%;object-fit:cover;
@@ -1264,12 +1253,21 @@ border-left:3px solid var(--accent-color);
 /* 多卡片横排网格 */
 .article-content .post-card-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  grid-template-columns:repeat(2,1fr);
   gap:10px;margin:12px 0;
 }
-.article-content .post-card-grid .post-card{margin:0;}
+.article-content .post-card-grid .post-card{margin:0;min-height:100px;}
+.article-content .post-card-grid .post-card:last-child:nth-child(odd){
+  grid-column:1/-1;
+}
+.article-content .post-card-grid .post-card .post-card-thumb{
+  width:100px;min-width:100px;height:100px;
+}
+.article-content .post-card-grid .post-card:last-child:nth-child(odd) .post-card-thumb{
+  width:120px;min-width:120px;height:100px;
+}
 
-/* ====== Poem 闂佽崵濮村ú锕傘€冩径鎰剨婵犻潧顑呯粻鎶芥煙閻戞ɑ鐓ユい?====== */
+/* ====== Poem 诗词排版 ====== */
 .article-content .poem-block{
   margin:20px 0;padding:20px 24px;
   text-align:center;
@@ -1289,7 +1287,7 @@ border-left:3px solid var(--accent-color);
   margin:12px 0 0;font-size:13px;color:#999;font-style:italic;
 }
 
-/* ====== Radio 闂備礁鎲￠〃鍡椕洪悢鐓庣劦妞ゆ巻鍋撴い锔藉閳ь剙鐏氱划鎾诲蓟?====== */
+/* ====== Radio 单选按钮 ====== */
 .article-content .radio-checkbox{
   width:18px;height:18px;flex-shrink:0;margin-top:2px;
   border:2px solid var(--todo-color,var(--accent-color));
@@ -1311,7 +1309,7 @@ border-left:3px solid var(--accent-color);
   background:var(--todo-color,var(--accent-color));
 }
 
-/* ====== Divider 闂備礁鎲＄敮鎺懳涘Δ浣虹彾濠电姴瀚Λ?====== */
+/* ====== Divider 分割线 ====== */
 .article-content .article-divider{
   border:none;border-top:1px solid rgba(0,0,0,0.1);
   margin:24px 0;
@@ -1330,7 +1328,7 @@ border-left:3px solid var(--accent-color);
   font-size:13px;font-weight:500;
 }
 
-/* ====== Details 闂佽崵濮村ù鍕⒔閸曨垰纾块煫鍥ㄦ磻濞岊亪鏌￠崶鈺佷户缁?====== */
+/* ====== Details 详情展开 ====== */
 .article-content .details-panel{
   margin:16px 0;border-radius:10px;
   border:1px solid rgba(0,0,0,0.08);
@@ -1343,7 +1341,7 @@ border-left:3px solid var(--accent-color);
   list-style:none;display:flex;align-items:center;gap:8px;
 }
 .article-content .details-summary::before{
-  content:'闂?;font-size:10px;transition:transform 0.2s;
+  content:'\f054';font-size:10px;transition:transform 0.2s;
 }
 .article-content .details-panel[open] .details-summary::before{
   transform:rotate(90deg);
@@ -1353,7 +1351,7 @@ border-left:3px solid var(--accent-color);
   font-size:14px;line-height:1.8;
 }
 
-/* ====== 闂備礁鎼Λ娆撱€冩繝鍕灊闁挎洍鍋撻摶锝夋煃閵夈儳锛嶇痪顓涘亾闂備焦瀵х粙鎺斿枈瀹ュ鍋夐柨婵嗘川妞规娊鏌熼鍡楁湰閳诲酣姊?====== */
+/* ====== 暗黑模式 — 标签外挂（Tabs/Folding/Note/Badge 等） ====== */
 [data-theme="dark"] .article-content .tabs-container{border-color:rgba(255,255,255,0.1);}
 [data-theme="dark"] .article-content .tabs-nav{background:rgba(255,255,255,0.04);}
 [data-theme="dark"] .article-content .tab-label{color:#ccc;}
@@ -1372,7 +1370,7 @@ border-left:3px solid var(--accent-color);
 [data-theme="dark"] .article-content .mermaid{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content .copy-inline{background:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content .copy-inline-btn{color:rgba(255,255,255,0.5);}
-/* 闂備礁鎼Λ娆撱€冩繝鍕灊闁挎洍鍋撻摶锝夋煃閵夈儳锛嶇痪顓涘亾 cb 闂傚倷鐒﹀妯肩矓闁垮鐝?*/
+/* 暗黑模式 — Note 容器各类型颜色 */
 [data-theme="dark"] .article-content .cb-tip,
 [data-theme="dark"] .article-content .cb-note,
 [data-theme="dark"] .article-content .note-default{
@@ -1417,7 +1415,7 @@ border-left:3px solid var(--accent-color);
 [data-theme="dark"] .article-content .note-danger .custom-block-header{
   background:rgba(239,68,68,0.15);
 }
-/* 闂備礁鎼Λ娆撱€冩繝鍕灊闁挎洍鍋撻摶锝夋煃閵夈儳锛嶇痪顓涘亾闂備焦瀵х粙鎺斿枈瀹ュ钃熷┑鐘叉搐閸愨偓闂佹悶鍎弲鈺呭礉椤旂⒈鐔嗛柤鍝ユ暩婢ь剟鎮?*/
+/* 暗黑模式 — Checkbox / Flink / Gallery 等标签外挂 */
 [data-theme="dark"] .article-content .todo-checked .todo-text{color:#666;}
 [data-theme="dark"] .article-content .quot-text{color:#ddd;}
 [data-theme="dark"] .article-content .quot-block{background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
@@ -1429,7 +1427,7 @@ border-left:3px solid var(--accent-color);
 [data-theme="dark"] .article-content .gallery-item{background:rgba(50,50,60,0.4);}
 [data-theme="dark"] .article-content .gallery-caption{background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#ddd;}
 [data-theme="dark"] .article-content .text-mark{color:inherit;}
-/* 闂備礁鎼Λ娆撱€冩繝鍕灊闁挎洍鍋撻摶锝夋煃閵夈儳锛嶇痪顓涘亾闂備焦瀵х粙鎺楊敆椤╁級kcard/poem/details */
+/* 暗黑模式 — Linkcard / Postcard / Poem / Details 等 */
 [data-theme="dark"] .article-content .link-card{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content .link-card-title{color:#eee;}
 [data-theme="dark"] .article-content .link-card-desc{color:#888;}
@@ -1445,7 +1443,7 @@ border-left:3px solid var(--accent-color);
 [data-theme="dark"] .article-content .details-content{border-top-color:rgba(255,255,255,0.06);color:#ddd;}
 [data-theme="dark"] .article-content .article-divider{border-top-color:rgba(255,255,255,0.1);}
 
-/* ====== Kbd 闂傚倷鐒﹂娆撳窗濮橆優楦跨疀濞戞顔囨繝銏ｅ煐閸旀牠寮?====== */
+/* ====== Kbd 键盘按键 ====== */
 .article-content .kbd-key{
   display:inline-block;padding:2px 8px;margin:0 2px;
   background:#f0f0f0;border:1px solid #d0d0d0;border-radius:4px;
@@ -1459,13 +1457,13 @@ border-left:3px solid var(--accent-color);
 }
 [data-theme="dark"] .article-content .kbd-plus{color:#666;}
 
-/* ====== Span 闂備胶鍘ч〃搴㈢濠婂牊鍋╅柣鎰靛墰閳绘洖顭跨捄渚剳濠㈢懓顦遍埀?====== */
+/* ====== Span 自定义样式 ====== */
 .article-content .custom-span{display:inline;}
 
-/* ====== Icon 闂佽崵鍋炵粙鎴︽嚐椤栫偛鑸归柟缁㈠枛閻愬﹪鏌ｉ幇闈涘闁?====== */
+/* ====== Icon 行内图标 ====== */
 .article-content .inline-icon{margin:0 3px;font-size:0.95em;}
 
-/* ====== U 濠电偞鍨堕幐鎼侇敄閸涙潙鍨傛繝闈涚墢濡垶鏌熺粙鍨劉闁诲寒鍣ｉ弻?====== */
+/* ====== U 下划线强调 ====== */
 .article-content .underline-text{
   text-decoration:underline;text-decoration-color:var(--accent-color);
   text-decoration-thickness:2px;text-underline-offset:2px;
@@ -1478,7 +1476,7 @@ border-left:3px solid var(--accent-color);
 }
 [data-theme="dark"] .article-content .abbr-text{border-bottom-color:#666;}
 
-/* ====== Pullquote 闂備礁鎼崯鈺呮倿閿曞倸鏋?====== */
+/* ====== Pullquote 引用块 ====== */
 .article-content .pullquote{
   margin:1em 0;padding:0.5em 1em;font-size:0.95em;font-style:italic;
   border-left:3px solid var(--accent-color);background:rgba(0,0,0,0.02);
@@ -1492,7 +1490,7 @@ border-left:3px solid var(--accent-color);
   background:rgba(255,255,255,0.03);color:#aaa;
 }
 
-/* ====== Sub/Sup 濠电偞鍨堕幐鎼佹晝閿濆洨绠旈柛娑欐綑閸愨偓?====== */
+/* ====== Sub/Sup 上下标 ====== */
 .article-content .sub-text,.article-content .sup-text{
   font-size:0.75em;color:inherit;
 }
@@ -1690,49 +1688,61 @@ border-left:3px solid var(--accent-color);
   background:color-mix(in srgb,var(--card-color,var(--accent-color)) 12%,rgba(255,255,255,0.03));
   border-bottom-color:color-mix(in srgb,var(--card-color,var(--accent-color)) 15%,transparent);
 }
-/* ====== 代码块暗黑模式 — Catppuccin Mocha ====== */
-[data-theme="dark"] .article-content pre{background:#1e1e2e;border-color:rgba(255,255,255,0.08);}
-[data-theme="dark"] .article-content pre code{color:#cdd6f4;}
-[data-theme="dark"] .article-content figure.highlight{background:#1e1e2e;border-color:rgba(255,255,255,0.08);}
+/* ====== 代码块暗黑模式 — Tokyo Night ====== */
+[data-theme="dark"] .article-content pre{background:#1a1b26;border-color:rgba(255,255,255,0.08);}
+[data-theme="dark"] .article-content pre code{color:#c0caf5;}
+[data-theme="dark"] .article-content figure.highlight{background:#1a1b26;border-color:rgba(255,255,255,0.08);box-shadow:0 2px 8px rgba(0,0,0,0.3);}
 [data-theme="dark"] .article-content figure.highlight::before{
-  background:#181825;border-bottom-color:rgba(255,255,255,0.08);
+  background:#16171f;border-bottom-color:rgba(255,255,255,0.06);
   background-image:
-  radial-gradient(circle at 12px 16px,#ff5f57 5px,transparent 6px),
-  radial-gradient(circle at 32px 16px,#febc2e 5px,transparent 6px),
-  radial-gradient(circle at 52px 16px,#28c840 5px,transparent 6px);
+  radial-gradient(circle at 14px 18px,#ff5f57 5px,transparent 6px),
+  radial-gradient(circle at 34px 18px,#ffbd2e 5px,transparent 6px),
+  radial-gradient(circle at 54px 18px,#28c840 5px,transparent 6px);
   background-repeat:no-repeat;
 }
 [data-theme="dark"] .article-content figure.highlight .code-lang-label{
-  color:#a6adc8;
+  color:#7a7a8a;
 }
-[data-theme="dark"] .article-content figure.highlight .gutter{
-  background:rgba(255,255,255,0.04);border-right-color:rgba(255,255,255,0.06);
-}
-[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.35);}
-[data-theme="dark"] .article-content figure.highlight .code pre{color:#cdd6f4;}
-[data-theme="dark"] .code-copy-btn{background:transparent;color:#a6adc8;}
+[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.3);}
+[data-theme="dark"] .article-content figure.highlight .code pre{color:#c0caf5;}
+[data-theme="dark"] .code-copy-btn{background:transparent;color:rgba(255,255,255,0.5);}
+[data-theme="dark"] .code-copy-btn:hover{color:var(--accent-color);background:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content .highlight .keyword,
 [data-theme="dark"] .article-content .highlight .selector,
-[data-theme="dark"] .article-content .highlight .built_in{color:#cba6f7;}
+[data-theme="dark"] .article-content .highlight .built_in{color:#bb9af7;}
 [data-theme="dark"] .article-content .highlight .string,
 [data-theme="dark"] .article-content .highlight .attr,
-[data-theme="dark"] .article-content .highlight .symbol{color:#a6e3a1;}
+[data-theme="dark"] .article-content .highlight .symbol{color:#9ece6a;}
 [data-theme="dark"] .article-content .highlight .number,
-[data-theme="dark"] .article-content .highlight .literal{color:#fab387;}
+[data-theme="dark"] .article-content .highlight .literal{color:#ff9e64;}
 [data-theme="dark"] .article-content .highlight .comment,
-[data-theme="dark"] .article-content .highlight .quote{color:#6c7086;}
+[data-theme="dark"] .article-content .highlight .quote{color:#565f89;}
 [data-theme="dark"] .article-content .highlight .function .title,
 [data-theme="dark"] .article-content .highlight .title,
-[data-theme="dark"] .article-content .highlight .section{color:#89b4fa;}
-[data-theme="dark"] .article-content .highlight .params{color:#cdd6f4;}
+[data-theme="dark"] .article-content .highlight .section{color:#7aa2f7;}
+[data-theme="dark"] .article-content .highlight .params{color:#c0caf5;}
 [data-theme="dark"] .article-content .highlight .meta,
-[data-theme="dark"] .article-content .highlight .tag{color:#89dceb;}
-[data-theme="dark"] .article-content .highlight .name{color:#f38ba8;}
-[data-theme="dark"] .article-content .highlight .attribute{color:#fab387;}
-[data-theme="dark"] .article-content .highlight .regexp{color:#fab387;}
+[data-theme="dark"] .article-content .highlight .tag{color:#73daca;}
+[data-theme="dark"] .article-content .highlight .name{color:#bb9af7;}
+[data-theme="dark"] .article-content .highlight .attribute{color:#ff9e64;}
+[data-theme="dark"] .article-content .highlight .regexp{color:#ff9e64;}
 [data-theme="dark"] .article-content .highlight .variable,
-[data-theme="dark"] .article-content .highlight .template-variable{color:#f38ba8;}
+[data-theme="dark"] .article-content .highlight .template-variable{color:#f7768e;}
 [data-theme="dark"] .article-content .highlight .type,
-[data-theme="dark"] .article-content .highlight .class .title{color:#a6e3a1;}
+[data-theme="dark"] .article-content .highlight .class .title{color:#9ece6a;}
 [data-theme="dark"] .article-content .highlight .bullet,
-[data-theme="dark"] .article-content .highlight .link{color:#89b4fa;}
+[data-theme="dark"] .article-content .highlight .link{color:#7aa2f7;}
+[data-theme="dark"] .article-content .highlight .emphasis{font-style:italic;}
+[data-theme="dark"] .article-content .highlight .strong{font-weight:700;}
+[data-theme="dark"] .article-content .highlight .property,
+[data-theme="dark"] .article-content .highlight .constant,
+[data-theme="dark"] .article-content .highlight .parent{color:#ff9e64;}
+[data-theme="dark"] .article-content .highlight .punctuation{color:#89ddff;}
+[data-theme="dark"] .article-content .highlight .operator{color:#89ddff;}
+[data-theme="dark"] .article-content .highlight .doctype,
+[data-theme="dark"] .article-content .highlight .pi{color:#565f89;font-style:italic;}
+[data-theme="dark"] .article-content .highlight .deletion{color:#f7768e;background-color:rgba(247,118,142,0.1);}
+[data-theme="dark"] .article-content .highlight .addition{color:#9ece6a;background-color:rgba(158,206,106,0.1);}
+[data-theme="dark"] .article-content .highlight .formula{color:#ff9e64;}
+[data-theme="dark"] .article-content .highlight .template-tag{color:#bb9af7;}
+[data-theme="dark"] .article-content .highlight .cdata{color:#565f89;}

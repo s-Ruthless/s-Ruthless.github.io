@@ -18,6 +18,8 @@
       return b.date - a.date;
     }).slice(0, config.per_page || 10);
   }
+  /* 分类图标统一使用文件夹样式 */
+  var catIcon = 'fas fa-folder';
 %>
 
 <div class="page-container">
@@ -44,8 +46,8 @@
             <span><%= date(post.date, 'YYYY-MM-DD') %></span>
             <% if (post.categories && post.categories.length > 0) { %>
               <span>·</span>
-              <i class="fas fa-folder"></i>
               <% post.categories.forEach(function(cat, i) { %>
+                <i class="<%= catIcon %>"></i>
                 <a class="ajax-link" data-href="<%- url_for(cat.path) %>"><%= cat.name %></a><%= i < post.categories.length - 1 ? ', ' : '' %>
               <% }); %>
             <% } %>

@@ -1,4 +1,4 @@
-﻿---
+---
 title: "用 Node.js 搭建个人 API 服务"
 date: 2026-06-28 12:00:00
 cover: https://picsum.photos/seed/nodejs-api/600/400
@@ -8,6 +8,7 @@ tags:
   - API
 categories:
   - 技术
+abbrlink: "a5ae383b"
 ---
 
 用 Node.js 从零搭建一个个人 API 服务，包括路由、中间件、数据库连接、JWT 认证和部署上线。

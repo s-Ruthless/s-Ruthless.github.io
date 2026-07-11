@@ -1199,6 +1199,66 @@ border-left:3px solid var(--accent-color);
   object-fit:cover;flex-shrink:0;
 }
 
+/* ====== Postcard 文章引用卡片 ====== */
+.article-content .post-card{
+  display:flex;flex-direction:column;
+  margin:20px 0;border-radius:14px;overflow:hidden;
+  text-decoration:none;color:inherit;
+  background:var(--card-bg,#fff);
+  border:1px solid rgba(0,0,0,0.08);
+  transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+  cursor:pointer;
+}
+.article-content .post-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(0,0,0,0.1);
+  border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
+}
+.article-content .post-card-cover{
+  position:relative;width:100%;padding-top:52%;
+  background-size:cover;background-position:center;
+  overflow:hidden;
+}
+.article-content .post-card-cover img{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  object-fit:cover;opacity:0;
+  transition:opacity 0.3s ease,transform 0.4s ease;
+}
+.article-content .post-card-cover img.loaded,
+.article-content .post-card-cover img[complete]{
+  opacity:1;
+}
+.article-content .post-card:hover .post-card-cover img{
+  transform:scale(1.05);
+}
+.article-content .post-card-body{
+  padding:16px 18px;display:flex;flex-direction:column;gap:8px;
+}
+.article-content .post-card-title{
+  font-size:17px;font-weight:700;color:#1a1a1a;
+  line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.article-content .post-card-excerpt{
+  font-size:13.5px;color:#666;line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.article-content .post-card-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:4px;padding-top:10px;
+  border-top:1px solid rgba(0,0,0,0.06);
+  font-size:12.5px;color:#999;
+}
+.article-content .post-card-date{display:flex;align-items:center;gap:5px;}
+.article-content .post-card-read{
+  display:flex;align-items:center;gap:5px;
+  color:var(--accent-color);font-weight:600;
+  transition:gap 0.2s ease;
+}
+.article-content .post-card:hover .post-card-read{gap:8px;}
+
 /* ====== Poem 闂佽崵濮村ú锕傘€冩径鎰剨婵犻潧顑呯粻鎶芥煙閻戞ɑ鐓ユい?====== */
 .article-content .poem-block{
   margin:20px 0;padding:20px 24px;
@@ -1363,6 +1423,11 @@ border-left:3px solid var(--accent-color);
 [data-theme="dark"] .article-content .link-card{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content .link-card-title{color:#eee;}
 [data-theme="dark"] .article-content .link-card-desc{color:#888;}
+[data-theme="dark"] .article-content .post-card{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08);}
+[data-theme="dark"] .article-content .post-card:hover{border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);box-shadow:0 12px 32px rgba(0,0,0,0.3);}
+[data-theme="dark"] .article-content .post-card-title{color:#eee;}
+[data-theme="dark"] .article-content .post-card-excerpt{color:#999;}
+[data-theme="dark"] .article-content .post-card-meta{border-top-color:rgba(255,255,255,0.06);color:#666;}
 [data-theme="dark"] .article-content .poem-line{color:#ccc;}
 [data-theme="dark"] .article-content .details-panel{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content .details-summary{color:#ccc;}

@@ -235,7 +235,6 @@ function initCopyInline() {
       var itemsEl = gallery.querySelector('.gallery-items');
       var items = Array.from(gallery.querySelectorAll('.gallery-item'));
       if (!itemsEl || !items.length) return;
-
       var perRow = parseInt(gallery.getAttribute('data-cols'), 10) || 4;
       var gap = 12;
       var baseRowHeight = 160;

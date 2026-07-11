@@ -254,21 +254,32 @@ douban:
 hexo new page gallery
 ```
 
-在 `source/gallery/index.md` 中写入图片数据：
+在 `source/gallery/index.md` 中使用 **Markdown 图片语法** 写入图片数据：
 
-```yaml
+```markdown
 ---
 title: 相册
-type: gallery
+layout: gallery
+date: 2026-07-05 22:00:00
 ---
 
-var GALLERY_DATA = [
-  { thumb: "/images/photo1.jpg", full: "/images/photo1.jpg", caption: "描述" },
-  { thumb: "/images/photo2.jpg", full: "/images/photo2.jpg", caption: "描述" }
-];
+<!-- 相册管理说明：
+  每张图片用 Markdown 语法编写，格式：![标题](缩略图地址)
+  如需指定大图（灯箱查看），在大图URL前加 "large:" 前缀写在图片下方一行
+-->
+
+![山间河流](https://example.com/photo1-small.jpg)
+large: https://example.com/photo1-large.jpg
+
+![云海山脉](https://example.com/photo2-small.jpg)
+large: https://example.com/photo2-large.jpg
 ```
 
-相册页面使用瀑布流布局，点击图片可打开灯箱查看大图。
+- **缩略图**：`![标题](缩略图URL)` — 必填
+- **大图**：`large: 大图URL` — 可选，不写则用缩略图作为大图
+- **标题**：`![]` 中的文字 — 可选，显示在图片悬浮层
+
+相册页面使用瀑布流布局，支持无限滚动加载，点击图片可打开灯箱查看大图。
 
 ---
 
@@ -372,9 +383,20 @@ cdn: "https://your-cdn.com/moemac/assets"
 
 ## 标签外挂
 
-moeMac 内置丰富的标签外挂，包括提示容器、标签页、折叠面板、轮播图、画廊、时间线、步骤条等。
+moeMac 内置丰富的标签外挂，包括提示容器、标签页、折叠面板、轮播图、画廊、时间线、步骤条、文章引用卡片等。
 
 详细语法请参考 [moeMac 标签外挂演示](/2026/06/30/moeMac主题标签外挂演示/) 一文。
+
+### 文章引用卡片（Postcard）
+
+在文章中引用站内其他文章，自动获取标题、摘要和封面图，点击通过 AJAX 无刷新跳转：
+
+```markdown
+{% postcard /2026/07/11/moeMac主题使用说明/ %}
+{% postcard /文章路径/, 自定义标题, 自定义描述, 封面图URL %}
+```
+
+> 不指定标题和描述时会自动从文章的 front-matter 中获取 `title`、`excerpt` 和 `cover`。
 
 ---
 

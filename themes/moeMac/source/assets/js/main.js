@@ -1063,6 +1063,27 @@ window.__moeMacMainLoaded = true;
       document.addEventListener('click', function (e) {
         var a = e.target.closest('.ajax-link');
         if (a) { var href = a.getAttribute('data-href'); if (href) { e.preventDefault(); self.go(href); return; } }
+        /* 拦截文章内容中的站内链接，使用 AJAX 切换 */
+        var articleLink = e.target.closest('.article-content a[href]');
+        if (articleLink) {
+          var linkHref = articleLink.getAttribute('href');
+          /* 跳过外部链接、新窗口链接、锚点链接、下载链接 */
+          if (articleLink.target === '_blank' || articleLink.hasAttribute('download')) return;
+          if (!linkHref || linkHref.charAt(0) === '#') return;
+          if (/^(https?:)?\/\//i.test(linkHref)) {
+            /* 绝对 URL：仅拦截同源链接 */
+            try {
+              var l = new URL(linkHref, location.origin);
+              if (l.origin !== location.origin) return;
+              linkHref = l.pathname + l.search;
+            } catch(err) { return; }
+          }
+          /* 跳过资源文件链接 */
+          if (/\.(jpg|jpeg|png|gif|svg|webp|ico|css|js|json|xml|rss|pdf|zip|rar|mp3|mp4|wav|webm|woff2?|ttf|eot)$/i.test(linkHref)) return;
+          e.preventDefault();
+          self.go(linkHref);
+          return;
+        }
         var d = e.target.closest('.dock-item:not(.dock-minimized-item)');
         if (d) {
           var href2 = d.getAttribute('data-href'); if (!href2) return; e.preventDefault();
@@ -1123,8 +1144,12 @@ window.__moeMacMainLoaded = true;
               else { document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; }); }
               // UI 增强效果重新初始化
               if (typeof UIEnhance !== "undefined") UIEnhance.init();
-              // 标签外挂重新初始化（Tabs/Folding/KaTeX/Mermaid 等）
+              // 标签外挂重新初始化（Tabs/Folding/KaTeX/Mermaid/Gallery 等）
               if (window.TagPlugins) window.TagPlugins.init();
+              // 延迟重试：确保图片加载后画廊布局正确
+              setTimeout(function() {
+                if (window.TagPlugins) window.TagPlugins.init();
+              }, 300);
               } catch(e2) { console.warn('AJAX init error:', e2); }
             }
           }
@@ -1333,10 +1358,11 @@ window.__moeMacMainLoaded = true;
   var Gallery = {
     page: 0, perPage: 9, loading: false, finished: false,
     data: [], currentIdx: 0,
+    _scrollBound: false,
     init: function () {
       var container = document.getElementById('galleryMasonry');
       if (!container) return;
-      if (typeof GALLERY_DATA === 'undefined') return;
+      if (typeof GALLERY_DATA === 'undefined' || !GALLERY_DATA) return;
       /* 重置状态 — AJAX 导航回到相册页时旧状态会残留 */
       this.page = 0;
       this.loading = false;
@@ -1349,15 +1375,19 @@ window.__moeMacMainLoaded = true;
       if (this.loader) this.loader.classList.remove('hidden');
       if (this.end) this.end.style.display = 'none';
       this.loadMore();
-      /* 无限加载监听 */
+      /* 无限加载监听 — 只绑定一次，用函数引用避免重复添加 */
       var self = this;
-      window.addEventListener('scroll', function () {
-        if (self.finished || self.loading) return;
-        var scrollBottom = window.innerHeight + window.scrollY;
-        if (scrollBottom >= document.body.offsetHeight - 200) {
-          self.loadMore();
-        }
-      }, { passive: true });
+      if (!this._scrollBound) {
+        this._scrollBound = true;
+        window.addEventListener('scroll', function () {
+          if (!self.container || !document.body.contains(self.container)) return;
+          if (self.finished || self.loading) return;
+          var scrollBottom = window.innerHeight + window.scrollY;
+          if (scrollBottom >= document.body.offsetHeight - 200) {
+            self.loadMore();
+          }
+        }, { passive: true });
+      }
       /* 灯箱 */
       this.initLightbox();
     },

@@ -681,6 +681,31 @@ gantt
 
 ---
 
+## Postcard 文章引用卡片
+
+在文章中引用站内其他文章，自动获取标题、摘要和封面图，点击通过 AJAX 无刷新跳转。
+
+### 语法
+
+```markdown
+{% postcard /文章路径/ %}                        自动获取文章信息
+{% postcard /文章路径/, 自定义标题, 自定义描述 %}    手动指定标题和描述
+{% postcard /文章路径/, 标题, 描述, 封面图URL %}     完全自定义
+```
+
+> 文章路径为 Hexo 生成的 URL 路径，如 `/2026/06/30/moeMac主题标签外挂演示/`。
+> 不指定标题和描述时会自动从文章的 `title`、`excerpt` 和 `cover` 中获取。
+
+### 效果
+
+{% postcard /2026/06/30/moeMac主题标签外挂演示/ %}
+
+{% postcard /2026/07/11/moeMac主题使用说明/ %}
+
+{% postcard /2026/06/18/css-grid-布局实战笔记/ %}
+
+---
+
 ## Poem 诗词排版
 
 居中展示诗词，带有标题和作者，适合文学类内容。
@@ -1103,6 +1128,7 @@ moeMac 主题已支持以下 **多种** 标签外挂功能：
 | Button 按钮 | `btn` | 按钮链接 |
 | Btns 按钮组 | `btns` | 多按钮排列 |
 | Linkcard 链接卡片 | `linkcard` | 卡片式链接 |
+| Postcard 文章卡片 | `postcard` | 站内文章引用卡片 |
 | Quot 引用 | `quot` | 带作者引用 |
 | Poem 诗词 | `poem` | 诗词排版 |
 | Flink 友链 | `flink` | 友情链接卡片 |

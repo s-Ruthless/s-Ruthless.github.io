@@ -2,7 +2,7 @@
 title: moeMac标签外挂演示
 date: 2026-06-30 12:00:00
 cover: https://picsum.photos/seed/moemac-tags/600/400
-sticky: 2
+sticky: 1
 tags:
   - 前端
   - 工具
@@ -433,7 +433,7 @@ print("Hello, Hidden World!")
 
 ## Gallery 图片画廊
 
-图片网格画廊，支持自定义列数和图片说明。
+等高对齐画廊布局，每行图片根据原始宽高比自动计算高度，保持各行等高对齐。支持自定义列数和图片说明。
 
 ### 语法
 
@@ -452,6 +452,8 @@ print("Hello, Hidden World!")
 图片地址2, 说明2
 {% endgallery %}
 ```
+
+> 列数默认为 4，移动端自动降为 2~3 列。
 
 ### 效果
 
@@ -918,6 +920,170 @@ E = mc{% sup 2 %}          上标
 
 ---
 
+## Bubble 气泡注释
+
+鼠标悬停时显示注释气泡，适合在不打断阅读流的情况下补充说明。
+
+### 语法
+
+```markdown
+{% bubble 文本@注释内容 %}
+```
+
+### 效果
+
+这是一个包含{% bubble 量子纠缠@两个或多个粒子之间存在的一种特殊关联 %}的句子。
+
+也可以{% bubble 简单标注 %}一下某个概念。
+
+---
+
+## Progress 进度条
+
+可视化展示进度、完成度等数值信息。
+
+### 语法
+
+```markdown
+{% progress 百分比, [颜色], [标签] %}
+```
+
+支持的颜色：`red` / `green` / `blue` / `yellow` / `orange` / `purple` / `cyan` / `pink`
+
+### 效果
+
+{% progress 75, blue, 前端开发 %}
+
+{% progress 90, green, 后端接口 %}
+
+{% progress 45, orange, 测试覆盖 %}
+
+{% progress 100, purple, 文档编写 %}
+
+---
+
+## Steps 步骤条
+
+将内容组织在可切换的步骤中，适合教程、流程说明等场景。
+
+### 语法
+
+```markdown
+{% steps %}
+
+{% step 步骤一标题 %}
+步骤一内容
+{% endstep %}
+
+{% step 步骤二标题 %}
+步骤二内容
+{% endstep %}
+
+{% endsteps %}
+```
+
+### 效果
+
+{% steps %}
+
+{% step 准备环境 %}
+安装 Node.js 和 Hexo CLI：
+
+```bash
+npm install -g hexo-cli
+```
+{% endstep %}
+
+{% step 初始化项目 %}
+创建新的 Hexo 博客：
+
+```bash
+hexo init my-blog
+cd my-blog
+npm install
+```
+{% endstep %}
+
+{% step 安装主题 %}
+将 moeMac 主题放入 `themes/moeMac` 目录，然后在 `_config.yml` 中设置：
+
+```yaml
+theme: moeMac
+```
+{% endstep %}
+
+{% step 启动预览 %}
+
+```bash
+hexo server
+```
+
+访问 `http://localhost:4000` 即可看到效果。
+{% endstep %}
+
+{% endsteps %}
+
+---
+
+## Carousel 轮播图
+
+图片轮播组件，支持自动播放、手动切换和触摸滑动。
+
+### 语法
+
+```markdown
+{% carousel %}
+![说明1](图片地址1)
+![说明2](图片地址2)
+{% endcarousel %}
+```
+
+### 效果
+
+{% carousel %}
+![春日花园](/images/douban/movie/p2893270877.jpg)
+![夏日萤火](/images/douban/movie/p2545472803.jpg)
+![秋日银杏](/images/douban/movie/p2770857575.jpg)
+![冬日雪景](/images/douban/movie/p2814949620.jpg)
+{% endcarousel %}
+
+---
+
+## Card 卡片容器
+
+带标题和颜色的卡片容器，适合突出展示重要内容。
+
+### 语法
+
+```markdown
+{% card [颜色] [标题] %}
+卡片内容
+{% endcard %}
+```
+
+支持的颜色：`red` / `green` / `blue` / `yellow` / `orange` / `purple` / `cyan` / `pink` / `default`
+
+### 效果
+
+{% card blue 重要提示 %}
+这是一个蓝色卡片容器，内部**支持 Markdown** 语法。
+
+- 列表项一
+- 列表项二
+
+> 也可以使用引用块。
+{% endcard %}
+
+{% card green 成功案例 %}
+使用 moeMac 主题搭建博客的步骤简单明了，几分钟即可完成部署。
+{% endcard %}
+
+{% card orange 注意事项 %}
+请确保 Node.js 版本 >= 14，否则部分功能可能无法正常使用。
+{% endcard %}
+
+---
+
 ## 功能总结
 
 moeMac 主题已支持以下 **多种** 标签外挂功能：
@@ -954,5 +1120,10 @@ moeMac 主题已支持以下 **多种** 标签外挂功能：
 | Aside 旁注 | `aside` | 旁注引用 |
 | Sub 下标 | `sub` | 下标文字 |
 | Sup 上标 | `sup` | 上标文字 |
+| Bubble 气泡注释 | `bubble` | 悬停显示注释气泡 |
+| Progress 进度条 | `progress` | 可视化进度条 |
+| Steps 步骤条 | `steps` | 可切换步骤内容 |
+| Carousel 轮播图 | `carousel` | 图片轮播组件 |
+| Card 卡片容器 | `card` | 带标题颜色卡片 |
 | 数学公式 | `$...$` | KaTeX 渲染 |
 | Mermaid 图表 | `mermaid` | 流程图/时序图/甘特图 |

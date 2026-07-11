@@ -267,7 +267,8 @@
         apiBaseUrl: '<%= c.cwd.apiBaseUrl %>',
         siteId: '<%= c.cwd.siteId || "" %>',
         lang: '<%= c.cwd.lang || "auto" %>',
-        theme: dark ? 'dark' : 'light'
+        theme: dark ? 'dark' : 'light',
+        primaryColor: '<%= c.cwd.primaryColor || "" %>'
       });
       comments.mount();
       window.__cwdInstance = comments;

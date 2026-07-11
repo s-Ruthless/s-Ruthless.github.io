@@ -141,6 +141,10 @@
   max-height: 0;
   transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+/* 折叠状态下：清除 padding 和 pointer-events，防止 hover 残留 */
+.archive-year-header:not(.expanded) + .archive-year-content{
+  padding-top:0;padding-bottom:0;pointer-events:none;
+}
 
 .archive-row{
   display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;
@@ -212,7 +216,4 @@
 [data-theme="dark"] .chart-point-label{fill:#c8c8c8;}
 [data-theme="dark"] .chart-line-svg line[stroke="rgba(0,0,0,0.06)"]{stroke:rgba(255,255,255,0.08);}
 
-/* 确保展开状态的年份内容有足够的高度 */
-.archive-year-header.expanded + .archive-year-content {
-  max-height: 2000px; /* 足够大的值以容纳内容 */
-}
+/* 确保展开状态的年份内容有足够的高度 — 由 JS scrollHeight 动态控制 */

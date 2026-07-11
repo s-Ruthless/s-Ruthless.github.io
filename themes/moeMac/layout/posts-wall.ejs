@@ -5,12 +5,11 @@
     return b.date - a.date;
   });
   var cats = site.categories;
-  var _icon = 'fas fa-newspaper';
-  var _path = (page.path || '').replace(/\/index\.html$/, '').replace(/^\/|\/$/g, '');
+  var _icon = "fas fa-newspaper";
+  var _path = (page.path || "").replace(/\/index\.html$/, "").replace(/^\/|\/$/g, "");
   (theme.dock || []).forEach(function(item){
-    if ((item.page || '').replace(/^\/|\/$/g, '') === _path) _icon = item.icon;
+    if ((item.page || "").replace(/^\/|\/$/g, "") === _path) _icon = item.icon;
   });
-  var PER_ROW = 4;
 %>
 
 <div class="page-container">
@@ -19,29 +18,24 @@
       <h2><i class="<%- _icon %>"></i> 全部文章 · <span class="badge badge-primary badge-sm"><%= site.posts.length %></span> 篇</h2>
     </div>
     <div class="page-content">
-    <div class="wall-filter">
-      <button class="filter-btn active" data-cat="all">全部</button>
-      <% cats.sort('name').each(function(cat) { %>
-        <button class="filter-btn" data-cat="<%= cat.name %>"><%= cat.name %> <span class="badge badge-xs"><%= cat.posts.length %></span></button>
-      <% }); %>
+    <div class="wall-toolbar">
+      <div class="wall-filter">
+        <button class="filter-btn active" data-cat="all">全部</button>
+        <% cats.sort("name").each(function(cat) { %>
+          <button class="filter-btn" data-cat="<%= cat.name %>"><%= cat.name %> <span class="badge badge-xs"><%= cat.posts.length %></span></button>
+        <% }); %>
+      </div>
     </div>
     <div class="wall-grid" id="posts-wall-grid">
-    <% var sizes = [30, 80, 150, 60, 120, 40, 100, 180, 50, 90, 140, 70]; %>
-    <% var idx = 0; %>
-    <% var total = posts.length; %>
-    <% for (var g = 0; g < total; g += PER_ROW) { %>
-      <div class="wall-row">
-      <% for (var i = g; i < Math.min(g + PER_ROW, total); i++) { %>
-        <% var post = posts[i]; %>
+    <% posts.forEach(function(post) { %>
         <%
-          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : '';
-          var fullText = '';
-          try { fullText = strip_html(post.excerpt || post.content || ''); } catch(e) { fullText = (post.excerpt || post.content || '').replace(/<[^>]*>/g, ''); }
-          var maxLen = sizes[idx % sizes.length];
-          var summary = fullText.substring(0, maxLen);
-          var coverImg = post.cover || post.thumbnail || '';
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+          var fullText = "";
+          try { fullText = strip_html(post.excerpt || post.content || ""); } catch(e) { fullText = (post.excerpt || post.content || "").replace(/<[^>]*>/g, ""); }
+          var summary = fullText.substring(0, 120);
+          var coverImg = post.cover || post.thumbnail || "";
         %>
-        <div class="wall-card ajax-link<% if (post.sticky) { %> wall-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-color-idx="<%= idx % 8 %>">
+        <div class="wall-card ajax-link<% if (post.sticky) { %> wall-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
           <% if (coverImg) { %>
             <div class="card-cover">
               <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.parentElement.style.display='none'">
@@ -54,10 +48,10 @@
             <% if (catName) { %>
               <span class="card-cat badge badge-xs"><%= catName %></span>
             <% } %>
-            <span class="card-date"><%= date(post.date, 'YYYY-MM-DD') %></span>
+            <span class="card-date"><%= date(post.date, "YYYY-MM-DD") %></span>
           </div>
           <h3 class="card-title"><%= post.title %></h3>
-          <p class="card-summary"><%= summary %><%= fullText.length > maxLen ? '...' : '' %></p>
+          <p class="card-summary"><%= summary %><%= fullText.length > 120 ? "..." : "" %></p>
           <% if (post.tags && post.tags.length > 0) { %>
             <div class="card-tags">
               <% post.tags.forEach(function(tag) { %>
@@ -66,13 +60,11 @@
             </div>
           <% } %>
         </div>
-        <% idx++; %>
-      <% } %>
-      </div>
-    <% } %>
-    <% if (total === 0) { %>
+    <% }); %>
+    <% if (posts.length === 0) { %>
       <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
     <% } %>
+    </div>
     </div>
     </div>
   </div>

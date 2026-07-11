@@ -2,7 +2,7 @@
   /* cdn 配置与 head.ejs 一致，所有 JS 资源统一加 cdn 前缀 */
   var A = (theme.cdn || '') + '/assets';
   /* 版本号用于强制浏览器刷新缓存，修改 JS 后递增此数字 */
-  var V = '?v=20260710r15';
+  var V = '?v=20260710r17';
 %>
 <script defer src="<%= A %>/js/APlayer.min.js"></script>
 <script defer src="<%= A %>/js/Meting.min.js"></script>
@@ -15,6 +15,8 @@
 <!-- 标签外挂交互脚本（Tabs/Folding/KaTeX渲染/Mermaid 等） -->
 <script defer src="<%= A %>/js/tag-plugins.js<%= V %>"></script>
 <!-- animations.js + ui-enhance.js 必须在 main.js 之前加载，确保 main.js 调用时已定义 -->
+<!-- Masonry 瀑布流布局库（全局优先加载） -->
+<script defer src="<%= A %>/js/masonry.pkgd.min.js"></script>
 <script defer src="<%= A %>/js/animations.js<%= V %>"></script>
 <script defer src="<%= A %>/js/ui-enhance.js<%= V %>"></script>
 <script defer src="<%= A %>/js/main.js<%= V %>"></script>

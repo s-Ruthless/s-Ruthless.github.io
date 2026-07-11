@@ -52,7 +52,7 @@
   var ALL_ANIM_CLASSES = [
     'anim-fade-up', 'anim-fade-in', 'anim-scale-in', 'anim-slide-left',
     'anim-slide-right', 'anim-flip-in', 'anim-zoom-in', 'anim-bounce-in',
-    'anim-rotate-in', 'anim-dock-up', 'anim-slide-down'
+    'anim-rotate-in', 'anim-dock-up', 'anim-slide-down', 'anim-win-fade', 'anim-win-scale', 'anim-win-slide', 'anim-win-flip'
   ];
 
   var Animations = {
@@ -61,38 +61,77 @@
     /** 清除旧动画状态 */
     killAll: function () {
       var sels = '.post-list-item,.wall-card,.archive-row,.archive-year-header,.article-header,.article-content,.article-nav,.page-header,.dock-bar,.win-traffic-btn,.dock-item-inner,#galleryMasonry .gallery-item,.douban-card,.flink-card,.link-card,.stat-hero-card,.cat-item,.tag,.search-item';
+      var winSels = '';
       if (document.documentElement.classList.contains('is-desktop')) {
-        sels = '.app-window,' + sels;
+        winSels = '.app-window,';
       }
-      var els = document.querySelectorAll(sels);
+      var els = document.querySelectorAll(winSels + sels);
       els.forEach(function (el) {
-        el.style.opacity = '';
-        el.style.transform = '';
-        el.style.animationDelay = '';
         ALL_ANIM_CLASSES.forEach(function (cls) { el.classList.remove(cls); });
+        el.style.animationDelay = '';
+        el.style.animation = '';
+        /* 取消 Web Animations API 动画 */
+        if (el.getAnimations) {
+          el.getAnimations().forEach(function (a) { a.cancel(); });
+        }
+        /* app-window 设为透明（由 heroWindows 动画渐入），其他元素清除透明度 */
+        if (el.classList.contains('app-window')) {
+          el.style.opacity = '0';
+          el.style.transform = '';
+        } else {
+          el.style.opacity = '';
+          el.style.transform = '';
+        }
       });
     },
 
-    /** 首页窗口：CSS 动画依次弹入 — 强制重启动画 */
+    /** 首页窗口：淡入入场动画 — 使用 Web Animations API，确保窗口整体动画 */
     heroWindows: function () {
-      if (!document.documentElement.classList.contains('is-desktop')) return;
       var windows = document.querySelectorAll('.app-window');
       if (!windows.length) return;
+      var isDesktop = document.documentElement.classList.contains('is-desktop');
+      /* 四种入场动画 keyframes，按窗口顺序轮换 */
+      var animKeyframes = [
+        [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'translateY(0)' }],
+        [{ opacity: 0, transform: 'scale(0.85)' }, { opacity: 1, transform: 'scale(1)' }],
+        [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'translateX(0)' }],
+        [{ opacity: 0, transform: 'perspective(800px) rotateX(-12deg) translateY(20px)' }, { opacity: 1, transform: 'perspective(800px) rotateX(0) translateY(0)' }]
+      ];
+      var easings = [
+        'cubic-bezier(0.4,0,0.2,1)',
+        'cubic-bezier(0.34,1.4,0.64,1)',
+        'cubic-bezier(0.4,0,0.2,1)',
+        'cubic-bezier(0.4,0,0.2,1)'
+      ];
       windows.forEach(function (win, i) {
+        /* 跳过已隐藏的窗口 */
+        if (win.style.display === 'none') return;
         win.style.visibility = 'visible';
-        win.classList.remove('anim-scale-in');
-        win.style.animation = 'none';
-        win.style.opacity = '0';
-        void win.offsetWidth;
-        win.style.animationDelay = (i * 80) + 'ms';
+        /* 清除旧动画状态（CSS class + inline style） */
+        ALL_ANIM_CLASSES.forEach(function (cls) { win.classList.remove(cls); });
         win.style.animation = '';
-        win.style.opacity = '';
-        win.classList.add('anim-scale-in');
-        win.addEventListener('animationend', function () {
-          win.classList.remove('anim-scale-in');
-          win.style.animationDelay = '';
+        win.style.animationDelay = '';
+        /* 取消正在进行的 Web Animations API 动画 */
+        if (win.getAnimations) {
+          win.getAnimations().forEach(function (a) { a.cancel(); });
+        }
+        /* 立即设为透明，防止 Drag.init 的 opacity:1 产生闪烁 */
+        win.style.opacity = '0';
+        /* 依次延迟：桌面端 90ms 间隔，移动端 120ms 间隔 */
+        var delay = isDesktop ? (i * 90) : (i * 120);
+        var kfIdx = i % animKeyframes.length;
+        /* 使用 Web Animations API — fill:'both' 确保延迟期间也应用 from 状态 */
+        var anim = win.animate(animKeyframes[kfIdx], {
+          duration: 500,
+          delay: delay,
+          easing: easings[kfIdx],
+          fill: 'both'
+        });
+        /* 动画完成后清理 inline 样式 */
+        anim.onfinish = function () {
           win.style.transform = '';
-        }, { once: true });
+          win.style.opacity = '';
+        };
       });
     },
 
@@ -206,6 +245,7 @@
         if (img.closest('.douban-card')) return;
         if (img.closest('.flink-card')) return;
         if (img.closest('.link-card')) return;
+        if (img.closest('.carousel-container')) return;
         observe(img, 'anim-zoom-in', 0);
       });
     },
@@ -294,6 +334,11 @@
           el.style.opacity = '';
           el.style.transform = '';
           el.style.animationDelay = '';
+          el.style.animation = '';
+          /* 取消 Web Animations API 动画（fill:both 会在 cancel 后恢复原始样式） */
+          if (el.getAnimations) {
+            el.getAnimations().forEach(function (a) { a.cancel(); });
+          }
         });
       }, 1500);
     }

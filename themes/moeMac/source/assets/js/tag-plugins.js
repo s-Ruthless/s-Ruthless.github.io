@@ -165,10 +165,207 @@ function initCopyInline() {
     });
   }
 
+  /* ========== Steps 步骤条切换 ========== */
+  function initSteps() {
+    document.querySelectorAll('.steps-container').forEach(function (container) {
+      if (container.dataset.initialized) return;
+      container.dataset.initialized = 'true';
+      var labels = container.querySelectorAll('.step-label');
+      labels.forEach(function (label) {
+        label.addEventListener('click', function () {
+          var targetId = label.getAttribute('data-step');
+          container.querySelectorAll('.step-label').forEach(function (l) { l.classList.remove('active'); });
+          container.querySelectorAll('.step-content').forEach(function (c) { c.classList.remove('active'); });
+          label.classList.add('active');
+          var target = container.querySelector('#' + CSS.escape(targetId));
+          if (target) target.classList.add('active');
+        });
+      });
+    });
+  }
+
+  /* ========== Carousel 轮播图 ========== */
+  function initCarousel() {
+    document.querySelectorAll('.carousel-container').forEach(function (container) {
+      if (container.dataset.initialized) return;
+      container.dataset.initialized = 'true';
+      var slides = container.querySelectorAll('.carousel-slide');
+      var dots = container.querySelectorAll('.carousel-dot');
+      var prevBtn = container.querySelector('.carousel-prev');
+      var nextBtn = container.querySelector('.carousel-next');
+      var current = 0;
+      var total = slides.length;
+      if (total <= 1) return;
+
+      function goTo(idx) {
+        current = ((idx % total) + total) % total;
+        slides.forEach(function (s, i) { s.classList.toggle('active', i === current); });
+        dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
+      }
+      if (prevBtn) prevBtn.addEventListener('click', function (e) { e.stopPropagation(); goTo(current - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function (e) { e.stopPropagation(); goTo(current + 1); });
+      dots.forEach(function (dot) {
+        dot.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var idx = parseInt(dot.getAttribute('data-idx'), 10);
+          if (!isNaN(idx)) goTo(idx);
+        });
+      });
+      /* 触摸滑动支持 */
+      var touchStartX = 0;
+      container.addEventListener('touchstart', function (e) {
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+      container.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 40) { goTo(dx > 0 ? current - 1 : current + 1); }
+      }, { passive: true });
+    });
+  }
+
+  /* ========== Gallery 等高对齐画廊布局 ========== */
+  function initGallery() {
+    var galleries = document.querySelectorAll('.gallery-container');
+    if (!galleries.length) return;
+
+    galleries.forEach(function (gallery) {
+      if (gallery.dataset.initialized) return;
+      gallery.dataset.initialized = 'true';
+
+      var itemsEl = gallery.querySelector('.gallery-items');
+      var items = Array.from(gallery.querySelectorAll('.gallery-item'));
+      if (!itemsEl || !items.length) return;
+
+      var perRow = parseInt(gallery.getAttribute('data-cols'), 10) || 4;
+      var gap = 12;
+      var baseRowHeight = 160;
+
+      function getPerRow() {
+        var w = window.innerWidth || document.documentElement.clientWidth;
+        if (w <= 600) return Math.min(perRow, 2);
+        if (w <= 900) return Math.min(perRow, 3);
+        return perRow;
+      }
+
+      function layout() {
+        var containerWidth = itemsEl.clientWidth;
+        if (!containerWidth) return;
+        var currentPerRow = getPerRow();
+        var topOffset = 0;
+
+        for (var i = 0; i < items.length; i += currentPerRow) {
+          var row = items.slice(i, i + currentPerRow);
+          var totalWidth = 0;
+          var validCount = 0;
+
+          row.forEach(function (item) {
+            var img = item.querySelector('img');
+            var ratio = 1;
+            if (img && img.naturalWidth && img.naturalHeight) {
+              ratio = img.naturalWidth / img.naturalHeight;
+            } else if (item._ratio) {
+              ratio = item._ratio;
+            }
+            item._ratio = ratio;
+            totalWidth += baseRowHeight * ratio;
+            validCount++;
+          });
+
+          if (validCount === 0) continue;
+          var totalGap = gap * (validCount - 1);
+          var scale = (containerWidth - totalGap) / totalWidth;
+          var actualRowHeight = baseRowHeight * scale;
+          var leftOffset = 0;
+
+          row.forEach(function (item) {
+            var itemWidth = actualRowHeight * item._ratio;
+            item.style.width = itemWidth + 'px';
+            item.style.height = actualRowHeight + 'px';
+            item.style.transform = 'translate(' + leftOffset + 'px,' + topOffset + 'px)';
+            leftOffset += itemWidth + gap;
+          });
+
+          topOffset += actualRowHeight + gap;
+        }
+
+        itemsEl.style.height = (topOffset - gap) + 'px';
+      }
+
+      /* 等待所有图片加载后布局 */
+      var loaded = 0;
+      var total = items.length;
+      var hasLaidOut = false;
+
+      function checkAllLoaded() {
+        loaded++;
+        if (loaded >= total && !hasLaidOut) {
+          hasLaidOut = true;
+          layout();
+        }
+      }
+
+      items.forEach(function (item) {
+        var img = item.querySelector('img');
+        if (!img) { checkAllLoaded(); return; }
+        if (img.complete && img.naturalWidth) {
+          checkAllLoaded();
+        } else {
+          img.addEventListener('load', checkAllLoaded, { once: true });
+          img.addEventListener('error', checkAllLoaded, { once: true });
+        }
+      });
+
+      /* 兜底：1.5 秒后强制布局 */
+      setTimeout(function () {
+        if (!hasLaidOut) { hasLaidOut = true; layout(); }
+      }, 1500);
+
+      /* 响应式重排 */
+      var resizeTimer = null;
+      function onResize() {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(layout, 150);
+      }
+      window.addEventListener('resize', onResize);
+
+      /* 点击灯箱放大 */
+      items.forEach(function (item) {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', function () {
+          var fullUrl = item.getAttribute('data-full');
+          if (!fullUrl) return;
+          openGalleryLightbox(fullUrl);
+        });
+      });
+    });
+  }
+
+  /* ========== Gallery 灯箱 ========== */
+  function openGalleryLightbox(url) {
+    var lb = document.querySelector('.gallery-lightbox');
+    if (!lb) {
+      lb = document.createElement('div');
+      lb.className = 'gallery-lightbox';
+      lb.innerHTML = '<div class="lightbox-mask"></div><div class="lightbox-content"><img src="" alt=""></div><button class="lightbox-close"><i class="fas fa-xmark"></i></button>';
+      document.body.appendChild(lb);
+      lb.querySelector('.lightbox-mask').addEventListener('click', function () { lb.classList.remove('open'); });
+      lb.querySelector('.lightbox-close').addEventListener('click', function () { lb.classList.remove('open'); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lb.classList.contains('open')) lb.classList.remove('open');
+      });
+    }
+    var img = lb.querySelector('.lightbox-content img');
+    img.src = url;
+    lb.classList.add('open');
+  }
+
   /* ========== 初始化全部 ========== */
   function init() {
     initTabs();
     initFolding();
+    initSteps();
+    initCarousel();
+    initGallery();
     initCopyInline();
     // KaTeX 和 Mermaid 延迟加载（库文件较大）
     setTimeout(initKatex, 100);

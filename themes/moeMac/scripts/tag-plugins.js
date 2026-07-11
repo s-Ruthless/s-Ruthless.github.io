@@ -172,9 +172,9 @@ var TAG_RENDERERS = {
     return html + '</div>';
   },
 
-  /* --- Gallery 图片画廊 --- */
+  /* --- Gallery 图片画廊（4列等高对齐布局） --- */
   gallery: function (args, content) {
-    var columns = parseInt(args[0]) || 3;
+    var columns = parseInt(args[0]) || 4;
     content = content.trim();
     var images = [];
     var lines = content.split('\n');
@@ -199,13 +199,19 @@ var TAG_RENDERERS = {
       });
     }
     if (images.length === 0) return content;
-    var html = '<div class="gallery-grid" style="--gallery-cols:' + columns + '">';
+    var gid = 'gallery-' + Math.random().toString(36).substr(2, 6);
+    var html = '<div class="gallery-container" id="' + gid + '" data-cols="' + columns + '">';
+    html += '<div class="gallery-items">';
     images.forEach(function (img) {
-      html += '<figure class="gallery-item"><img src="' + img.url + '" alt="' + escapeHtml(img.caption) + '" loading="lazy" decoding="async">';
-      if (img.caption) html += '<figcaption>' + img.caption + '</figcaption>';
-      html += '</figure>';
+      html += '<div class="gallery-item" data-full="' + img.url + '">';
+      html += '<img src="' + img.url + '" alt="' + escapeHtml(img.caption) + '" loading="lazy" decoding="async">';
+      if (img.caption) {
+        html += '<div class="gallery-caption">' + img.caption + '</div>';
+      }
+      html += '</div>';
     });
-    return html + '</div>';
+    html += '</div></div>';
+    return html;
   },
 
   /* --- Timeline 时间线 --- */
@@ -441,16 +447,129 @@ var TAG_RENDERERS = {
   },
 
   sub: function (args) { return '<sub class="sub-text">' + args.join(' ') + '</sub>'; },
-  sup: function (args) { return '<sup class="sup-text">' + args.join(' ') + '</sup>'; }
+  sup: function (args) { return '<sup class="sup-text">' + args.join(' ') + '</sup>'; },
+
+  /* =================== 新增标签外挂 =================== */
+
+  /* --- Bubble 气泡注释（行内 hover 显示） --- */
+  bubble: function (args) {
+    var input = args.join(' ');
+    var atIdx = input.lastIndexOf('@');
+    var text, tip;
+    if (atIdx !== -1) { text = input.substring(0, atIdx).trim(); tip = input.substring(atIdx + 1).trim(); }
+    else { text = input; tip = '注释'; }
+    return '<span class="bubble-note" data-tip="' + escapeHtml(tip) + '">' + escapeHtml(text) + '<i class="fas fa-circle-info bubble-icon"></i></span>';
+  },
+
+  /* --- Progress 进度条 --- */
+  progress: function (args) {
+    var raw = args.join(' ');
+    var parts = raw.split(',').map(function (s) { return s.trim(); });
+    var percent = parseInt(parts[0], 10);
+    if (isNaN(percent)) percent = 0;
+    percent = Math.max(0, Math.min(100, percent));
+    var colorMap = { red: '#ef4444', green: '#22c55e', blue: '#3b82f6', yellow: '#eab308', orange: '#f97316', purple: '#a855f7', cyan: '#06b6d4', pink: '#ec4899' };
+    var color = colorMap[parts[1]] || parts[1] || 'var(--accent-color)';
+    var label = parts[2] || '';
+    var html = '<div class="progress-bar-wrap" style="--progress-color:' + color + '">';
+    if (label) html += '<span class="progress-label">' + escapeHtml(label) + '</span>';
+    html += '<div class="progress-track"><div class="progress-fill" style="width:' + percent + '%"></div></div>';
+    html += '<span class="progress-percent">' + percent + '%</span></div>';
+    return html;
+  },
+
+  /* --- Steps 步骤条（块级容器） --- */
+  steps: function (args, content) {
+    var name = args[0] || '';
+    var stepRegex = /<!--STEP_START:([\s\S]*?)-->([\s\S]*?)<!--STEP_END-->/g;
+    var stepLabels = [], stepContents = [], stepCounter = 0, m;
+    while ((m = stepRegex.exec(content)) !== null) {
+      stepCounter++;
+      stepLabels.push(m[1].trim());
+      stepContents.push(m[2].trim());
+    }
+    if (stepCounter === 0) return content;
+    var sid = 'steps-' + Math.random().toString(36).substr(2, 6);
+    var html = '<div class="steps-container" id="' + sid + '"><div class="steps-nav">';
+    stepLabels.forEach(function (label, i) {
+      html += '<button class="step-label' + (i === 0 ? ' active' : '') + '" data-step="' + sid + '-' + i + '"><span class="step-num">' + (i + 1) + '</span><span class="step-text">' + label + '</span></button>';
+    });
+    html += '</div><div class="steps-body">';
+    stepContents.forEach(function (c, i) {
+      html += '<div class="step-content' + (i === 0 ? ' active' : '') + '" id="' + sid + '-' + i + '">' + c + '</div>';
+    });
+    html += '</div></div>';
+    return html;
+  },
+
+  step: function (args, content) {
+    var label = args.join(' ').trim() || 'Step';
+    return '<!--STEP_START:' + label + '-->' + content + '<!--STEP_END-->';
+  },
+
+  /* --- Carousel 轮播图（块级容器） --- */
+  carousel: function (args, content) {
+    var itemRegex = /<!--CAROUSEL_START:([\s\S]*?)-->([\s\S]*?)<!--CAROUSEL_END-->/g;
+    var items = [], m;
+    while ((m = itemRegex.exec(content)) !== null) {
+      items.push({ url: m[1].trim(), caption: m[2].trim() });
+    }
+    if (items.length === 0) {
+      var imgRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+      while ((m = imgRegex.exec(content)) !== null) {
+        items.push({ url: m[2].trim(), caption: m[1] || '' });
+      }
+    }
+    if (items.length === 0) return content;
+    var cid = 'carousel-' + Math.random().toString(36).substr(2, 6);
+    var html = '<div class="carousel-container" id="' + cid + '">';
+    html += '<div class="carousel-track">';
+    items.forEach(function (item, i) {
+      html += '<div class="carousel-slide' + (i === 0 ? ' active' : '') + '">';
+      html += '<img src="' + item.url + '" alt="' + escapeHtml(item.caption) + '" loading="eager" decoding="async">';
+      if (item.caption) html += '<div class="carousel-caption">' + item.caption + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    if (items.length > 1) {
+      html += '<button class="carousel-btn carousel-prev" data-carousel="' + cid + '"><i class="fas fa-chevron-left"></i></button>';
+      html += '<button class="carousel-btn carousel-next" data-carousel="' + cid + '"><i class="fas fa-chevron-right"></i></button>';
+      html += '<div class="carousel-dots">';
+      items.forEach(function (_, i) {
+        html += '<button class="carousel-dot' + (i === 0 ? ' active' : '') + '" data-carousel="' + cid + '" data-idx="' + i + '"></button>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
+  },
+
+  /* --- Card 卡片容器（块级） --- */
+  card: function (args, content) {
+    var COLOR_MAP = { red: '#ef4444', green: '#22c55e', blue: '#3b82f6', yellow: '#eab308', orange: '#f97316', purple: '#a855f7', cyan: '#06b6d4', pink: '#ec4899', default: 'var(--accent-color)' };
+    var firstArg = args[0] || '';
+    var color = 'default', title, icon = '';
+    if (COLOR_MAP[firstArg]) {
+      color = firstArg;
+      title = args.slice(1).join(' ') || '';
+    } else {
+      title = args.join(' ') || '';
+    }
+    var c = COLOR_MAP[color] || 'var(--accent-color)';
+    var html = '<div class="card-box" style="--card-color:' + c + '">';
+    if (title) html += '<div class="card-box-header"><i class="fas fa-bookmark card-box-icon"></i><span class="card-box-title">' + escapeHtml(title) + '</span></div>';
+    html += '<div class="card-box-body">' + content + '</div></div>';
+    return html;
+  }
 };
 
 /* =================== 标签解析与渲染 =================== */
 
 // 块级标签列表（有 end 标签）
-var BLOCK_TAGS = ['note', 'tabs', 'tab', 'folding', 'hideBlock', 'hideToggle', 'btns', 'flink', 'gallery', 'timeline', 'timenode', 'poem', 'detail'];
+var BLOCK_TAGS = ['note', 'tabs', 'tab', 'folding', 'hideBlock', 'hideToggle', 'btns', 'flink', 'gallery', 'timeline', 'timenode', 'poem', 'detail', 'steps', 'step', 'carousel', 'card'];
 
 // 行内标签列表（无 end 标签）
-var INLINE_TAGS = ['badge', 'label', 'hide', 'btn', 'inlineImg', 'copy', 'checkbox', 'mark', 'quot', 'linkcard', 'radio', 'divider', 'kbd', 'span', 'icon', 'u', 'abbr', 'aside', 'sub', 'sup'];
+var INLINE_TAGS = ['badge', 'label', 'hide', 'btn', 'inlineImg', 'copy', 'checkbox', 'mark', 'quot', 'linkcard', 'radio', 'divider', 'kbd', 'span', 'icon', 'u', 'abbr', 'aside', 'sub', 'sup', 'bubble', 'progress'];
 
 /**
  * 递归渲染内容中的标签
@@ -481,7 +600,7 @@ function renderContent(content) {
       // 递归处理内部内容
       var renderedInner = renderContent(inner);
       // 对于需要 Markdown 渲染的标签，调用 md()
-      if (['note', 'folding', 'hideBlock', 'hideToggle', 'detail'].indexOf(name) !== -1) {
+      if (['note', 'folding', 'hideBlock', 'hideToggle', 'detail', 'card'].indexOf(name) !== -1) {
         renderedInner = md(inner.replace(/```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\n]+`/g, function (m2) {
           return m2; // 保留代码块
         }));
@@ -490,7 +609,7 @@ function renderContent(content) {
         renderedInner = md(renderedInner.replace(/\x00C\d+\x00/g, function (m2) {
           return codeStore[parseInt(m2.replace(/\D/g, ''))];
         }));
-      } else if (['tab', 'timenode'].indexOf(name) !== -1) {
+      } else if (['tab', 'timenode', 'step'].indexOf(name) !== -1) {
         // tab 和 timenode 的内容需要 Markdown 渲染
         renderedInner = md(renderedInner);
       }
@@ -544,7 +663,7 @@ hexo.extend.filter.register('before_post_render', function (data) {
 
   // 2. 匹配块级标签，替换为 @@TAG_N@@ 占位符
   //    先匹配容器标签（tabs, timeline），再匹配子标签（tab, timenode）
-  var blockOrder = ['tabs', 'tab', 'timeline', 'timenode', 'note', 'folding', 'hideBlock', 'hideToggle', 'btns', 'flink', 'gallery', 'poem', 'detail'];
+  var blockOrder = ['tabs', 'tab', 'timeline', 'timenode', 'note', 'folding', 'hideBlock', 'hideToggle', 'btns', 'flink', 'gallery', 'poem', 'detail', 'steps', 'step', 'carousel', 'card'];
   blockOrder.forEach(function (name) {
     var regex = new RegExp('{%\\s*' + name + '\\s+([^%]*?)%}([\\s\\S]*?){%\\s*end' + name + '\\s*%}', 'g');
     data.content = data.content.replace(regex, function (m, argsStr, inner) {
@@ -593,9 +712,9 @@ hexo.extend.filter.register('after_post_render', function (data) {
       // 先递归处理内部标签
       var processed = renderContent(item.raw);
       // 某些标签需要 Markdown 渲染
-      if (['note', 'folding', 'hideBlock', 'hideToggle', 'detail'].indexOf(item.name) !== -1) {
+      if (['note', 'folding', 'hideBlock', 'hideToggle', 'detail', 'card'].indexOf(item.name) !== -1) {
         innerHtml = md(processed);
-      } else if (['tab', 'timenode'].indexOf(item.name) !== -1) {
+      } else if (['tab', 'timenode', 'step', 'carouselItem'].indexOf(item.name) !== -1) {
         innerHtml = md(processed);
       } else {
         innerHtml = processed;

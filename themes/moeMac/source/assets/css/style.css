@@ -267,6 +267,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 .animating .article-nav,
 .animating .page-header,
 .animating .dock-bar{transition:none!important;}
+.animating .app-window{will-change:opacity,transform;}
 
 /* ====== Dock 栏（全局组件） ====== */
 .dock-bar{
@@ -490,7 +491,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 @media (prefers-reduced-motion:reduce){
 .mesh-blob,.shimmer-text{animation:none!important;}
 .clip-reveal{clip-path:none!important;transition:none!important;}
-.anim-fade-up,.anim-fade-in,.anim-scale-in,.anim-slide-left,.anim-slide-right,.anim-slide-down,.anim-dock-up,.anim-flip-in,.anim-zoom-in,.anim-bounce-in,.anim-rotate-in{animation:none!important;opacity:1!important;transform:none!important;}
+.anim-fade-up,.anim-fade-in,.anim-scale-in,.anim-slide-left,.anim-slide-right,.anim-slide-down,.anim-dock-up,.anim-flip-in,.anim-zoom-in,.anim-bounce-in,.anim-rotate-in,.anim-win-fade,.anim-win-scale,.anim-win-slide,.anim-win-flip{animation:none!important;opacity:1!important;transform:none!important;}
 }
 
 /* ====== CSS 入场动画（替代 GSAP）— 多样化动画库 ====== */
@@ -505,6 +506,10 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 @keyframes anim-zoom-in{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
 @keyframes anim-bounce-in{0%{opacity:0;transform:scale(0.3);}50%{opacity:1;transform:scale(1.05);}70%{opacity:1;transform:scale(0.9);}100%{opacity:1;transform:scale(1);}}
 @keyframes anim-rotate-in{from{opacity:0;transform:rotate(-8deg) scale(0.8);}to{opacity:1;transform:rotate(0) scale(1);}}
+@keyframes anim-win-fade{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+@keyframes anim-win-scale{from{opacity:0;transform:scale(0.85);}to{opacity:1;transform:scale(1);}}
+@keyframes anim-win-slide{from{opacity:0;transform:translateX(-30px);}to{opacity:1;transform:translateX(0);}}
+@keyframes anim-win-flip{from{opacity:0;transform:perspective(800px) rotateX(-12deg) translateY(20px);}to{opacity:1;transform:perspective(800px) rotateX(0) translateY(0);}}
 
 .anim-fade-up{animation:anim-fade-up 0.5s cubic-bezier(0.4,0,0.2,1) both;}
 .anim-fade-in{animation:anim-fade-in 0.4s ease both;}
@@ -517,6 +522,10 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 .anim-zoom-in{animation:anim-zoom-in 0.4s cubic-bezier(0.34,1.4,0.64,1) both;}
 .anim-bounce-in{animation:anim-bounce-in 0.6s cubic-bezier(0.34,1.56,0.64,1) both;}
 .anim-rotate-in{animation:anim-rotate-in 0.4s cubic-bezier(0.34,1.4,0.64,1) both;}
+.anim-win-fade{animation:anim-win-fade 0.5s cubic-bezier(0.4,0,0.2,1) both;}
+.anim-win-scale{animation:anim-win-scale 0.5s cubic-bezier(0.34,1.4,0.64,1) both;}
+.anim-win-slide{animation:anim-win-slide 0.45s cubic-bezier(0.4,0,0.2,1) both;}
+.anim-win-flip{animation:anim-win-flip 0.55s cubic-bezier(0.4,0,0.2,1) both;}
 
 /* ====== 卡片 hover 波浪抖动 ====== */
 @keyframes card-wobble{
@@ -528,12 +537,26 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   100%{transform:rotate(0deg);}
 }
 
-/* ====== 防 hover 字体模糊 ======
-   不使用 -webkit-font-smoothing:antialiased（会让 Windows ClearType 失效导致模糊）
-   不使用 translateZ(0)（会在 hover 时重建合成层导致文字重渲染）
-   改用 backface-visibility:hidden 防止闪烁，浏览器自行管理合成 */
-.post-list-item,.wall-card,.link-card,.douban-card,.flink-card,.stat-hero-card,.cat-item,.tag,.search-item,.dock-item-inner,.back-top-btn,.theme-toggle,.search-trigger{
+/* ====== 防 hover 字体闪烁/模糊 ======
+   核心问题：hover 时 transform 会创建新的合成层，导致文字重新光栅化
+   解决方案：
+   1. 用 will-change:transform 预先提升合成层，避免 hover 时突然创建
+   2. 用 contain:layout style paint 隔离重排影响
+   3. 保留 backface-visibility:hidden 作为兼容补充 */
+/* 注意：.gallery-item 使用 position:absolute + JS transform 定位，
+   不能加 contain:layout（干扰绝对定位）和 transition-property:transform（导致定位滑动） */
+.post-list-item,.wall-card,.link-card,.douban-card,.flink-card,.stat-hero-card,.cat-item,.tag,.search-item,.dock-item-inner,.back-top-btn,.theme-toggle,.search-trigger,.carousel-container,.btn,.btns a,.filter-btn,.note,.folding-item{
   -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  will-change:transform;
+  contain:layout style;
+}
+/* hover 过渡动画统一使用 transform，避免触发 layout/paint */
+.wall-card,.link-card,.douban-card,.flink-card,.stat-hero-card,.cat-item,.tag,.search-item,.dock-item-inner,.back-top-btn,.theme-toggle,.search-trigger,.filter-btn{
+  transition-property:transform,box-shadow,border-color,opacity,background-color,color;
+}
+/* 避免 hover 时 font-weight 变化导致重排 */
+.wall-card:hover,.link-card:hover,.douban-card:hover,.flink-card:hover,.cat-item:hover,.tag:hover,.search-item:hover,.filter-btn:hover{
+  font-weight:inherit;
 }
 
 /* 桌面端：未定位的拖拽窗口默认隐藏，定位后由 JS (animations.js heroWindows) 添加动画 */

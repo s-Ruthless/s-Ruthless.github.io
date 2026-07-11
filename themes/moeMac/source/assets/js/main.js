@@ -199,11 +199,15 @@ window.__moeMacMainLoaded = true;
       zone.appendChild(item);
       DockTip.init();
 
-      /* 测量目标宽度 */
-      zone.style.width = '0px';
+      /* 测量目标宽度 — 不先归零，避免瞬间收缩 */
       zone.classList.remove('expanded');
+      var currentWidth = zone.offsetWidth;
+      /* 临时设为 auto 测量目标宽度 */
+      zone.style.width = 'auto';
+      var targetWidth = zone.offsetWidth;
+      /* 恢复当前宽度，准备过渡 */
+      zone.style.width = currentWidth + 'px';
       void zone.offsetWidth;
-      var targetWidth = zone.scrollWidth;
 
       var savedLeft = win.style.left, savedTop = win.style.top;
       win.dataset.savedLeft = savedLeft;
@@ -216,7 +220,7 @@ window.__moeMacMainLoaded = true;
       var targetScale = Math.max(iconRect.width / winRect.width, 0.06);
 
       /* 持续同步 dock-glass 宽度 */
-      syncDockGlassForDuration(450);
+      syncDockGlassForDuration(500);
 
       /* 窗口 Genie 吸入 — Web Animations API */
       var winAnim = win.animate([
@@ -225,28 +229,28 @@ window.__moeMacMainLoaded = true;
       ], { duration: 420, easing: 'cubic-bezier(0.4,0,0.2,1)', fill: 'forwards' });
 
       /* dock-mini-zone 宽度展开 — CSS transition */
-      zone.style.transition = 'width 0.35s cubic-bezier(0.4,0,0.2,1)';
+      zone.style.transition = 'width 0.4s cubic-bezier(0.4,0,0.2,1)';
       requestAnimationFrame(function() { zone.style.width = targetWidth + 'px'; });
 
       /* dock 图标弹入 — Web Animations API */
       item.animate([
         { transform: 'scale(0) translateY(16px)', opacity: 0 },
         { transform: 'scale(1) translateY(0)', opacity: 1 }
-      ], { duration: 280, easing: 'cubic-bezier(0.34,1.56,0.64,1)', delay: 320, fill: 'forwards' });
+      ], { duration: 280, easing: 'cubic-bezier(0.34,1.56,0.64,1)', delay: 300, fill: 'forwards' });
 
-      /* 动画完成后的清理 */
+      /* 动画完成后的清理 — 直接保持目标宽度，避免 auto 跳跃 */
       winAnim.onfinish = function () {
         win.style.transform = '';
         win.style.opacity = '';
         win.classList.add('win-minimized');
         win.style.display = 'none';
         win.style.left = savedLeft; win.style.top = savedTop;
-        setTimeout(function () {
+        /* 用 requestAnimationFrame 平滑切换到 auto */
+        requestAnimationFrame(function () {
           zone.style.transition = '';
-          zone.style.width = 'auto';
           zone.classList.add('expanded');
           syncDockGlass();
-        }, 60);
+        });
       };
     },
 
@@ -325,19 +329,23 @@ window.__moeMacMainLoaded = true;
           if (miniItem && miniItem.parentNode) miniItem.remove();
           if (sep && sep.parentNode && !zone.querySelector('.dock-minimized-item')) sep.remove();
           if (zone.querySelector('.dock-minimized-item')) {
+            /* 还有其他最小化窗口 — 平滑调整宽度 */
             zone.classList.remove('expanded');
+            var prevW = zone.offsetWidth;
+            zone.style.width = 'auto';
+            var newW = zone.offsetWidth;
+            zone.style.width = prevW + 'px';
             void zone.offsetWidth;
-            var newW = zone.scrollWidth;
-            zone.style.transition = 'width 0.28s cubic-bezier(0.4,0,0.2,1)';
-            zone.style.width = newW + 'px';
+            zone.style.transition = 'width 0.3s cubic-bezier(0.4,0,0.2,1)';
+            requestAnimationFrame(function() { zone.style.width = newW + 'px'; });
+            /* 动画完成后保持宽度，不切换 auto */
             setTimeout(function () {
               zone.style.transition = '';
-              zone.style.width = 'auto';
               zone.classList.add('expanded');
               syncDockGlass();
-            }, 300);
+            }, 320);
           } else {
-            if (!shouldCollapseZone) zone.style.width = 'auto';
+            zone.style.width = 'auto';
             syncDockGlass();
           }
         }
@@ -441,7 +449,7 @@ window.__moeMacMainLoaded = true;
         var best = self.findPos(ew, eh, placed);
         el.style.left = best.x + 'px'; el.style.top = best.y + 'px';
         el.setAttribute('data-pos', '1');
-        el.style.opacity = '1';
+        el.style.opacity = '0'; /* 初始透明，由 heroWindows 动画渐入 */
       });
       document.querySelectorAll('.app-window').forEach(function (el) {
         el.addEventListener('mousedown', function () { self.focus(el); });
@@ -577,18 +585,86 @@ window.__moeMacMainLoaded = true;
     }
   };
 
-  /* ====== Wall Filter ====== */
+  /* ====== Wall Filter + Search + Masonry ====== */
+  var masonryInstance = null;
+  function initMasonry() {
+    var grid = document.getElementById('posts-wall-grid');
+    if (!grid || typeof Masonry === 'undefined') return;
+    /* 销毁旧实例 */
+    if (masonryInstance) { try { masonryInstance.destroy(); } catch(e){} }
+    masonryInstance = new Masonry(grid, {
+      itemSelector: '.wall-card',
+      columnWidth: '.wall-card',
+      percentPosition: true,
+      gutter: 16,
+      transitionDuration: '0.2s',
+      originLeft: true,
+      originTop: true
+    });
+  }
+  function relayoutMasonry() {
+    if (masonryInstance) {
+      try { masonryInstance.reloadItems(); masonryInstance.layout(); } catch(e){}
+    }
+  }
   function WallFilter() {
     var btns = document.querySelectorAll('.filter-btn');
-    var cards = document.querySelectorAll('.wall-card');
-    if (!btns.length) return;
+    var grid = document.getElementById('posts-wall-grid');
+    var cards = grid ? grid.querySelectorAll('.wall-card') : [];
+    if (!btns.length || !grid) return;
+
+    /* 初始化 Masonry */
+    initMasonry();
+    /* 图片加载后重新布局 */
+    grid.querySelectorAll('img').forEach(function(img){
+      if (!img.complete) {
+        img.addEventListener('load', function(){ relayoutMasonry(); }, { once: true });
+      }
+    });
+
+    var currentCat = 'all';
+
+    function applyFilter() {
+      var visibleItems = [];
+      var hiddenItems = [];
+      cards.forEach(function (c) {
+        var cat = c.getAttribute('data-cat');
+        var catMatch = currentCat === 'all' || cat === currentCat;
+        if (catMatch) {
+          visibleItems.push(c);
+          c.classList.remove('hidden');
+        } else {
+          hiddenItems.push(c);
+          c.classList.add('hidden');
+        }
+      });
+      /* 使用 Masonry 的 hide/reveal + layout */
+      if (masonryInstance) {
+        try {
+          masonryInstance.hide(hiddenItems);
+          masonryInstance.reveal(visibleItems);
+          masonryInstance.layout();
+        } catch(e) {}
+      }
+    }
+
     btns.forEach(function (b) {
       b.addEventListener('click', function () {
         btns.forEach(function (x) { x.classList.remove('active'); });
         b.classList.add('active');
-        var cat = b.getAttribute('data-cat');
-        cards.forEach(function (c) { c.classList.toggle('hidden', cat !== 'all' && c.getAttribute('data-cat') !== cat); });
+        currentCat = b.getAttribute('data-cat');
+        applyFilter();
       });
+    });
+
+    /* 窗口 resize 时重新布局 Masonry（防抖） */
+    var masonryResizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (!masonryInstance) return;
+      clearTimeout(masonryResizeTimer);
+      masonryResizeTimer = setTimeout(function () {
+        relayoutMasonry();
+      }, 200);
     });
   }
 
@@ -1004,6 +1080,8 @@ window.__moeMacMainLoaded = true;
               if (push) history.pushState(null, null, u);
               var t = doc.querySelector('title'); if (t) document.title = t.textContent;
               box.innerHTML = nc.innerHTML;
+              /* 立即将窗口设为透明，防止 innerHTML 替换后到 Drag.init 之间的闪烁 */
+              box.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity = '0'; });
               /* 关键：innerHTML 不执行 <script>，需手动重建执行
                  必须在 init 调用之前，因为 Gallery.init 等依赖内联脚本设置的变量（如 GALLERY_DATA） */
               try { execScripts(box); } catch(e) { console.warn('execScripts error:', e); }
@@ -1027,6 +1105,7 @@ window.__moeMacMainLoaded = true;
               window.scrollTo(0, 0);
               // 动画需在 AJAX 加载完成后重新执行
               if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
+              else { document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; }); }
               // UI 增强效果重新初始化
               if (typeof UIEnhance !== "undefined") UIEnhance.init();
               // 标签外挂重新初始化（Tabs/Folding/KaTeX/Mermaid 等）
@@ -1189,11 +1268,19 @@ window.__moeMacMainLoaded = true;
           var isExpanded = header && header.classList.contains('expanded');
           
           if (!isExpanded) {
-            content.style.maxHeight = '2000px';
+            // 展开：先设为 scrollHeight 精确值，过渡更平滑
+            content.style.maxHeight = content.scrollHeight + 'px';
             if (icon) icon.style.transform = 'rotate(0deg)';
             if (header) header.classList.add('expanded');
           } else {
-            content.style.maxHeight = '0';
+            // 折叠：先将 maxHeight 固定为当前精确值（避免从 2000px 开始过渡的空延迟）
+            content.style.maxHeight = content.scrollHeight + 'px';
+            // 强制浏览器重绘，确保上一步的 maxHeight 已生效
+            void content.offsetHeight;
+            // 下一帧再设为 0，实现平滑过渡
+            requestAnimationFrame(function() {
+              content.style.maxHeight = '0';
+            });
             if (icon) icon.style.transform = 'rotate(-90deg)';
             if (header) header.classList.remove('expanded');
           }
@@ -1357,6 +1444,7 @@ window.__moeMacMainLoaded = true;
     window.addEventListener('resize', syncDockGlass);
     // 入场动画 — animations.js 已在 main.js 之前加载，可直接调用
     if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
+    else { document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; }); }
     if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }
 
     /* ====== 响应式断点监听：跨越 768px 时刷新页面 ====== */

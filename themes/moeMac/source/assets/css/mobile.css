@@ -587,6 +587,15 @@ html:not(.is-desktop) .row-cat{
 html:not(.is-desktop) .wall-header h2{
   font-size:18px;
 }
+html:not(.is-desktop) .wall-toolbar{
+  flex-direction:column;align-items:stretch;gap:10px;
+}
+html:not(.is-desktop) .wall-search-wrap{
+  flex:1 1 100%;
+}
+html:not(.is-desktop) .wall-search-input{
+  padding:9px 34px 9px 34px;font-size:14px;
+}
 html:not(.is-desktop) .wall-filter{
   gap:6px;
   overflow-x:auto;
@@ -607,7 +616,7 @@ html:not(.is-desktop) .filter-btn{
   padding:5px 12px;font-size:11px;white-space:nowrap;flex-shrink:0;
 }
 html:not(.is-desktop) .wall-grid{
-column-count:2;column-gap:10px;
+/* Masonry 负责布局，不需要 column-count */
 }
 /* ====== 文章墙卡片 — 移动端紧凑 ====== */
 html:not(.is-desktop) .wall-card{

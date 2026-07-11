@@ -36,7 +36,7 @@ keywords: "博客,生活,技术,随笔"
 twitter: ""
 
 # ====== 主题色 ======
-accent_color: "#00665d"
+accent_color: "#cf0226"
 
 # ====== 静态资源 CDN ======
 # 所有静态资源按类型统一放在 source/assets/ 下：
@@ -51,7 +51,7 @@ accent_color: "#00665d"
 #   2. 在此填写 CDN 中 assets 目录的完整 URL
 #   例如: cdn: "https://your-cdn.com/moemac/assets"
 #   或:   cdn: "https://cdn.jsdelivr.net/gh/user/repo/assets"
-cdn: ""
+cdn: "https://cdn.jsdelivr.net/gh/s-Ruthless/s-Ruthless.github.io@master/themes/moeMac/source/assets"
 
 # ====== 一言 / 每日一句 ======
 # hitokoto: true 启用一言 API，首页实时获取；false 使用下方 sentences 列表随机显示
@@ -228,7 +228,7 @@ comments:
     siteId: "blog"
     lang: "auto"
     customCssUrl: ''
-    primaryColor: '#00665d'
+    primaryColor: '#cf0226'
 
 # ====== 搜索 ======
 # 需安装 hexo-generator-searchdb 插件：npm i hexo-generator-searchdb

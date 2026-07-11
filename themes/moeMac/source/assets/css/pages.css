@@ -42,7 +42,7 @@
 }
 .wall-search-clear:hover{background:color-mix(in srgb,var(--accent-color) 12%,transparent);color:var(--accent-color);}
 
-.wall-filter{display:flex;flex-wrap:wrap;gap:8px;flex:1;justify-content:flex-end;}
+.wall-filter{display:flex;flex-wrap:wrap;gap:8px;flex:1;justify-content:flex-start;}
 .filter-btn{
   display:inline-flex;align-items:center;gap:4px;
   padding:6px 14px;border-radius:10px;border:none;cursor:pointer;

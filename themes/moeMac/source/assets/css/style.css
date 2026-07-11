@@ -545,7 +545,7 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
    3. 保留 backface-visibility:hidden 作为兼容补充 */
 /* 注意：.gallery-item 使用 position:absolute + JS transform 定位，
    不能加 contain:layout（干扰绝对定位）和 transition-property:transform（导致定位滑动） */
-.post-list-item,.wall-card,.link-card,.douban-card,.flink-card,.stat-hero-card,.cat-item,.tag,.search-item,.dock-item-inner,.back-top-btn,.theme-toggle,.search-trigger,.carousel-container,.btn,.btns a,.filter-btn,.note,.folding-item{
+.post-list-item,.wall-card,.link-card,.douban-card,.flink-card,.stat-hero-card,.cat-item,.tag,.search-item,.dock-item-inner,.back-top-btn,.theme-toggle,.search-trigger,.btn,.btns a,.filter-btn,.note,.folding-item{
   -webkit-backface-visibility:hidden;backface-visibility:hidden;
   will-change:transform;
   contain:layout style;
@@ -683,8 +683,8 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);
 [data-theme="dark"] .article-content p,
 [data-theme="dark"] .article-content li{color:#e0e0e0;}
 [data-theme="dark"] .article-content blockquote{color:#c8c8c8;background:color-mix(in srgb,var(--accent-color) 8%,transparent);}
-[data-theme="dark"] .article-content pre{background:rgba(0,0,0,0.45);}
-[data-theme="dark"] .article-content pre code{color:#e0e0e0;}
+[data-theme="dark"] .article-content pre{background:#11111b;border-color:rgba(255,255,255,0.06);}
+[data-theme="dark"] .article-content pre code{color:#cdd6f4;}
 [data-theme="dark"] .article-content table th{color:#d0d0d0;background:color-mix(in srgb,var(--accent-color) 10%,transparent);}
 [data-theme="dark"] .article-content table td{border-bottom-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content a{color:var(--accent-color);}

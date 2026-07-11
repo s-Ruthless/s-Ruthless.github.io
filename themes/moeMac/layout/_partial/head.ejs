@@ -2,7 +2,7 @@
   /* cdn 配置：留空 = 使用本地 /assets/ 路径；填写后所有资源走 CDN
      例如: cdn: "https://your-cdn.com/moemac/assets"
      末尾不加 / — 统一拼接路径 */
-  var A = (theme.cdn || '') + '/assets';
+  var A = theme.cdn || '/assets';
   var pageDesc = strip_html(page.description || page.excerpt || config.description || '');
   var ogTitle = page.title ? page.title + ' | ' + config.title : config.title;
   var ogUrl = (config.url ? config.url.replace(/\/$/,'') : '') + url_for(page.path);

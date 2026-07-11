@@ -782,6 +782,21 @@ window.__moeMacMainLoaded = true;
         if (pre.querySelector('.code-copy-btn')) return;
         /* 只对代码块加，跳过已被 figure 包裹的 pre（避免重复） */
         if (pre.tagName === 'PRE' && pre.closest('figure.highlight')) return;
+
+        /* 提取代码语言标签 */
+        var fig = pre.closest('figure.highlight') || (pre.tagName === 'FIGURE' ? pre : null);
+        if (fig && !fig.querySelector('.code-lang-label')) {
+          var langClass = fig.className.match(/highlight\s+(\w+)/);
+          var lang = langClass ? langClass[1] : '';
+          if (lang && lang !== 'plaintext') {
+            var label = document.createElement('span');
+            label.className = 'code-lang-label';
+            label.textContent = lang;
+            fig.appendChild(label);
+            fig.classList.add('has-lang');
+          }
+        }
+
         var btn = document.createElement('button');
         btn.className = 'code-copy-btn';
         btn.type = 'button';

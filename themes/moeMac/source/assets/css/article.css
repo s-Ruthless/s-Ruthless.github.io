@@ -252,26 +252,30 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
 /* ====== 濠电偛顕刊瀵稿緤閸ф鍋夋繝濠傚濞堟淇婇婊勫殌闁?====== */
 .article-content figure.highlight{
 margin:16px 0;border-radius:12px;overflow:hidden;
-background:#f6f8fa;border:1px solid rgba(0,0,0,0.08);position:relative;
+background:#f6f8fa;border:1px solid #d0d7de;position:relative;
 }
-.article-content figure.highlight::before{
-content:'';position:absolute;top:0;left:0;right:0;height:30px;
-background:linear-gradient(180deg,rgba(0,0,0,0.03),transparent);
-border-bottom:1px solid rgba(0,0,0,0.06);pointer-events:none;
+/* 语言标签 */
+.article-content figure.highlight .code-lang-label{
+position:absolute;top:0;left:0;z-index:3;
+padding:4px 12px;font-size:12px;font-weight:600;
+font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+color:#57606a;background:#eaeef2;
+border-right:1px solid #d0d7de;border-bottom:1px solid #d0d7de;
+border-radius:12px 0 0 0;text-transform:uppercase;letter-spacing:0.5px;
 }
 .article-content figure.highlight > table{
-  width:100%;border-collapse:collapse;border-spacing:0;table-layout:fixed;position:relative;z-index:1;
+width:100%;border-collapse:collapse;border-spacing:0;table-layout:fixed;position:relative;z-index:1;
 }
 .article-content figure.highlight tr{background:transparent;}
 .article-content figure.highlight td{padding:0;border:none;vertical-align:top;}
 .article-content figure.highlight .gutter{
 width:1%;white-space:nowrap;user-select:none;
-background:rgba(0,0,0,0.03);border-right:1px solid rgba(0,0,0,0.06);
+background:#eaeef2;border-right:1px solid #d0d7de;
 }
 .article-content figure.highlight .gutter pre{
 background:none!important;padding:14px 10px 14px 14px;margin:0;
 font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
-font-size:13px;line-height:1.6;color:rgba(0,0,0,0.35);
+font-size:13px;line-height:1.6;color:#8c959f;
 }
 .article-content figure.highlight .code pre{
 background:none!important;padding:14px 16px;margin:0;overflow-x:auto;
@@ -328,8 +332,7 @@ font-size:13px;line-height:1.6;color:#24292e;
 .code-copy-btn{
   position:absolute;top:6px;right:6px;z-index:3;
   width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;
-  background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  color:#888;font-size:12px;padding:0;
+  background:#eaeef2;color:#57606a;font-size:12px;padding:0;
   display:flex;align-items:center;justify-content:center;
   opacity:0;transition:opacity 0.2s ease,background 0.2s ease,color 0.2s ease,transform 0.2s ease;
 }
@@ -1533,7 +1536,7 @@ border-left:3px solid var(--accent-color);
 @keyframes carousel-fade{from{opacity:0;}to{opacity:1;}}
 .article-content .carousel-slide img{
   width:100%;display:block;object-fit:cover;
-  max-height:420px;min-height:200px;
+  max-height:420px;min-height:200px;margin:0!important;
 }
 .article-content .carousel-caption{
   position:absolute;bottom:0;left:0;right:0;
@@ -1607,15 +1610,16 @@ border-left:3px solid var(--accent-color);
 [data-theme="dark"] .article-content pre{background:#1e1e2e;border-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content pre code{color:#cdd6f4;}
 [data-theme="dark"] .article-content figure.highlight{background:#1e1e2e;border-color:rgba(255,255,255,0.08);}
-[data-theme="dark"] .article-content figure.highlight::before{
-  background:linear-gradient(180deg,rgba(255,255,255,0.06),transparent);
-  border-bottom-color:rgba(255,255,255,0.06);
+[data-theme="dark"] .article-content figure.highlight .code-lang-label{
+  color:#a6adc8;background:rgba(255,255,255,0.05);
+  border-right-color:rgba(255,255,255,0.08);border-bottom-color:rgba(255,255,255,0.08);
 }
 [data-theme="dark"] .article-content figure.highlight .gutter{
   background:rgba(255,255,255,0.04);border-right-color:rgba(255,255,255,0.06);
 }
 [data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.35);}
 [data-theme="dark"] .article-content figure.highlight .code pre{color:#cdd6f4;}
+[data-theme="dark"] .code-copy-btn{background:rgba(255,255,255,0.1);color:#a6adc8;}
 [data-theme="dark"] .article-content .highlight .keyword,
 [data-theme="dark"] .article-content .highlight .selector,
 [data-theme="dark"] .article-content .highlight .built_in{color:#cba6f7;}

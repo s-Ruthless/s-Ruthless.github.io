@@ -2,7 +2,7 @@
   /* cdn 配置与 head.ejs 一致，所有 JS 资源统一加 cdn 前缀 */
   var A = theme.cdn || '/assets';
   /* 版本号用于强制浏览器刷新缓存，修改 JS 后递增此数字 */
-  var V = '?v=20260711r10';
+  var V = '?v=20260712r3';
 %>
 <script>window.__ASSETS__="<%= A %>";</script>
 <!-- 优先加载核心布局脚本：animations.js + main.js（defer 按顺序执行） -->
@@ -14,14 +14,11 @@
 <script defer src="<%= A %>/js/ui-enhance.js<%= V %>"></script>
 <!-- main.js 核心布局脚本 — 最高优先级 -->
 <script defer src="<%= A %>/js/main.js<%= V %>"></script>
-<!-- 标签外挂交互脚本（Tabs/Folding/KaTeX/Mermaid 等）— 次优先级 -->
+<!-- 标签外挂交互脚本（Tabs/Folding/KaTeX/Mermaid 等）— 次优先级
+     KaTeX 和 Mermaid 均在 tag-plugins.js 中按需懒加载，不在全局引入 -->
 <script defer src="<%= A %>/js/tag-plugins.js<%= V %>"></script>
-<!-- KaTeX 数学公式（本地化）— 次优先级 -->
-<script defer src="<%= A %>/js/katex.min.js"></script>
-<script defer src="<%= A %>/js/auto-render.min.js"></script>
-<!-- 非关键第三方库 — 最低优先级 -->
-<script defer src="<%= A %>/js/APlayer.min.js"></script>
-<script defer src="<%= A %>/js/Meting.min.js"></script>
+<!-- APlayer 音乐播放器 — 仅在有音乐窗口的页面懒加载（由 main.js MusicPlayer.init 动态创建） -->
+<!-- Meting API 已由 main.js fetch 调用，无需全局加载 -->
 <% if (theme.comments && theme.comments.enable && theme.comments.provider === 'cwd' && theme.comments.cwd && theme.comments.cwd.apiBaseUrl) { %>
 <script defer src="<%= A %>/js/cwd.js"></script>
 <% } %>

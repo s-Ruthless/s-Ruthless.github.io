@@ -46,13 +46,30 @@ window.TagPlugins = (function () {
   }
 
   /* ========== KaTeX 数学公式渲染 ========== */
+  var katexLoaded = false;
   function initKatex() {
+    /* 没有数学公式元素时不加载 KaTeX（节省 ~275KB） */
+    var hasMath = document.querySelector('.math-inline, .math-block');
+    if (!hasMath) return;
+
     if (typeof katex === 'undefined') {
-      // KaTeX 库尚未加载，等待后重试
-      setTimeout(initKatex, 200);
+      if (katexLoaded) { setTimeout(initKatex, 200); return; }
+      katexLoaded = true;
+      var script = document.createElement('script');
+      script.src = (window.__ASSETS__ || '/assets') + '/js/katex.min.js';
+      script.onload = function () {
+        /* 加载 auto-render 后执行渲染 */
+        var ar = document.createElement('script');
+        ar.src = (window.__ASSETS__ || '/assets') + '/js/auto-render.min.js';
+        ar.onload = function () { renderKatex(); };
+        document.head.appendChild(ar);
+      };
+      document.head.appendChild(script);
       return;
     }
-
+    renderKatex();
+  }
+  function renderKatex() {
     // 渲染行内公式 <span class="math-inline">公式</span>
     document.querySelectorAll('.math-inline:not([data-katex-rendered])').forEach(function (el) {
       try {
@@ -290,8 +307,12 @@ function initCopyInline() {
         itemsEl.style.height = (topOffset - gap) + 'px';
       }
 
-      /* 先做一次初始布局（即使图片未加载，用默认 ratio=1 先撑开容器） */
-      layout();
+      /* 先做一次初始布局（用 requestAnimationFrame 确保 DOM 已渲染）*/
+      requestAnimationFrame(function() {
+        layout();
+        /* 再用 rAF 二次确认（AJAX 导航时容器宽度可能需要两帧才稳定）*/
+        requestAnimationFrame(layout);
+      });
 
       /* 等待所有图片加载后重新布局 */
       var loaded = 0;
@@ -317,15 +338,15 @@ function initCopyInline() {
         }
       });
 
-      /* 兜底：500ms 后强制重新布局（缩短等待时间，适配 AJAX 导航） */
+      /* 兜底：200ms 后强制重新布局（缩短等待时间，适配 AJAX 导航） */
       setTimeout(function () {
         if (layoutCount === 0) { layout(); layoutCount++; }
-      }, 500);
+      }, 200);
 
-      /* 二次兜底：1.5s 后再检查一次（确保慢速网络下也能正确布局） */
+      /* 二次兜底：1s 后再检查一次（确保慢速网络下也能正确布局） */
       setTimeout(function () {
         layout();
-      }, 1500);
+      }, 1000);
 
       /* 响应式重排 */
       var resizeTimer = null;

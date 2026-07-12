@@ -57,7 +57,7 @@
     /* 豆瓣页面：封面图可能使用外部 CDN */
     if (page.layout === 'douban' || (page.path || '').indexOf('douban') > -1) {
       var _db = (site.data && site.data.douban) ? site.data.douban : (theme.douban || {});
-      ['books','movies','music'].forEach(function(k) {
+      ['books','movies'].forEach(function(k) {
         (_db[k] || []).forEach(function(it) {
           if (it.cover && !it.cover_local) _addPC(it.cover);
         });
@@ -95,10 +95,11 @@
   <% } %>
 
   <!-- 第三方库 CSS + 组件库 -->
-  <% var V = '?v=20260711r10'; %>
+  <% var V = '?v=20260712r4'; %>
   <link rel="stylesheet" href="<%= A %>/css/icons.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>">
+  <!-- 组件 CSS 异步加载，不阻塞首屏渲染 -->
+  <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>" media="print" onload="this.media='all'">
   <!-- KaTeX 数学公式样式（本地化） -->
   <link rel="stylesheet" href="<%= A %>/css/katex.min.css" media="print" onload="this.media='all'">
 
@@ -149,15 +150,25 @@
   <!-- 卜算子访客统计 -->
   <script async src="<%= A %>/js/busuanzi.pure.mini.js"></script>
 
-  <!-- 主题 CSS -->
+  <!-- 主题 CSS — 关键布局样式同步加载，非首屏样式异步加载 -->
   <link rel="stylesheet" href="<%= A %>/css/style.css<%= V %>">
-  <link rel="stylesheet" href="<%= A %>/css/home.css<%= V %>">
-  <link rel="stylesheet" href="<%= A %>/css/article.css<%= V %>">
-  <link rel="stylesheet" href="<%= A %>/css/archive.css<%= V %>">
-  <link rel="stylesheet" href="<%= A %>/css/gallery.css<%= V %>">
-  <link rel="stylesheet" href="<%= A %>/css/pages.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/mobile.css<%= V %>">
-  <link rel="stylesheet" href="<%= A %>/css/aplayer.css<%= V %>">
+  <!-- pages.css 含文章墙/分类/标签/关于/友链/豆瓣等页面布局，必须同步加载 -->
+  <link rel="stylesheet" href="<%= A %>/css/pages.css<%= V %>">
+  <!-- 非首屏 CSS 异步加载，不阻塞渲染 -->
+  <link rel="stylesheet" href="<%= A %>/css/home.css<%= V %>" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/article.css<%= V %>" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/archive.css<%= V %>" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/gallery.css<%= V %>" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/aplayer.css<%= V %>" media="print" onload="this.media='all'">
+
+  <!-- LCP 图片预加载：头像和壁纸是首屏最大内容元素 -->
+  <% if (theme.avatar_type === 'image' && theme.avatar_url) { %>
+  <link rel="preload" href="<%= theme.avatar_url %>" as="image" fetchpriority="high">
+  <% } %>
+  <% if (theme.wallpaper_path) { %>
+  <link rel="preload" href="<%= theme.wallpaper_path %>" as="image" fetchpriority="high">
+  <% } %>
 
   <!-- 关键 JS 预加载：提前高优先级拉取核心脚本，缩短首屏渲染等待 -->
   <link rel="preload" href="<%= A %>/js/main.js<%= V %>" as="script">

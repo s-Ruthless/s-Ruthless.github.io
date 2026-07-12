@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    article.css 文章页面样式 — 文章布局、代码块、标签外挂、评论区等
    ============================================ */
 /* ====== 文章窗口容器 ====== */
@@ -92,9 +92,14 @@ border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
 .post-list-item .post-meta a:hover{text-decoration:underline;}
 .post-excerpt{ font-size:13px;color:#444;line-height:1.5;margin-top:6px;}
 
-/* 文章列表封面图 */
-.post-list-cover{width:100%;height:140px;overflow:hidden;position:relative;border-radius:14px 14px 0 0;}
-.post-list-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);}
+/* 文章列表封面图 — 可爱加载动画：奔跑的小猫 + 尘土飞扬 */
+.post-list-cover{width:100%;height:140px;overflow:hidden;position:relative;border-radius:14px 14px 0 0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 6%,#f5f5fa),color-mix(in srgb,var(--accent-color) 3%,#eeeef5));}
+.post-list-cover::before{content:'';position:absolute;bottom:28%;left:50%;width:30px;height:6px;margin-left:-15px;border-radius:50%;background:color-mix(in srgb,var(--accent-color) 14%,rgba(0,0,0,0.08));box-shadow:20px -2px 0 -2px color-mix(in srgb,var(--accent-color) 12%,rgba(0,0,0,0.06)),28px -1px 0 -3px color-mix(in srgb,var(--accent-color) 10%,rgba(0,0,0,0.04));animation:cat-shadow 0.45s ease-in-out infinite;z-index:0;}
+.post-list-cover::after{content:'\1F431';position:absolute;top:50%;left:50%;font-size:26px;transform:translate(-50%,-50%);animation:cat-run 0.45s ease-in-out infinite;z-index:0;}
+.post-list-cover.loaded::before,.post-list-cover.loaded::after{opacity:0;transition:opacity 0.3s ease;}
+.post-list-cover.loaded{background:transparent;}
+.post-list-cover img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.4s ease,transform 0.4s cubic-bezier(0.4,0,0.2,1);position:relative;z-index:1;}
+.post-list-cover img.loaded{opacity:1;}
 .post-list-item:hover .post-list-cover img{filter:brightness(1.08);}
 /* 文章列表内容区内边距 */
 .post-list-item h3,.post-list-item .post-meta,.post-list-item .post-excerpt{ padding-left:22px;padding-right:20px;}
@@ -146,23 +151,7 @@ background:color-mix(in srgb,var(--accent-color) 8%,transparent);transition:back
 .page-btn:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-color);}
 .page-info{font-size:13px;color:#444;}
 
-/* ====== 通用页面容器 ====== */
-.page-container{max-width:900px;margin:0 auto;padding:20px 16px 100px;}
-.page-body{
-  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
-  background:var(--card-bg);border:var(--card-border);border-radius:var(--radius-xl);
-  box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,0.5);padding:0;overflow:hidden;
-  position:relative;
-}
-.page-body::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--accent-color),#ec4899);opacity:0.7;z-index:1;
-}
-.page-header{padding:24px 24px 16px;text-align:center;border-bottom:1px solid rgba(0,0,0,0.06);}
-.page-header h2{font-size:22px;font-weight:700;color:#111;margin:0;}
-.page-header i{margin-right:6px;color:var(--accent-medium);}
-.page-header .archive-subtitle{margin-top:6px;}
-.page-body > .page-content{padding:24px;}
+/* ====== 通用页面容器（已移至 style.css 同步加载，防止非文章页刷新时布局丢失） ====== */
 .article-window{
   backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
   background:var(--card-bg);border:var(--card-border);border-radius:var(--radius-xl);
@@ -279,15 +268,19 @@ width:100%;border-collapse:collapse;border-spacing:0;table-layout:fixed;position
 .article-content figure.highlight tr{background:transparent;}
 .article-content figure.highlight td{padding:0;border:none;vertical-align:top;}
 .article-content figure.highlight .gutter{
-width:30px;white-space:nowrap;user-select:none;
+width:40px;white-space:nowrap;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;
+position:sticky;left:0;z-index:2;background:#fff;
 }
 .article-content figure.highlight .gutter pre{
-background:none!important;padding:14px 10px 14px 0;margin:0;text-align:right;
+background:#fff!important;padding:14px 8px 14px 4px;margin:0;text-align:right;
 font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
-font-size:13px;line-height:1.65;color:#c2c2c2;white-space:pre;
+font-size:13px;line-height:1.65;color:#c2c2c2;white-space:pre;pointer-events:none;
+}
+.article-content figure.highlight .code{
+overflow:hidden;
 }
 .article-content figure.highlight .code pre{
-background:none!important;padding:14px 10px;margin:0;overflow-x:auto;
+background:none!important;padding:14px 14px;margin:0;overflow-x:auto;
 font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
 font-size:13px;line-height:1.65;color:#333;white-space:pre;
 }
@@ -353,7 +346,7 @@ font-family:inherit;font-size:inherit;line-height:inherit;background:none;paddin
   letter-spacing:0.5px;text-transform:uppercase;display:none;
 }
 
-/* 濠电姰鍨煎▔娑氱矓閹绢喖鏄ユ俊銈呮噹缁犳澘顭块懜闈涘閻?*/
+/* 复制按钮 */
 .code-copy-btn{
   position:absolute;top:4px;right:8px;z-index:3;
   width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;
@@ -407,7 +400,7 @@ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:1px 0;
 .post-toc-list a.toc-active{color:var(--accent-color);font-weight:600;background:color-mix(in srgb,var(--accent-color) 14%,transparent);border-left-color:var(--accent-color);border-radius:6px;}
 .post-toc-list ol{padding-left:10px;}
 .post-toc-list ol a{font-size:12px;padding-left:16px;}
-/* TOC 濠电偛鐡ㄧ划宀勬儔閸忕⒈娈介柛銉墯閸庡孩銇勯弮鍥т汗缂佸娼￠弻鐔兼嚋瀵版浜ｉ妵鎰板籍閸喐娅栭梺鍓插亖閸庡磭鏁☉銏″仯濞达綁娼ч埀顒佹礋瀹曪綀顦规慨濠傤煼椤㈡﹢濡歌椤?*/
+/* TOC 默认折叠子目录 */
 .post-toc-wrap[data-expand="false"] .post-toc-list li > ol{
 max-height:0;overflow:hidden;opacity:0;
 transition:max-height 0.3s ease,opacity 0.2s ease;
@@ -692,7 +685,8 @@ min-height:120px;
   background:#16171f;
   border-bottom-color:rgba(255,255,255,0.06);
 }
-[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.3);}
+[data-theme="dark"] .article-content figure.highlight .gutter{background:#1a1b26;}
+[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.3);background:#1a1b26!important;}
 [data-theme="dark"] .article-content figure.highlight .code pre{color:#c0caf5;}
 /* token 颜色定义在下方 Tokyo Night 暗黑模式区块 */
 /* token colors are defined in the Tokyo Night dark mode section below */
@@ -701,7 +695,7 @@ min-height:120px;
   background:color-mix(in srgb,var(--accent-color) 18%,rgba(255,255,255,0.08));
   color:var(--accent-soft);
 }
-/* 濠电姰鍨煎▔娑氱矓閹绢喖鏄ユ俊銈呮噹缁犳澘顭块懜闈涘閻忓骏绠撻弻锟犲幢濮楀棙鐤佺紓渚囧櫙缁犳垼鐏掗梺鐐藉劚绾绢厾娑甸埀?*/
+/* 暗黑模式 — 复制按钮 */
 [data-theme="dark"] .code-copy-btn{
   background:transparent;
   color:rgba(255,255,255,0.5);
@@ -849,7 +843,7 @@ min-height:120px;
   padding:12px 16px;border-top:1px solid rgba(0,0,0,0.05);
   font-size:14px;line-height:1.8;
 }
-/* folding 濠碘槅鍋嗘晶妤冨垝韫囨梻鐝跺┑鐘叉搐閻淇婇姘础缂?*/
+/* folding 折叠面板颜色 */
 .article-content .folding-blue{border-left:3px solid #3b82f6;}
 .article-content .folding-cyan{border-left:3px solid #06b6d4;}
 .article-content .folding-green{border-left:3px solid #22c55e;}
@@ -1203,7 +1197,7 @@ border-left:3px solid var(--accent-color);
   border:1px solid rgba(0,0,0,0.08);
   transition:all 0.25s ease;
   cursor:pointer;
-  height:100px;
+  height:110px;
 }
 .article-content .post-card:hover{
   transform:translateY(-2px);
@@ -1211,7 +1205,7 @@ border-left:3px solid var(--accent-color);
   border-color:color-mix(in srgb,var(--accent-color) 30%,transparent);
 }
 .article-content .post-card-thumb{
-  width:100px;min-width:100px;
+  width:110px;min-width:110px;
   overflow:hidden;flex-shrink:0;
   background:#f0f0f0;
   display:flex;align-items:stretch;
@@ -1262,10 +1256,10 @@ border-left:3px solid var(--accent-color);
   grid-column:1/-1;
 }
 .article-content .post-card-grid .post-card .post-card-thumb{
-  width:100px;min-width:100px;
+  width:110px;min-width:110px;
 }
 .article-content .post-card-grid .post-card:last-child:nth-child(odd) .post-card-thumb{
-  width:100px;min-width:100px;
+  width:110px;min-width:110px;
 }
 
 /* ====== Poem 诗词排版 ====== */
@@ -1276,16 +1270,16 @@ border-left:3px solid var(--accent-color);
   border-radius:12px;
 }
 .article-content .poem-title{
-  font-size:18px;font-weight:600;margin:0 0 12px;
-  color:var(--accent-color);
+font-size:18px;font-weight:600;margin:0 0 4px;
+color:var(--accent-color);
+}
+.article-content .poem-author{
+margin:0 0 14px;font-size:13px;color:#999;font-style:italic;
 }
 .article-content .poem-body{margin:0;}
 .article-content .poem-line{
-  font-size:16px;line-height:2;margin:0;
-  color:#444;letter-spacing:2px;
-}
-.article-content .poem-author{
-  margin:12px 0 0;font-size:13px;color:#999;font-style:italic;
+font-size:16px;line-height:2;margin:0;
+color:#444;letter-spacing:2px;
 }
 
 /* ====== Radio 单选按钮 ====== */
@@ -1470,7 +1464,7 @@ border-left:3px solid var(--accent-color);
   text-decoration-thickness:2px;text-underline-offset:2px;
 }
 
-/* ====== Abbr 缂傚倸鍊搁崐鐢稿疾濞戙垹鐤柟鎹愵嚙缁犵敻鏌熼柇锕€鏋斿ù?====== */
+/* ====== Abbr 缩写提示 ====== */
 .article-content .abbr-text{
   cursor:help;border-bottom:1px dotted #999;
   text-decoration:none;color:inherit;
@@ -1704,7 +1698,8 @@ border-left:3px solid var(--accent-color);
 [data-theme="dark"] .article-content figure.highlight .code-lang-label{
   color:#7a7a8a;
 }
-[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.3);}
+[data-theme="dark"] .article-content figure.highlight .gutter{background:#1a1b26;}
+[data-theme="dark"] .article-content figure.highlight .gutter pre{color:rgba(255,255,255,0.3);background:#1a1b26!important;}
 [data-theme="dark"] .article-content figure.highlight .code pre{color:#c0caf5;}
 [data-theme="dark"] .code-copy-btn{background:transparent;color:rgba(255,255,255,0.5);}
 [data-theme="dark"] .code-copy-btn:hover{color:var(--accent-color);background:rgba(255,255,255,0.08);}

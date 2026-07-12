@@ -28,7 +28,7 @@
         <% }); %>
       </div>
     </div>
-    <div class="wall-grid" id="posts-wall-grid">
+    <div class="wall-grid" id="posts-wall-grid" style="opacity:0">
     <% posts.forEach(function(post) { %>
         <%
           var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
@@ -40,7 +40,7 @@
         <div class="wall-card ajax-link<% if (post.sticky) { %> wall-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
           <% if (coverImg) { %>
             <div class="card-cover">
-              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.parentElement.style.display='none'">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.parentElement.style.display='none'">
             </div>
           <% } %>
           <div class="card-body">

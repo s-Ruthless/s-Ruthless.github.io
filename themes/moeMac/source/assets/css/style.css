@@ -94,6 +94,7 @@ body{
 .article-content,.article-content *{user-select:text;-webkit-user-select:text;}
 .about-content,.about-content *{user-select:text;-webkit-user-select:text;}
 .page-body,.page-body *{user-select:text;-webkit-user-select:text;}
+/* 暗黑模式 page-body 在下方暗黑模式区域处理 */
 a{color:inherit;text-decoration:none;font-family:inherit;}
 
 /* ====== 进度条 ====== */
@@ -170,13 +171,16 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
 .app-window .win-head{cursor:move;padding:8px 16px 6px;text-align:center;position:relative;z-index:1;}
 .app-window .win-head:hover .win-name{color:#666;}
 .win-name{font-size:13px;font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;justify-content:center;gap:6px;}
+.win-head-icon.fas,
 .win-head-icon{
-  font-size:11px;color:var(--accent-color);
-  width:22px;height:22px;
-  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--accent-color);line-height:1;
+  width:20px;height:20px;
+  display:inline-flex!important;align-items:center;justify-content:center;
   background:color-mix(in srgb,var(--accent-color) 12%,transparent);
   border-radius:6px;flex-shrink:0;
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
+.win-head:hover .win-head-icon{transform:scale(1.15) rotate(-5deg);}
 [data-theme="dark"] .win-head-icon{
   background:color-mix(in srgb,var(--accent-color) 18%,transparent);
 }
@@ -564,6 +568,24 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);transition:b
   html.is-desktop .drag-win:not([data-pos]){opacity:0;}
 }
 
+/* ====== 通用页面容器（所有页面共用，必须同步加载防止布局闪烁） ====== */
+.page-container{max-width:900px;margin:0 auto;padding:20px 16px 100px;}
+.page-body{
+  backdrop-filter:var(--card-blur);-webkit-backdrop-filter:var(--card-blur);
+  background:var(--card-bg);border:var(--card-border);border-radius:var(--radius-xl);
+  box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,0.5);padding:0;overflow:hidden;
+  position:relative;
+}
+.page-body::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent-color),#ec4899);opacity:0.7;z-index:1;
+}
+.page-header{padding:24px 24px 16px;text-align:center;border-bottom:1px solid rgba(0,0,0,0.06);}
+.page-header h2{font-size:22px;font-weight:700;color:#111;margin:0;}
+.page-header i{margin-right:6px;color:var(--accent-medium);}
+.page-header .archive-subtitle{margin-top:6px;}
+.page-body > .page-content{padding:24px;}
+
 /* ====== 性能优化 ====== */
 .chart-bars,.chart-bars-full{contain:layout style;}
 .stat-hero-row{contain:layout style;}
@@ -688,3 +710,482 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);
 [data-theme="dark"] .article-content table th{color:#d0d0d0;background:color-mix(in srgb,var(--accent-color) 10%,transparent);}
 [data-theme="dark"] .article-content table td{border-bottom-color:rgba(255,255,255,0.08);}
 [data-theme="dark"] .article-content a{color:var(--accent-color);}
+
+/* ====== Font Awesome 图标 CSS 动画增强（0 KB 依赖） ======
+   策略：保留所有 FA 图标，通过 CSS hover 给图标添加微动画
+   分场景设计：弹跳、摇摆、旋转、滑动、脉冲 */
+
+/* --- Dock 图标：hover 时摇摆 --- */
+.dock-item:hover .dock-icon,
+.dock-minimized-item:hover .dock-icon{
+  animation:icon-wiggle 0.6s ease;
+}
+@keyframes icon-wiggle{
+  0%,100%{transform:rotate(0deg);}
+  20%{transform:rotate(-12deg);}
+  40%{transform:rotate(10deg);}
+  60%{transform:rotate(-6deg);}
+  80%{transform:rotate(4deg);}
+}
+
+/* --- 搜索按钮：hover 时旋转 --- */
+.search-trigger:hover .fa-magnifying-glass,
+.search-trigger:hover i{
+  animation:icon-spin 0.5s ease;
+}
+@keyframes icon-spin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+
+/* --- 主题切换按钮：点击时旋转 --- */
+.theme-toggle i{
+  transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.theme-toggle:active i,
+.theme-toggle:hover i{
+  transform:rotate(180deg);
+}
+
+/* --- 返回顶部按钮：hover 时弹跳 --- */
+.back-top-btn:hover i{
+  animation:icon-bounce 0.5s ease;
+}
+@keyframes icon-bounce{
+  0%,100%{transform:translateY(0);}
+  30%{transform:translateY(-4px);}
+  50%{transform:translateY(0);}
+  70%{transform:translateY(-2px);}
+}
+
+/* --- 文章元信息图标：hover 时脉冲 --- */
+.post-meta i,.article-tags .tag i,.page-header i{
+  transition:transform 0.3s ease,color 0.3s ease;
+}
+.post-meta:hover i,.page-header:hover i{
+  animation:icon-pulse 0.6s ease;
+}
+@keyframes icon-pulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.25);}
+}
+
+/* --- 导航箭头：hover 时滑动 --- */
+.article-nav .nav-prev:hover .fa-chevron-left,
+.page-btn .fa-chevron-left{
+  transition:transform 0.3s ease;
+}
+.article-nav .nav-prev:hover .fa-chevron-left{transform:translateX(-4px);}
+.article-nav .nav-next:hover .fa-chevron-right{transform:translateX(4px);}
+.page-btn:hover .fa-chevron-left{transform:translateX(-3px);}
+.page-btn:hover .fa-chevron-right{transform:translateX(3px);}
+
+/* --- 标签图标：hover 时摇摆 --- */
+.tag:hover i,.badge:hover i,.filter-btn:hover i{
+  animation:icon-wiggle 0.5s ease;
+}
+
+/* --- 置顶图标：持续轻微摇摆 --- */
+.sticky-icon,.card-sticky-badge i{
+  animation:icon-tilt 3s ease-in-out infinite;
+}
+@keyframes icon-tilt{
+  0%,100%{transform:rotate(-8deg);}
+  50%{transform:rotate(8deg);}
+}
+
+/* --- TOC 目录图标：hover 时弹跳 --- */
+.post-toc-toggle:hover i,.post-toc-fab:hover i{
+  animation:icon-bounce 0.5s ease;
+}
+
+/* --- 版权/信息图标：hover 时脉冲 --- */
+.post-copyright-title i,.comments-config-hint i{
+  transition:transform 0.3s ease;
+}
+.post-copyright-title:hover i,.comments-config-hint:hover i{
+  animation:icon-pulse 0.6s ease;
+}
+
+/* --- 窗口标题图标：hover 时弹跳（补充 win-head:hover 已有的 scale） --- */
+.win-head-icon{
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),background 0.25s ease;
+}
+
+/* --- 豆瓣/友链卡片图标：hover 时摇摆 --- */
+.douban-tab:hover i,.flink-card:hover .flink-avatar i{
+  animation:icon-wiggle 0.5s ease;
+}
+
+/* --- 搜索结果清空按钮：hover 时旋转 --- */
+.search-clear:hover .fa-xmark{
+  animation:icon-spin 0.4s ease;
+}
+
+/* --- 筛选按钮图标：hover 时弹跳 --- */
+.filter-btn:hover i{
+  animation:icon-bounce 0.4s ease;
+}
+
+/* --- 分类列表项图标：hover 时摇摆 --- */
+.cat-item:hover .fa-folder,
+.cat-item i{
+  transition:transform 0.3s ease,color 0.3s ease;
+}
+.cat-item:hover i{
+  animation:icon-wiggle 0.5s ease;
+}
+
+/* --- 文章列表置顶徽章图标：持续摇摆（补充 .sticky-badge） --- */
+.sticky-badge i{
+  animation:icon-tilt 3s ease-in-out infinite;
+}
+
+/* --- 文章列表标签 # 图标：hover 时摇摆 --- */
+.post-list-tag i{
+  transition:transform 0.3s ease;
+}
+.post-list-tag:hover i{
+  animation:icon-wiggle 0.5s ease;
+}
+
+/* --- 豆瓣区域标题图标：hover 时脉冲 --- */
+.douban-sec-head h3 i{
+  transition:transform 0.3s ease;
+}
+.douban-sec-head:hover h3 i{
+  animation:icon-pulse 0.6s ease;
+}
+
+/* --- 豆瓣详情链接箭头：hover 时滑动 --- */
+.douban-link .fa-arrow-right{
+  transition:transform 0.3s ease;
+}
+.douban-link:hover .fa-arrow-right{
+  transform:translateX(4px);
+}
+
+/* --- 豆瓣评分星星：hover 时闪烁 --- */
+.douban-stars .fa-star{
+  transition:transform 0.2s ease,filter 0.2s ease;
+}
+.douban-card:hover .douban-stars .star-on{
+  animation:icon-twinkle 0.6s ease;
+}
+.douban-card:hover .douban-stars .star-on:nth-child(2){animation-delay:0.1s;}
+.douban-card:hover .douban-stars .star-on:nth-child(3){animation-delay:0.2s;}
+.douban-card:hover .douban-stars .star-on:nth-child(4){animation-delay:0.3s;}
+.douban-card:hover .douban-stars .star-on:nth-child(5){animation-delay:0.4s;}
+@keyframes icon-twinkle{
+  0%,100%{transform:scale(1);filter:brightness(1);}
+  50%{transform:scale(1.3);filter:brightness(1.5) drop-shadow(0 0 4px gold);}
+}
+
+/* --- 豆瓣空状态图标：持续脉冲 --- */
+.douban-empty i{
+  animation:icon-pulse 2s ease-in-out infinite;
+}
+
+/* --- 豆瓣封面占位图标：持续脉冲 --- */
+.douban-cover-ph i{
+  animation:icon-pulse 2.5s ease-in-out infinite;
+}
+
+/* --- 按钮内图标（404页面等）：hover 时摇摆 --- */
+.btn i{
+  transition:transform 0.3s ease;
+}
+.btn:hover i{
+  animation:icon-wiggle 0.5s ease;
+}
+
+/* --- 灯箱关闭按钮：hover 时旋转 --- */
+.lightbox-close i{
+  transition:transform 0.3s ease;
+}
+.lightbox-close:hover i{
+  animation:icon-spin 0.4s ease;
+}
+
+/* --- 灯箱导航箭头：hover 时滑动 --- */
+.lightbox-prev i,.lightbox-next i{
+  transition:transform 0.3s ease;
+}
+.lightbox-prev:hover i{transform:translateX(-4px);}
+.lightbox-next:hover i{transform:translateX(4px);}
+
+/* --- 归档统计英雄图标：hover 时脉冲 --- */
+.stat-hero-icon i,.stat-title i{
+  transition:transform 0.3s ease;
+}
+.stat-hero-card:hover .stat-hero-icon i,
+.stat-title:hover i{
+  animation:icon-pulse 0.6s ease;
+}
+
+/* --- 归档年份折叠箭头：展开/收起时旋转 --- */
+.year-toggle-icon{
+  transition:transform 0.3s ease;
+}
+.archive-year-header.expanded .year-toggle-icon{
+  transform:rotate(180deg);
+}
+
+/* --- 文章列表卡片 hover 时元信息图标脉冲 --- */
+.post-list-item:hover .post-meta i{
+  animation:icon-pulse 0.5s ease;
+}
+
+/* --- 文章列表卡片 hover 时分类图标摇摆 --- */
+.post-list-item:hover .post-meta .fa-folder{
+  animation:icon-wiggle 0.5s ease;
+}
+
+/* --- reduce-motion 适配 --- */
+@media (prefers-reduced-motion:reduce){
+  .dock-item:hover .dock-icon,.search-trigger:hover i,.back-top-btn:hover i,
+  .post-meta:hover i,.page-header:hover i,.tag:hover i,.badge:hover i,
+  .filter-btn:hover i,.sticky-icon,.card-sticky-badge i,.sticky-badge i,
+  .post-toc-toggle:hover i,.post-toc-fab:hover i,
+  .post-copyright-title:hover i,.comments-config-hint:hover i,
+  .douban-tab:hover i,.search-clear:hover .fa-xmark,
+  .cat-item:hover i,.post-list-tag:hover i,
+  .douban-sec-head:hover h3 i,.douban-empty i,.douban-cover-ph i,
+  .btn:hover i,.lightbox-close:hover i,
+  .stat-hero-card:hover .stat-hero-icon i,.stat-title:hover i,
+  .post-list-item:hover .post-meta i,
+  .post-list-item:hover .post-meta .fa-folder,
+  .douban-card:hover .douban-stars .star-on,
+  .hero-social-btn svg,.data-item span:last-child,.info-item a,
+  .link-name,.link-desc,.douban-name,.wall-card .card-title,
+  .art-item h4,.post-item .post-title,.nav-prev span,.nav-next span,
+  .win-traffic-btn svg,.gallery-loader .fa-circle-notch,
+  .archive-year-label,.year-post-count,.archive-row .row-date,.archive-row .row-cat,
+  .not-found-card,.stat-hero-num,.tag-cloud .tag,.post-list-tag,
+  .douban-link,.page-btn,.archive-list li,
+  .douban-count,.stat-hero-card,.hero-ava,
+  .folding-icon,.chart-bar,.tab-label,
+  .article-content a,.post-copyright-link,
+  .search-item,.wall-search-input,.wall-search-clear{
+    animation:none!important;
+    transition:none!important;
+    transform:none!important;
+  }
+}
+
+/* ====== 全站 UI 元素动画增强（0 KB 第三方依赖） ======
+   目标：100% 交互元素动画覆盖 */
+
+/* --- 红绿灯按钮：hover 时缩放 + 颜色加深 --- */
+.win-traffic-btn svg{transition:transform 0.2s ease,opacity 0.2s ease;}
+.win-traffic-btn:hover{transform:scale(1.15);}
+.win-btn-close:hover{background:#ff5f57!important;}
+.win-btn-minimize:hover{background:#febc2e!important;}
+.win-btn-pin:hover{background:#28c840!important;}
+
+/* --- 社交按钮：hover 时图标弹跳 --- */
+.hero-social-btn svg{transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.hero-social-btn:hover svg{animation:icon-bounce 0.5s ease;}
+
+/* --- 头像：hover 时持续轻微旋转 --- */
+.hero-ava-img{transition:transform 0.4s ease;}
+.hero-ava:hover .hero-ava-img{transform:scale(1.08) rotate(3deg);}
+
+/* --- 数据窗口数字：hover 时弹跳 --- */
+.data-item span:last-child{transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.data-item:hover span:last-child{animation:icon-bounce 0.4s ease;}
+
+/* --- 信息窗口链接：hover 时下划线滑入 --- */
+.info-item a{position:relative;transition:color 0.2s ease;}
+.info-item a::after{
+  content:'';position:absolute;bottom:-1px;left:0;width:0;height:1px;
+  background:var(--accent-color);transition:width 0.3s ease;
+}
+.info-item a:hover::after{width:100%;}
+
+/* --- 文章列表项标题：hover 时颜色过渡 --- */
+.art-item h4,.post-item .post-title{transition:color 0.2s ease,transform 0.2s ease;}
+.art-item:hover h4,.post-item:hover .post-title{transform:translateX(2px);}
+
+/* --- 文章列表日期标签：hover 时脉冲 --- */
+.archive-list .arc-date,.archive-row .row-date{
+  transition:transform 0.2s ease,background 0.2s ease;
+}
+.archive-row:hover .row-date,.archive-list li:hover .arc-date{
+  animation:icon-pulse 0.4s ease;
+}
+
+/* --- 分类计数徽章：hover 时弹跳 --- */
+.cat-item .cat-count,.cat-box .cat-item em,.year-post-count{
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.cat-item:hover .cat-count,.cat-box .cat-item:hover em,
+.archive-year-header:hover .year-post-count{
+  animation:icon-bounce 0.4s ease;
+}
+
+/* --- 文章导航 prev/next：hover 时整体上移 --- */
+.nav-prev,.nav-next{
+  transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s ease;
+}
+.nav-prev:hover,.nav-next:hover{transform:translateY(-2px);}
+.nav-prev span,.nav-next span{transition:transform 0.25s ease;}
+.nav-prev:hover span{transform:translateX(-3px);}
+.nav-next:hover span{transform:translateX(3px);}
+
+/* --- 友链卡片头像：hover 时旋转 --- */
+.link-ava{transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),border-radius 0.3s ease;}
+.link-card:hover .link-ava{transform:rotate(-5deg) scale(1.08);border-radius:50%;}
+.link-name{transition:color 0.2s ease;}
+.link-card:hover .link-name{color:var(--accent-color);}
+.link-desc{transition:color 0.2s ease;}
+.link-card:hover .link-desc{color:var(--accent-medium);}
+
+/* --- 豆瓣卡片名称：hover 时颜色过渡 --- */
+.douban-name{transition:color 0.2s ease;}
+.douban-card:hover .douban-name{color:var(--accent-color);}
+
+/* --- 文章墙卡片标题：hover 时颜色过渡 + 轻微上移 --- */
+.wall-card .card-title{
+  transition:color 0.2s ease,transform 0.2s ease;
+}
+.wall-card:hover .card-title{color:var(--accent-color);}
+
+/* --- 标签云：hover 时 3D 弹跳 --- */
+.tag-cloud .tag,.tag-box .tag{
+  transition:background 0.2s ease,color 0.2s ease,transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s ease;
+}
+.tag-cloud .tag:hover,.tag-box .tag:hover{transform:translateY(-2px) scale(1.05);}
+
+/* --- 搜索输入框：focus 时边框发光脉冲 --- */
+.wall-search-input,.search-input{
+  transition:border-color 0.25s ease,background 0.25s ease,box-shadow 0.25s ease;
+}
+.wall-search-input:focus,.search-input:focus{
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-color) 12%,transparent);
+}
+
+/* --- 搜索结果项：hover 时左侧出现指示条 --- */
+.search-item{
+  position:relative;transition:background 0.2s ease,padding-left 0.2s ease;
+}
+.search-item::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:0;background:var(--accent-color);border-radius:0 3px 3px 0;
+  transition:height 0.25s ease;
+}
+.search-item:hover::before{height:60%;}
+
+/* --- 搜索清空按钮：hover 时缩放 --- */
+.wall-search-clear,.search-clear{
+  transition:transform 0.2s ease,background 0.15s ease,color 0.15s ease;
+}
+.wall-search-clear:hover,.search-clear:hover{transform:scale(1.15);}
+
+/* --- 分页按钮：hover 时上移 + 阴影 --- */
+.page-btn{
+  transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.25s ease,background 0.2s ease,color 0.2s ease;
+}
+.page-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px color-mix(in srgb,var(--accent-color) 20%,transparent);}
+
+/* --- 404 页面：emoji 持续弹跳 --- */
+.not-found-code .nf-emoji{animation:nf-bounce 2s ease-in-out infinite;}
+@keyframes nf-bounce{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-8px) rotate(10deg);}}
+.not-found-card{animation:anim-fade-up 0.6s ease both;}
+.not-found-title{transition:color 0.3s ease;}
+.not-found-card:hover .not-found-title{color:var(--accent-color);}
+
+/* --- 归档统计数字：hover 时数字弹跳 --- */
+.stat-hero-num{transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.stat-hero-card:hover .stat-hero-num{animation:icon-bounce 0.5s ease;}
+
+/* --- 柱状图柱子：hover 时颜色变亮 + 上移 --- */
+.chart-bar{transition:height 0.5s cubic-bezier(0.4,0,0.2,1),background 0.25s ease,transform 0.2s ease;}
+.chart-col:hover .chart-bar{transform:translateY(-3px);}
+
+/* --- 归档年份标签：hover 时整体缩放 --- */
+.archive-year-label,.year-label-text{transition:transform 0.2s ease;}
+.archive-year-header:hover .archive-year-label{transform:scale(1.02);}
+
+/* --- 折线图数据点：hover 时圆圈放大 --- */
+.chart-point circle{transition:r 0.2s ease,stroke-width 0.2s ease;}
+.chart-point:hover circle{r:7;stroke-width:3;}
+
+/* --- 折叠面板箭头：展开/收起时旋转 --- */
+.folding-icon{transition:transform 0.3s ease;}
+.folding-panel[open] .folding-icon,.hide-toggle-panel.expanded .folding-icon{transform:rotate(90deg);}
+
+/* --- Tabs 标签：hover 时底部线条滑入 --- */
+.tab-label{transition:color 0.2s ease,background 0.2s ease,border-bottom-color 0.2s ease;}
+.tab-label::after{
+  content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;
+  background:var(--accent-color);transition:width 0.3s ease;
+}
+.tab-label:hover::after{width:100%;}
+.tab-label.active::after{width:100%;}
+
+/* --- 文章内链接：hover 时下划线滑入 --- */
+.article-content a{
+  position:relative;transition:color 0.2s ease;
+}
+.article-content a::after{
+  content:'';position:absolute;bottom:-1px;left:0;width:0;height:1px;
+  background:currentColor;transition:width 0.3s ease;
+}
+.article-content a:hover::after{width:100%;}
+
+/* --- 版权链接：hover 时下划线滑入 --- */
+.post-copyright-link{transition:color 0.2s ease;}
+.post-copyright-link::after{
+  content:'';position:absolute;bottom:-1px;left:0;width:0;height:1px;
+  background:var(--accent-color);transition:width 0.3s ease;
+}
+.post-copyright-link:hover::after{width:100%;}
+
+/* --- 文章正文图片：hover 时轻微放大 --- */
+.article-content img{transition:transform 0.3s ease,box-shadow 0.3s ease;}
+.article-content img:hover{transform:scale(1.02);box-shadow:0 4px 20px rgba(0,0,0,0.12);}
+
+/* --- 代码块复制按钮：hover 时弹跳 --- */
+.copy-btn{transition:transform 0.2s ease,background 0.2s ease,color 0.2s ease,opacity 0.2s ease;}
+.copy-btn:hover{animation:icon-bounce 0.3s ease;}
+
+/* --- 一言文字：加载完成时淡入 --- */
+.hero-hitokoto-text{animation:anim-fade-in 0.6s ease both;}
+
+/* --- 归档列表项：hover 时日期缩进 --- */
+.archive-list li{transition:background 0.2s ease,padding-left 0.2s ease;}
+.archive-list li:hover{padding-left:16px;}
+.archive-list .arc-title{transition:color 0.2s ease;}
+.archive-list li:hover .arc-title{color:var(--accent-color);}
+
+/* --- 归档行：hover 时整体缩放 --- */
+.archive-row{transition:background 0.2s ease,transform 0.2s ease;}
+.archive-row:hover{transform:translateX(2px);}
+.archive-row .row-title{transition:color 0.2s ease;}
+
+/* --- 豆瓣计数徽章：hover 时弹跳 --- */
+.douban-count{transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.douban-sec-head:hover .douban-count{animation:icon-bounce 0.4s ease;}
+
+/* --- 相册图片加载完成时淡入 --- */
+.gallery-item.loaded{animation:anim-fade-in 0.4s ease both;}
+
+/* --- 相册加载动画：旋转 --- */
+.gallery-loader .fa-circle-notch{animation:icon-spin 1s linear infinite;}
+
+/* --- 窗口聚焦时：边框光圈脉冲 --- */
+.app-window.win-focused{animation:win-focus-pulse 0.4s ease;}
+@keyframes win-focus-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent-color) 30%,transparent);}100%{box-shadow:0 24px 70px rgba(0,0,0,0.14),0 12px 32px color-mix(in srgb,var(--accent-color) 10%,transparent),inset 0 1px 0 rgba(255,255,255,0.7);}}
+
+/* --- Dock 活跃指示点：持续脉冲 --- */
+.dock-item.active .dock-item-inner::after{
+  content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:var(--accent-color);
+  animation:dot-pulse 1.5s ease-in-out infinite;
+}
+@keyframes dot-pulse{0%,100%{opacity:0.4;transform:translateX(-50%) scale(0.8);}50%{opacity:1;transform:translateX(-50%) scale(1.2);}}
+
+/* --- 进度条入场动画 --- */
+#nprogress-bar.show{animation:bar-slide 0.3s ease;}
+@keyframes bar-slide{from{transform:translateX(-100%);}to{transform:translateX(0);}}

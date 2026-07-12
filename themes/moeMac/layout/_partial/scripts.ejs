@@ -2,23 +2,19 @@
   /* cdn 配置与 head.ejs 一致，所有 JS 资源统一加 cdn 前缀 */
   var A = theme.cdn || '/assets';
   /* 版本号用于强制浏览器刷新缓存，修改 JS 后递增此数字 */
-  var V = '?v=20260712r3';
+  var V = '?v=20260712r18';
 %>
 <script>window.__ASSETS__="<%= A %>";</script>
-<!-- 优先加载核心布局脚本：animations.js + main.js（defer 按顺序执行） -->
-<!-- Masonry 瀑布流布局库 — 与 main.js 同优先级，首页布局依赖 -->
+<!-- Masonry 瀑布流布局库 — defer 按顺序执行 -->
 <script defer src="<%= A %>/js/masonry.pkgd.min.js"></script>
-<!-- animations.js 必须在 main.js 之前，确保 main.js 调用时 Animations 已定义 -->
+<!-- animations.js 必须在 main.js 之前 -->
 <script defer src="<%= A %>/js/animations.js<%= V %>"></script>
-<!-- ui-enhance.js 在 main.js 之前，确保 UIEnhance 已定义 -->
+<!-- ui-enhance.js 在 main.js 之前 -->
 <script defer src="<%= A %>/js/ui-enhance.js<%= V %>"></script>
-<!-- main.js 核心布局脚本 — 最高优先级 -->
+<!-- main.js 核心布局脚本 -->
 <script defer src="<%= A %>/js/main.js<%= V %>"></script>
-<!-- 标签外挂交互脚本（Tabs/Folding/KaTeX/Mermaid 等）— 次优先级
-     KaTeX 和 Mermaid 均在 tag-plugins.js 中按需懒加载，不在全局引入 -->
+<!-- 标签外挂交互脚本 — 次优先级 -->
 <script defer src="<%= A %>/js/tag-plugins.js<%= V %>"></script>
-<!-- APlayer 音乐播放器 — 仅在有音乐窗口的页面懒加载（由 main.js MusicPlayer.init 动态创建） -->
-<!-- Meting API 已由 main.js fetch 调用，无需全局加载 -->
 <% if (theme.comments && theme.comments.enable && theme.comments.provider === 'cwd' && theme.comments.cwd && theme.comments.cwd.apiBaseUrl) { %>
 <script defer src="<%= A %>/js/cwd.js"></script>
 <% } %>

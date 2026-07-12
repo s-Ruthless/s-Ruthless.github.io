@@ -1,4 +1,4 @@
-/* ====== 相册页面 ====== */
+﻿/* ====== 相册页面 ====== */
 
 /* CSS columns 瀑布流：图片保持原始宽高比，自动填充列 */
 .gallery-masonry{
@@ -36,7 +36,7 @@
   transition:transform 0.4s ease;
 }
 #galleryMasonry .gallery-item:hover img{filter:brightness(1.08);}
-/* 鏍囬閬僵 */
+/* 标签遮罩 */
 #galleryMasonry .gallery-item .gallery-overlay{
   position:absolute;bottom:0;left:0;right:0;
   padding:24px 12px 10px;
@@ -50,7 +50,7 @@
   text-shadow:0 1px 4px rgba(0,0,0,0.5);
 }
 
-/* 鍔犺浇鎸囩ず鍣?*/
+/* 加载指示器 */
 .gallery-loader{
   display:flex;align-items:center;justify-content:center;gap:8px;
   padding:30px 0;color:var(--accent-soft);font-size:14px;
@@ -60,7 +60,7 @@
   text-align:center;padding:30px 0;color:var(--text-hint);font-size:13px;
 }
 
-/* ====== 鐏 ====== */
+/* 灯箱 */
 .gallery-lightbox{
   position:fixed;inset:0;z-index:10002;display:none;
   align-items:center;justify-content:center;

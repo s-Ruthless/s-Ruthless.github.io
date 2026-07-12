@@ -1,10 +1,10 @@
-/* ============================================
+﻿/* ============================================
    home.css — 首页桌面窗口专用样式
    包含：Hero区、文章列表、分类、标签云、
          数据窗口、音乐窗口、hover增强
    ============================================ */
 
-/* ====== Hero �?====== */
+/* ====== Hero 区 ====== */
 .hero-ava{
   width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:28px;font-weight:600;color:var(--accent-medium);
@@ -58,7 +58,7 @@ transition:all 0.25s ease;flex-shrink:0;text-decoration:none;
 .art-item h4:hover{color:var(--accent-color);}
 .art-item span{font-size:11px;color:#444;flex-shrink:0;}
 
-/* ====== 分类（首页窗�?+ 分类页） ====== */
+/* ====== 分类（首页窗口 + 分类页） ====== */
 .cat-item{
   display:flex;justify-content:space-between;align-items:center;
   padding:8px 12px;border-radius:10px;transition:background 0.2s ease;cursor:pointer;
@@ -80,7 +80,7 @@ transition:all 0.25s ease;flex-shrink:0;text-decoration:none;
 .cat-box .cat-item span{flex:1;}
 .cat-box .cat-item em{font-style:normal;font-size:11px;color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:1px 7px;border-radius:8px;}
 
-/* ====== 标签�?====== */
+/* ====== 标签云 ====== */
 .tag-cloud{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0;}
 .tag-cloud .tag{
   padding:4px 10px;border-radius:10px;font-size:12px;
@@ -89,7 +89,7 @@ transition:all 0.25s ease;flex-shrink:0;text-decoration:none;
 }
 .tag-cloud .tag:hover{background:color-mix(in srgb,var(--accent-color) 18%,transparent);color:var(--accent-medium);box-shadow:0 4px 12px color-mix(in srgb,var(--accent-color) 15%,transparent);}
 
-/* 首页标签云窗�?*/
+/* 首页标签云窗口 */
 .tag-box{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;}
 .tag-box .tag{
   display:inline-block;padding:4px 10px;border-radius:10px;font-size:12px;

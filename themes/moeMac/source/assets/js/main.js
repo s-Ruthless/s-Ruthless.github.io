@@ -603,7 +603,12 @@ window.__moeMacMainLoaded = true;
   var masonryInstance = null;
   function initMasonry() {
     var grid = document.getElementById('posts-wall-grid');
-    if (!grid || typeof Masonry === 'undefined') return;
+    if (!grid) return;
+    if (typeof Masonry === 'undefined') {
+      /* Masonry 库未加载，直接显示网格（兜底） */
+      grid.classList.add('masonry-ready');
+      return;
+    }
     /* 销毁旧实例 */
     if (masonryInstance) { try { masonryInstance.destroy(); } catch(e){} }
     masonryInstance = new Masonry(grid, {
@@ -611,9 +616,15 @@ window.__moeMacMainLoaded = true;
       columnWidth: '.wall-card',
       percentPosition: true,
       gutter: 16,
-      transitionDuration: '0.2s',
+      transitionDuration: 0,
       originLeft: true,
       originTop: true
+    });
+    /* 双 rAF 确保 Masonry 布局完成后再显示，避免淡入时卡片仍在位移 */
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        grid.classList.add('masonry-ready');
+      });
     });
   }
   function relayoutMasonry() {
@@ -625,7 +636,18 @@ window.__moeMacMainLoaded = true;
     var btns = document.querySelectorAll('.filter-btn');
     var grid = document.getElementById('posts-wall-grid');
     var cards = grid ? grid.querySelectorAll('.wall-card') : [];
-    if (!btns.length || !grid) return;
+    if (!grid) return;
+    /* 兜底：3 秒后无论如何都显示网格，防止 Masonry 异常导致永久隐藏 */
+    setTimeout(function() {
+      if (grid && !grid.classList.contains('masonry-ready')) {
+        grid.classList.add('masonry-ready');
+      }
+    }, 3000);
+    /* 即使没有筛选按钮，也要初始化 Masonry 并显示网格 */
+    if (!btns.length) {
+      initMasonry();
+      return;
+    }
 
     /* 初始化 Masonry */
     initMasonry();
@@ -1516,23 +1538,25 @@ window.__moeMacMainLoaded = true;
       else { document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; }); }
       if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }
     }
-    /* 检查所有 CSS link 是否已加载完成 */
+    /* 检查同步 CSS link 是否已加载完成（忽略 media="print" 异步 CSS）
+       异步 CSS 不影响布局和动画，不应阻塞入场动画 */
     function checkCSSAndAnimate() {
+      var syncLinks = document.querySelectorAll('link[rel="stylesheet"]:not([media="print"])');
       var allLoaded = true;
-      document.querySelectorAll('link[rel="stylesheet"]').forEach(function(link) {
+      syncLinks.forEach(function(link) {
         if (!link.sheet) { allLoaded = false; }
       });
       if (allLoaded) {
         runAnimations();
       } else {
-        /* CSS 尚未加载完，等待 load 事件 */
+        /* 同步 CSS 尚未加载完，等待 load 事件 */
         window.addEventListener('load', runAnimations, { once: true });
-        /* 兜底：2s 后强制执行动画 */
+        /* 兜底：1s 后强制执行动画（同步 CSS 通常很快加载完） */
         setTimeout(function() {
           if (!document.body.classList.contains('animating') && !document.querySelector('.anim-fade-up, .anim-zoom-in, .anim-scale-in')) {
             runAnimations();
           }
-        }, 2000);
+        }, 1000);
       }
     }
     checkCSSAndAnimate();

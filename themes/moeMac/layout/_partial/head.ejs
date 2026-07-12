@@ -9,6 +9,13 @@
   var ogImage = page.cover || theme.og_image || theme.avatar_url || '';
   var accent = theme.accent_color || '#a78bfa';
   var favicon = theme.favicon || ('data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">' + (theme.favicon_emoji || '🌿') + '</text></svg>'));
+  /* 判断当前页面类型，用于条件加载 CSS */
+  var _layout = page.layout || (page.path === 'index.html' ? 'index' : 'page');
+  var _isPost = _layout === 'post';
+  var _isHome = _layout === 'index';
+  var _isArchive = _layout === 'archive';
+  var _isGallery = _layout === 'gallery';
+  var _isDouban = _layout === 'douban' || _layout === 'page-douban' || (page.path || '').indexOf('douban') > -1;
 %>
 <!DOCTYPE html>
 <html lang="<%= config.language || 'zh-CN' %>">
@@ -55,7 +62,7 @@
       if (_cp === 'giscus' && theme.comments.giscus && theme.comments.giscus.repo) _addPC('https://giscus.app');
     }
     /* 豆瓣页面：封面图可能使用外部 CDN */
-    if (page.layout === 'douban' || (page.path || '').indexOf('douban') > -1) {
+    if (_isDouban) {
       var _db = (site.data && site.data.douban) ? site.data.douban : (theme.douban || {});
       ['books','movies'].forEach(function(k) {
         (_db[k] || []).forEach(function(it) {
@@ -74,7 +81,7 @@
   <% } %>
 
   <!-- Open Graph -->
-  <meta property="og:type" content="<%= page.layout === 'post' ? 'article' : 'website' %>">
+  <meta property="og:type" content="<%= _isPost ? 'article' : 'website' %>">
   <meta property="og:title" content="<%= page.title || config.title %>">
   <meta property="og:description" content="<%= pageDesc %>">
   <meta property="og:url" content="<%= ogUrl %>">
@@ -94,24 +101,29 @@
   <link rel="alternate" type="application/rss+xml" title="<%= config.title %>" href="<%= config.url %>/<%= theme.rss.path || 'atom.xml' %>">
   <% } %>
 
-  <!-- 第三方库 CSS + 组件库 -->
-  <% var V = '?v=20260712r4'; %>
-  <link rel="stylesheet" href="<%= A %>/css/icons.css<%= V %>">
-  <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
-  <!-- 组件 CSS 异步加载，不阻塞首屏渲染 -->
-  <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>" media="print" onload="this.media='all'">
-  <!-- KaTeX 数学公式样式（本地化） -->
-  <link rel="stylesheet" href="<%= A %>/css/katex.min.css" media="print" onload="this.media='all'">
+  <% var V = '?v=20260712r18'; %>
 
-  <!-- 主题色注入 -->
+  <!-- ====== 内联关键 CSS（~1.5KB，零额外请求，防止首屏空白） ====== -->
   <style>
+    /* CSS 变量 — 主题色 + 暗黑模式，供同步 CSS 文件使用 */
     :root{
-      --accent-color:<%= accent %>;
-      --accent-soft:<%= accent %>;
-      --accent-medium:<%= accent %>;
-      --accent-strong:<%= accent %>;
+      --accent-color:<%= accent %>;--accent-soft:<%= accent %>;--accent-medium:<%= accent %>;--accent-strong:<%= accent %>;
       --accent-gradient:linear-gradient(135deg,<%= accent %>,#06b6d4);
     }
+    /* 基础重置 — 防止首屏空白闪烁 */
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{height:100%;overflow-x:hidden;}
+    body{min-height:100%;overflow-x:hidden;overflow-y:scroll;font-family:"PingFang SC",-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:#111;background:transparent;user-select:none;-webkit-user-select:none;}
+    [data-theme="dark"] body{color:#e8e8e8;}
+    /* 桌面端：窗口定位前隐藏（JS 计算位置后由动画渐入）
+       移动端：窗口始终可见（纵向卡片流，无需 JS 定位） */
+    html.is-desktop .drag-win:not([data-pos]){opacity:0;}
+    html:not(.is-desktop) .drag-win:not([data-pos]){opacity:1!important;}
+    @media(max-width:768px),(max-device-width:768px){.drag-win:not([data-pos]){opacity:1!important;}}
+    /* 进度条 — 在 CSS 文件加载前即可显示 */
+    #nprogress-bar{position:fixed;top:0;left:0;height:3px;z-index:10000;pointer-events:none;opacity:0;width:0;background:linear-gradient(90deg,#ff6b6b,#ffa36b,#ffd56b,#6bffb8,#6bd4ff,#a06bff,#ff6bd4);background-size:200% 100%;animation:rainbow-shift 1.5s linear infinite;border-radius:0 2px 2px 0;transition:opacity 0.3s ease,width 0.2s ease;}
+    #nprogress-bar.show{opacity:1;}
+    @keyframes rainbow-shift{0%{background-position:0% 0}100%{background-position:200% 0}}
   </style>
 
   <!-- 早期主题初始化：在所有 CSS/JS 之前从 localStorage 读取暗黑模式偏好，
@@ -122,12 +134,7 @@
       /* 安全的 matchMedia 包装：部分国产浏览器 matchMedia 可能返回 null 或抛异常 */
       function mm(q){ try { return window.matchMedia ? window.matchMedia(q) : null; } catch(e){ return null; } }
       function mmMatches(q){ var m = mm(q); return m ? m.matches : false; }
-      /* 移动端检测：多层策略，任一命中即为移动端
-         1. UA 关键词（最可靠，荣耀/华为 UA 含特征词）
-         2. 物理屏幕宽度 ≤500px（手机物理像素）
-         3. 触摸 + 无 hover + 小视口
-         4. userAgentData.mobile API
-         5. 视口宽度 ≤768px（响应式断点） */
+      /* 移动端检测：多层策略，任一命中即为移动端 */
       var ua = navigator.userAgent || '';
       var uaMobile = /Android.*Mobile|iPhone|iPod/i.test(ua)
         || (/Android/i.test(ua) && /Honor|HWV|HUAWEI|HonorBrowser|HarmonyOS|ArkWeb/i.test(ua));
@@ -150,17 +157,39 @@
   <!-- 卜算子访客统计 -->
   <script async src="<%= A %>/js/busuanzi.pure.mini.js"></script>
 
-  <!-- 主题 CSS — 关键布局样式同步加载，非首屏样式异步加载 -->
+  <!-- ====== 核心 CSS 同步加载（布局+动画+JS 依赖，所有页面必需） ====== -->
   <link rel="stylesheet" href="<%= A %>/css/style.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/mobile.css<%= V %>">
-  <!-- pages.css 含文章墙/分类/标签/关于/友链/豆瓣等页面布局，必须同步加载 -->
   <link rel="stylesheet" href="<%= A %>/css/pages.css<%= V %>">
-  <!-- 非首屏 CSS 异步加载，不阻塞渲染 -->
-  <link rel="stylesheet" href="<%= A %>/css/home.css<%= V %>" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/icons.css<%= V %>">
+
+  <!-- ====== 页面级 CSS — 当前页面同步，其他页面异步 ====== -->
+  <% if (_isPost) { %>
+  <link rel="stylesheet" href="<%= A %>/css/article.css<%= V %>">
+  <% } else { %>
   <link rel="stylesheet" href="<%= A %>/css/article.css<%= V %>" media="print" onload="this.media='all'">
+  <% } %>
+  <% if (_isHome) { %>
+  <link rel="stylesheet" href="<%= A %>/css/home.css<%= V %>">
+  <% } else { %>
+  <link rel="stylesheet" href="<%= A %>/css/home.css<%= V %>" media="print" onload="this.media='all'">
+  <% } %>
+  <% if (_isArchive) { %>
+  <link rel="stylesheet" href="<%= A %>/css/archive.css<%= V %>">
+  <% } else { %>
   <link rel="stylesheet" href="<%= A %>/css/archive.css<%= V %>" media="print" onload="this.media='all'">
+  <% } %>
+  <% if (_isGallery) { %>
+  <link rel="stylesheet" href="<%= A %>/css/gallery.css<%= V %>">
+  <% } else { %>
   <link rel="stylesheet" href="<%= A %>/css/gallery.css<%= V %>" media="print" onload="this.media='all'">
+  <% } %>
+
+  <!-- ====== 非关键 CSS 异步加载（不阻塞渲染） ====== -->
+  <link rel="stylesheet" href="<%= A %>/css/components.css<%= V %>" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="<%= A %>/css/aplayer.css<%= V %>" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/APlayer.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="<%= A %>/css/katex.min.css" media="print" onload="this.media='all'">
 
   <!-- LCP 图片预加载：头像和壁纸是首屏最大内容元素 -->
   <% if (theme.avatar_type === 'image' && theme.avatar_url) { %>
@@ -173,5 +202,4 @@
   <!-- 关键 JS 预加载：提前高优先级拉取核心脚本，缩短首屏渲染等待 -->
   <link rel="preload" href="<%= A %>/js/main.js<%= V %>" as="script">
   <link rel="preload" href="<%= A %>/js/animations.js<%= V %>" as="script">
-  <link rel="preload" href="<%= A %>/js/masonry.pkgd.min.js" as="script">
 </head>

@@ -69,6 +69,8 @@
 }
 /* ====== 文章墙：Masonry 瀑布流布局 ====== */
 .wall-grid{position:relative;width:100%;margin-bottom:20px;}
+/* Masonry 初始化后显示（初始 opacity:0 由模板内联样式设置） */
+.wall-grid.masonry-ready{opacity:1!important;}
 /* 每张卡片宽度按百分比，Masonry 负责定位 */
 .wall-card{width:calc(33.333% - 11px);margin-bottom:16px;min-width:0;}
 /* 响应式 */
@@ -126,11 +128,20 @@ transform:translateY(-3px);
 .card-summary{font-size:12px;color:#444;line-height:1.5;margin-bottom:4px;position:relative;z-index:1;}
 .card-tags{display:flex;flex-wrap:wrap;gap:4px;position:relative;z-index:1;}
 .card-tag{font-size:11px;color:#444;background:rgba(0,0,0,0.04);padding:2px 6px;border-radius:4px;}
-/* 封面图片 */
-.card-cover{width:100%;height:120px;overflow:hidden;position:relative;z-index:1;border-radius:16px 16px 0 0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 8%,transparent),color-mix(in srgb,var(--accent-color) 3%,transparent));}
-.card-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease;}
+/* 封面图片 — 可爱加载动画：奔跑的小猫 + 尘土飞扬 */
+.card-cover{width:100%;height:120px;overflow:hidden;position:relative;z-index:1;border-radius:16px 16px 0 0;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 6%,#f5f5fa),color-mix(in srgb,var(--accent-color) 3%,#eeeef5));}
+/* 地面阴影 + 尾随尘土 */
+.card-cover::before{content:'';position:absolute;bottom:28%;left:50%;width:28px;height:5px;margin-left:-14px;border-radius:50%;background:color-mix(in srgb,var(--accent-color) 14%,rgba(0,0,0,0.08));box-shadow:18px -2px 0 -2px color-mix(in srgb,var(--accent-color) 12%,rgba(0,0,0,0.06)),26px -1px 0 -3px color-mix(in srgb,var(--accent-color) 10%,rgba(0,0,0,0.04));animation:cat-shadow 0.45s ease-in-out infinite;z-index:0;}
+/* 奔跑的小猫 */
+.card-cover::after{content:'\1F431';position:absolute;top:50%;left:50%;font-size:24px;transform:translate(-50%,-50%);animation:cat-run 0.45s ease-in-out infinite;z-index:0;}
+.card-cover.loaded::before,.card-cover.loaded::after{opacity:0;transition:opacity 0.3s ease;}
+.card-cover.loaded{background:transparent;}
+@keyframes cat-shadow{0%,100%{transform:scale(1,1);opacity:0.5;}50%{transform:scale(0.65,1);opacity:0.25;}}
+@keyframes cat-run{0%,100%{transform:translate(-50%,-50%) rotate(-8deg) scale(1,1);}25%{transform:translate(-52%,-58%) rotate(0deg) scale(0.95,1.05);}50%{transform:translate(-50%,-50%) rotate(8deg) scale(1,1);}75%{transform:translate(-48%,-58%) rotate(0deg) scale(0.95,1.05);}}
+.card-cover img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 0.4s ease,transform 0.4s ease;position:relative;z-index:1;}
+.card-cover img.loaded{opacity:1;}
 .wall-card:hover .card-cover img{filter:brightness(1.08);transform:scale(1.06);}
-/* ????? clip-reveal ?? */
+/* 禁用 clip-reveal 动画 — 卡片封面图不需要此效果 */
 .card-cover img.clip-reveal{clip-path:none!important;transition:none!important;}
 .card-cover img.clip-reveal.revealed{clip-path:none!important;}
 
@@ -312,6 +323,11 @@ will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hid
 [data-theme="dark"] .wall-search-empty p{color:#aaa;}
 [data-theme="dark"] .douban-card{background:var(--card-bg);border-color:rgba(255,255,255,0.14);}
 [data-theme="dark"] .douban-stars .star-off{color:rgba(255,255,255,0.2);}
+/* 暗黑模式 — 卡片封面加载动画适配 */
+[data-theme="dark"] .card-cover:not(.loaded),
+[data-theme="dark"] .post-list-cover:not(.loaded){background:linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));}
+[data-theme="dark"] .card-cover::before,
+[data-theme="dark"] .post-list-cover::before{background:color-mix(in srgb,var(--accent-color) 20%,rgba(255,255,255,0.08));box-shadow:18px -2px 0 -2px color-mix(in srgb,var(--accent-color) 16%,rgba(255,255,255,0.06)),26px -1px 0 -3px color-mix(in srgb,var(--accent-color) 12%,rgba(255,255,255,0.04));}
 
 /* ====== 桌面端首页：隐藏滚动条（macOS 窗口系统不需要可见滚动条） ====== */
 /* 仅桌面端生效，移动端和文章内容页保留原生滚动条 */

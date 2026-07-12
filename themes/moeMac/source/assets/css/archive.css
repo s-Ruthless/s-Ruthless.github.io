@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    archive.css — 归档/时间轴页专用样式
    包含：统计看板、柱状图、年份折叠、文章列表
    ============================================ */
@@ -31,7 +31,7 @@
 /* ====== 统计看板 ====== */
 .archive-stats{margin-bottom:32px;}
 
-/* 三宫格数字卡�?*/
+/* 三宫格数字卡片 */
 .stat-hero-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
 .stat-hero-card{
   display:flex;align-items:center;gap:16px;padding:20px 24px;border-radius:var(--radius-xl);
@@ -64,7 +64,7 @@
 }
 .stat-hero-label{font-size:12px;color:#444;margin-top:2px;}
 
-/* 详情�?*/
+/* 详情卡片 */
 .stat-detail-row{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;}
 .stat-chart-full{
   padding:24px;border-radius:var(--radius-xl);
@@ -82,7 +82,7 @@
 .stat-title i{color:var(--accent-color);margin-right:6px;}
 .stat-title-tags{margin-top:18px;}
 
-/* 柱状�?*/
+/* 柱状图 */
 .chart-bars{display:flex;align-items:flex-end;gap:14px;height:130px;padding-top:14px;}
 .chart-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;}
 .chart-bar-wrap{width:100%;height:100px;display:flex;align-items:flex-end;}
@@ -174,7 +174,7 @@
 }
 .archive-empty{text-align:center;padding:40px;color:#444;font-size:14px;}
 
-/* ====== 响应�?====== */
+/* ====== 响应式 ====== */
 @media (max-width:1024px) and (min-width:601px){
   .stat-hero-row{grid-template-columns:repeat(2,1fr);}
   .stat-hero-card:nth-child(3){grid-column:span 2;}
@@ -193,7 +193,7 @@
   .year-label-text{font-size:16px;}
 }
 
-/* ====== 归档页暗黑模�?====== */
+/* ====== 归档页暗黑模式 ====== */
 [data-theme="dark"] .archive-year,
 [data-theme="dark"] .archive-header h2,
 [data-theme="dark"] .year-label-text,

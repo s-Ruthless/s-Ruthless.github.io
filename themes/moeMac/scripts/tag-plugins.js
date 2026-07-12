@@ -354,11 +354,11 @@ var TAG_RENDERERS = {
     var author = parts[1] || '';
     var lines = content.trim().split('\n').filter(function (l) { return l.trim(); });
     var bodyHtml = lines.map(function (l) { return '<p class="poem-line">' + l.trim() + '</p>'; }).join('');
-    var html = '<div class="poem-block">';
-    if (title) html += '<h4 class="poem-title">' + title + '</h4>';
-    html += '<div class="poem-body">' + bodyHtml + '</div>';
-    if (author) html += '<p class="poem-author">— ' + author + '</p>';
-    return html + '</div>';
+var html = '<div class="poem-block">';
+if (title) html += '<h4 class="poem-title">' + title + '</h4>';
+if (author) html += '<p class="poem-author">— ' + author + '</p>';
+html += '<div class="poem-body">' + bodyHtml + '</div>';
+return html + '</div>';
   },
 
   /* --- Detail 详情展开 --- */

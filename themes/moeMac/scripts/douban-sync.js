@@ -367,14 +367,20 @@ function extractItem(block) {
 
   // 评分（个人评分）
   // 旧格式: rating5-t, rating3-t (1-5 星 → ×2 转为 10 分制)
-  // 新格式: allstar50, allstar35 等 (直接是 10 分制)
+  // 新格式: allstar50, allstar35 等 (star×10 → /5 转为 10 分制)
+  //   allstar50 = 5.0星 = 10分, allstar45 = 4.5星 = 9分, allstar35 = 3.5星 = 7分
+  //   修复: 之前直接 parseInt('50')=50，实际应为 50/5=10
+  // 额外格式: data-rating="50", class="rating5-t"等
   var ratingMatch = block.match(/rating(\d)-t/);
   var allstarMatch = block.match(/allstar(\d{2})/);
+  var dataRatingMatch = block.match(/data-rating=["'](\d{2})["']/);
   var rating = 0;
   if (ratingMatch) {
     rating = parseInt(ratingMatch[1], 10) * 2;
   } else if (allstarMatch) {
-    rating = parseInt(allstarMatch[1], 10);
+    rating = parseInt(allstarMatch[1], 10) / 5;
+  } else if (dataRatingMatch) {
+    rating = parseInt(dataRatingMatch[1], 10) / 5;
   }
 
   // 日期
@@ -441,7 +447,7 @@ function parseItems(html) {
   var bookBlocks = html.split(/<li\s+class="subject-item"/);
   if (bookBlocks.length > 1) {
     for (var i = 1; i < bookBlocks.length; i++) {
-      var item = extractItem(bookBlocks[i].substring(0, 3000));
+      var item = extractItem(bookBlocks[i].substring(0, 5000));
       if (item) items.push(item);
     }
     return items;
@@ -453,7 +459,7 @@ function parseItems(html) {
   var movieBlocks = searchHtml.split(/<div\s+class="item(?:\s+[^"]*)?"/);
   if (movieBlocks.length > 1) {
     for (var j = 1; j < movieBlocks.length; j++) {
-      var item = extractItem(movieBlocks[j].substring(0, 3000));
+      var item = extractItem(movieBlocks[j].substring(0, 5000));
       if (item) items.push(item);
     }
   }
@@ -569,9 +575,10 @@ async function runSync(hexo, opts) {
   }
 
   var cookie = cfg.cookie || '';
-  var fetchBooks = opts.books || (!opts.books && !opts.movies && !opts.music);
-  var fetchMovies = opts.movies || (!opts.books && !opts.movies && !opts.music);
-  var fetchMusic = opts.music || (!opts.books && !opts.movies && !opts.music);
+  var fetchBooks = opts.books || (!opts.books && !opts.movies);
+  var fetchMovies = opts.movies || (!opts.books && !opts.movies);
+  // 音乐已从页面移除，不再抓取
+  var fetchMusic = false;
 
   console.log('\n🔄 开始同步豆瓣收藏 [用户: ' + userId + ']');
   if (_proxyUrl) console.log('🌐 使用代理: ' + _proxyUrl);
@@ -662,10 +669,23 @@ async function runSync(hexo, opts) {
       var uItem = needFetch[u];
       try {
         var sHtml = await fetchPage(uItem.link, cookie);
-        // 评分
+        // 评分：优先用户个人评分，回退到豆瓣社区平均分
         if (!uItem.rating || uItem.rating === 0) {
-          var rMatch = sHtml.match(/property="v:average"[^>]*>\s*([\d.]+)\s*</);
-          if (rMatch) uItem.rating = Math.round(parseFloat(rMatch[1]) * 10) / 10;
+          // 个人评分：allstar50 等 (star×10 → /5 转 10 分制)
+          var pAllstar = sHtml.match(/class="[^"]*allstar(\d{2})[^"]*"/);
+          var pDataRating = sHtml.match(/data-rating=["'](\d{2})["']/);
+          var pRatingOld = sHtml.match(/rating(\d)-t/);
+          if (pAllstar) {
+            uItem.rating = parseInt(pAllstar[1], 10) / 5;
+          } else if (pDataRating) {
+            uItem.rating = parseInt(pDataRating[1], 10) / 5;
+          } else if (pRatingOld) {
+            uItem.rating = parseInt(pRatingOld[1], 10) * 2;
+          } else {
+            // 回退：豆瓣社区平均分
+            var rMatch = sHtml.match(/property="v:average"[^>]*>\s*([\d.]+)\s*</);
+            if (rMatch) uItem.rating = Math.round(parseFloat(rMatch[1]) * 10) / 10;
+          }
         }
         // 电影类型
         if (uItem.link.indexOf('movie.douban.com') > -1) {
@@ -770,8 +790,21 @@ async function fetchMissingRatings(hexo) {
     try {
       var sHtml = await fetchPage(item.link, cookie);
       if (!item.rating || item.rating === 0) {
-        var rMatch = sHtml.match(/property="v:average"[^>]*>\s*([\d.]+)\s*</);
-        if (rMatch) item.rating = Math.round(parseFloat(rMatch[1]) * 10) / 10;
+        // 个人评分：allstar50 等 (star×10 → /5 转 10 分制)
+        var pAllstar = sHtml.match(/class="[^"]*allstar(\d{2})[^"]*"/);
+        var pDataRating = sHtml.match(/data-rating=["'](\d{2})["']/);
+        var pRatingOld = sHtml.match(/rating(\d)-t/);
+        if (pAllstar) {
+          item.rating = parseInt(pAllstar[1], 10) / 5;
+        } else if (pDataRating) {
+          item.rating = parseInt(pDataRating[1], 10) / 5;
+        } else if (pRatingOld) {
+          item.rating = parseInt(pRatingOld[1], 10) * 2;
+        } else {
+          // 回退：豆瓣社区平均分
+          var rMatch = sHtml.match(/property="v:average"[^>]*>\s*([\d.]+)\s*</);
+          if (rMatch) item.rating = Math.round(parseFloat(rMatch[1]) * 10) / 10;
+        }
       }
       if (item.link.indexOf('movie.douban.com') > -1) {
         var genreMatches = sHtml.match(/property="v:genre">([^<]+)</g);

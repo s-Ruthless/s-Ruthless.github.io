@@ -683,11 +683,11 @@ gantt
 
 **单卡片：**
 
-{% postcard /2026/06/30/moeMac主题标签外挂演示/ %}
+{% postcard /posts/91ca8701.html/ %}
 
 **多卡片横排：**
 
-{% postcard /2026/07/11/moeMac主题使用说明/ | /2026/06/18/css-grid-布局实战笔记/ | /2026/06/10/vue-3-组合式-api-入门/ %}
+{% postcard /posts/91ca8701.html/ | /posts/91ca8701.html/ | /posts/91ca8701.html/ %}
 
 
 ## Poem 诗词排版

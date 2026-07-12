@@ -40,22 +40,66 @@ function md(content) {
 
 function renderSinglePostcard(raw) {
   var parts = raw.split(',').map(function (s) { return s.trim(); });
-  var postPath = parts[0] || '';
-  if (!postPath) return '';
+  var inputPath = parts[0] || '';
+  if (!inputPath) return '';
 
   /* 规范化路径 */
-  if (postPath.charAt(0) !== '/') postPath = '/' + postPath;
-  if (postPath.charAt(postPath.length - 1) !== '/') postPath = postPath + '/';
+  if (inputPath.charAt(0) !== '/') inputPath = '/' + inputPath;
 
-  /* 从 Hexo site 数据中查找文章 */
+  /* 从 Hexo site 数据中查找文章
+     支持多种路径格式匹配：
+     1. abbrlink: /posts/75bba892.html 或 75bba892
+     2. 旧日期路径: /2026/06/30/标题/ → 按 slug 匹配
+     3. 完整路径: /posts/xxx.html 精确匹配
+     4. 标题匹配 */
   var post = null;
+  var resolvedPath = '';
   try {
     var posts = hexo.locals.get('posts');
+    /* 提取输入路径中的关键信息 */
+    var cleanInput = inputPath.replace(/^\/+|\/+$/g, '');
+    /* 尝试提取 abbrlink: posts/75bba892.html → 75bba892 */
+    var abbrlinkMatch = cleanInput.match(/(?:posts\/)?([a-f0-9]{8})\.html?$/i);
+    var abbrlink = abbrlinkMatch ? abbrlinkMatch[1] : '';
+    /* 尝试提取 slug: /2026/06/30/标题/ → 标题 */
+    var slugMatch = cleanInput.match(/\d{4}\/\d{2}\/\d{2}\/(.+)$/);
+    var slug = slugMatch ? decodeURIComponent(slugMatch[1]) : cleanInput;
+
     posts.forEach(function (p) {
-      var pPath = '/' + (p.path || '').replace(/^\/+|\/+$/g, '') + '/';
-      if (pPath === postPath) post = p;
+      if (post) return;
+      var pPath = '/' + (p.path || '').replace(/^\/+|\/+$/g, '');
+      /* 1. 精确路径匹配 */
+      if (pPath === '/' + cleanInput || (p.path || '') === cleanInput) {
+        post = p;
+        resolvedPath = pPath;
+        return;
+      }
+      /* 2. abbrlink 匹配 */
+      if (abbrlink && p.abbrlink === abbrlink) {
+        post = p;
+        resolvedPath = pPath;
+        return;
+      }
+      /* 3. slug 匹配（旧日期路径兼容） */
+      if (slug && p.slug === slug) {
+        post = p;
+        resolvedPath = pPath;
+        return;
+      }
+      /* 4. 标题匹配 */
+      if (slug && p.title === slug) {
+        post = p;
+        resolvedPath = pPath;
+        return;
+      }
     });
   } catch (e) { /* ignore */ }
+
+  /* 如果没找到文章，使用原始输入路径作为链接 */
+  var finalPath = resolvedPath || inputPath;
+  if (finalPath.charAt(finalPath.length - 1) !== '/' && finalPath.indexOf('.html') === -1) {
+    finalPath = finalPath + '/';
+  }
 
   var title = parts[1] || (post ? post.title : '') || '文章';
   var desc = parts[2] || '';
@@ -92,7 +136,7 @@ function renderSinglePostcard(raw) {
   }
 
   /* 紧凑横向卡片：缩略图在左，信息在右 */
-  var html = '<a class="post-card ajax-link" data-href="' + postPath + '">';
+  var html = '<a class="post-card ajax-link" data-href="' + finalPath + '">';
   if (cover) {
     html += '<div class="post-card-thumb">';
     html += '<img src="' + cover + '" alt="' + escapeHtml(title) + '" loading="lazy" decoding="async">';
@@ -277,7 +321,7 @@ var TAG_RENDERERS = {
     html += '<div class="gallery-items">';
     images.forEach(function (img) {
       html += '<div class="gallery-item" data-full="' + img.url + '">';
-      html += '<img src="' + img.url + '" alt="' + escapeHtml(img.caption) + '" loading="lazy" decoding="async">';
+      html += '<img src="' + img.url + '" alt="' + escapeHtml(img.caption) + '" decoding="async">';
       if (img.caption) {
         html += '<div class="gallery-caption">' + img.caption + '</div>';
       }

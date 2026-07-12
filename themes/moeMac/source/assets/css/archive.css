@@ -135,15 +135,23 @@
   background:color-mix(in srgb,var(--accent-color) 12%,transparent);
 }
 .year-toggle-icon{transition:transform 0.3s ease;color:var(--accent-color);font-size:14px;font-weight:bold;}
+/* 使用 grid-template-rows 实现折叠动画 — 纯合成层动画，不触发布局重排
+   避免 max-height + padding 时序不同步导致的手机端抖动 */
 .archive-year-content{
-  padding:4px 8px 8px 8px;
+  display:grid;
+  grid-template-rows:1fr;
+  transition:grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow:hidden;
-  max-height: 0;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* 折叠状态下：清除 padding 和 pointer-events，防止 hover 残留 */
+/* 折叠状态：grid 行高归零，内容自然消失，无需操作 padding */
 .archive-year-header:not(.expanded) + .archive-year-content{
-  padding-top:0;padding-bottom:0;pointer-events:none;
+  grid-template-rows:0fr;
+  pointer-events:none;
+}
+/* 内层 wrapper 承载 padding，overflow:hidden 配合 grid 行高过渡 */
+.archive-year-content > .archive-year-inner{
+  overflow:hidden;
+  padding:4px 8px 8px 8px;
 }
 
 .archive-row{

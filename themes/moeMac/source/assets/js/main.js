@@ -107,7 +107,7 @@ window.__moeMacMainLoaded = true;
 
   /* ====== Music Player ====== */
   var MusicPlayer = {
-    ap: null, initialized: false, loading: false,
+    ap: null, initialized: false, loading: false, _apLoaded: false,
     init: function () {
       if (this.initialized || this.loading) return;
       var mount = document.getElementById('aplayer-mount');
@@ -122,6 +122,17 @@ window.__moeMacMainLoaded = true;
       var url = apiBase + '?server=' + platform + '&type=playlist&id=' + playlistId;
       function hideLoading() { if (loadingEl) loadingEl.style.display = 'none'; }
       function showError(msg) { if (loadingEl) loadingEl.innerHTML = '<span style="color:#e57373;font-size:13px;">' + msg + '</span>'; }
+      /* 懒加载 APlayer 库（仅在有音乐挂载点时才加载 ~59KB） */
+      function loadAPlayer(cb) {
+        if (typeof APlayer !== 'undefined') { cb(); return; }
+        if (self._apLoaded) { setTimeout(function(){loadAPlayer(cb);}, 200); return; }
+        self._apLoaded = true;
+        var s = document.createElement('script');
+        s.src = (window.__ASSETS__ || '/assets') + '/js/APlayer.min.js';
+        s.onload = cb;
+        document.head.appendChild(s);
+      }
+      loadAPlayer(function() {
       fetch(url)
         .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function (songs) {
@@ -142,6 +153,7 @@ window.__moeMacMainLoaded = true;
           window.__aplayer = self.ap;
         })
         .catch(function (err) { console.error('[Music]', err); showError('\u6b4c\u5355\u52a0\u8f7d\u5931\u8d25: ' + err.message); self.loading = false; });
+      }); /* end loadAPlayer */
     },
     moveToWindow: function () {
       var wrap = document.getElementById('global-music-player');
@@ -370,6 +382,8 @@ window.__moeMacMainLoaded = true;
   /* ====== Dock Tooltip ====== */
   var DockTip = {
     init: function () {
+      /* 移动端不需要 tooltip — 已在 CSS 中 display:none */
+      if (isMobile()) return;
       document.querySelectorAll('.dock-item, .dock-minimized-item').forEach(function (item) {
         var tip = item.querySelector('.dock-text');
         if (!tip) return;
@@ -621,6 +635,12 @@ window.__moeMacMainLoaded = true;
         img.addEventListener('load', function(){ relayoutMasonry(); }, { once: true });
       }
     });
+    /* 安全网：异步 CSS 加载完成后重新布局（防止卡片宽度不对导致 Masonry 列宽计算错误） */
+    document.querySelectorAll('link[rel="stylesheet"][media="print"]').forEach(function(link) {
+      link.addEventListener('load', function() { relayoutMasonry(); }, { once: true });
+    });
+    /* window load 后再重排一次（确保所有资源就绪） */
+    window.addEventListener('load', function() { relayoutMasonry(); }, { once: true });
 
     var currentCat = 'all';
 
@@ -1166,11 +1186,11 @@ window.__moeMacMainLoaded = true;
               // 延迟重试：确保图片加载后画廊/轮播等布局正确
               setTimeout(function() {
                 if (window.TagPlugins) { try { window.TagPlugins.init(); } catch(e) {} }
-              }, 500);
+              }, 300);
               // 二次延迟：慢速网络下图片可能需要更长时间加载
               setTimeout(function() {
                 if (window.TagPlugins) { try { window.TagPlugins.init(); } catch(e) {} }
-              }, 1200);
+              }, 800);
             }
           }
           } catch(e3) { console.warn('AJAX load error:', e3); }
@@ -1312,6 +1332,8 @@ window.__moeMacMainLoaded = true;
   };
 
   /* ====== 归档页面年份折叠 ====== */
+  /* 使用纯 CSS grid-template-rows 过渡，JS 只切换 class，不操作 maxHeight/scrollHeight
+     避免强制重排（forced reflow）和 padding/max-height 时序错位导致的抖动 */
   var ArchiveFold = {
     init: function () {
       var sections = document.querySelectorAll('.archive-year-section');
@@ -1319,30 +1341,16 @@ window.__moeMacMainLoaded = true;
       /* 确保 toggleYear 全局可用 */
       if (typeof window.toggleYear !== 'function') {
         window.toggleYear = function (year) {
-          var content = document.getElementById('year-content-' + year);
           var header = document.querySelector('#year-' + year + ' .archive-year-header');
           var icon = document.querySelector('#year-' + year + ' .year-toggle-icon');
-          if (!content) return;
-          
-          // 更可靠的展开状态检测：检查header是否有expanded类
-          var isExpanded = header && header.classList.contains('expanded');
-          
+          if (!header) return;
+          var isExpanded = header.classList.contains('expanded');
           if (!isExpanded) {
-            // 展开：先设为 scrollHeight 精确值，过渡更平滑
-            content.style.maxHeight = content.scrollHeight + 'px';
+            header.classList.add('expanded');
             if (icon) icon.style.transform = 'rotate(0deg)';
-            if (header) header.classList.add('expanded');
           } else {
-            // 折叠：先将 maxHeight 固定为当前精确值（避免从 2000px 开始过渡的空延迟）
-            content.style.maxHeight = content.scrollHeight + 'px';
-            // 强制浏览器重绘，确保上一步的 maxHeight 已生效
-            void content.offsetHeight;
-            // 下一帧再设为 0，实现平滑过渡
-            requestAnimationFrame(function() {
-              content.style.maxHeight = '0';
-            });
+            header.classList.remove('expanded');
             if (icon) icon.style.transform = 'rotate(-90deg)';
-            if (header) header.classList.remove('expanded');
           }
         };
       }
@@ -1359,17 +1367,12 @@ window.__moeMacMainLoaded = true;
           });
         }
       });
-      /* 默认折叠所有年份（使用新的CSS过渡效果）*/
+      /* 默认折叠所有年份 — 只需移除 expanded 类，CSS 的 :not(.expanded) 自动收起 */
       sections.forEach(function (section) {
-        var yearId = section.id.replace('year-', '');
-        var content = document.getElementById('year-content-' + yearId);
         var header = section.querySelector('.archive-year-header');
         var icon = section.querySelector('.year-toggle-icon');
-        if (content) {
-          content.style.maxHeight = '0';
-          if (icon) icon.style.transform = 'rotate(-90deg)';
-          if (header) header.classList.remove('expanded');
-        }
+        if (header) header.classList.remove('expanded');
+        if (icon) icon.style.transform = 'rotate(-90deg)';
       });
     }
   };

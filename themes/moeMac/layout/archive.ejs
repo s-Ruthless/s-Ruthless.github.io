@@ -138,6 +138,7 @@
             <i class="fas fa-chevron-down year-toggle-icon"></i>
           </div>
           <div class="archive-year-content" id="year-content-<%= y %>">
+            <div class="archive-year-inner">
             <% yearGroups[y].forEach(function(post) { %>
               <%
                 var m = date(post.date, 'MM');
@@ -151,6 +152,7 @@
                 <% } %>
               </div>
             <% }); %>
+            </div>
           </div>
         </div>
       <% }); %>
@@ -161,48 +163,32 @@
     </div>
 
     <script>
-      /* toggleYear 定义 — ArchiveFold.init() 也会定义全局版本，这里作为 fallback */
+      /* toggleYear 定义 — ArchiveFold.init() 也会定义全局版本，这里作为 fallback
+         纯 CSS grid-template-rows 过渡，JS 只切换 class，不操作 maxHeight */
       if (typeof window.toggleYear !== 'function') {
         window.toggleYear = function (year) {
-          var content = document.getElementById('year-content-' + year);
           var header = document.querySelector('#year-' + year + ' .archive-year-header');
           var icon = document.querySelector('#year-' + year + ' .year-toggle-icon');
-          if (!content) return;
-          
-          // 更可靠的展开状态检测：检查header是否有expanded类，或者内容是否可见
-          var isExpanded = header && header.classList.contains('expanded');
-          
+          if (!header) return;
+          var isExpanded = header.classList.contains('expanded');
           if (!isExpanded) {
-            content.style.maxHeight = '2000px';
+            header.classList.add('expanded');
             if (icon) icon.style.transform = 'rotate(0deg)';
-            if (header) header.classList.add('expanded');
           } else {
-            content.style.maxHeight = '0';
+            header.classList.remove('expanded');
             if (icon) icon.style.transform = 'rotate(-90deg)';
-            if (header) header.classList.remove('expanded');
           }
         };
       }
-      
-      /* 确保页面加载时，所有年份都是折叠的 */
+      /* 确保页面加载时，所有年份都是折叠的 — 只需移除 expanded 类 */
       function _foldAllYears() {
-        var headers = document.querySelectorAll('.archive-year-header');
-        var icons = document.querySelectorAll('.year-toggle-icon');
-        
-        headers.forEach(function(header) {
+        document.querySelectorAll('.archive-year-header').forEach(function(header) {
           header.classList.remove('expanded');
         });
-        
-        icons.forEach(function(icon) {
+        document.querySelectorAll('.year-toggle-icon').forEach(function(icon) {
           icon.style.transform = 'rotate(-90deg)';
         });
-        
-        var contents = document.querySelectorAll('.archive-year-content');
-        contents.forEach(function(content) {
-          content.style.maxHeight = '0';
-        });
       }
-      /* AJAX 导航时 DOMContentLoaded 已触发，需兼容两种场景 */
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', _foldAllYears);
       } else {

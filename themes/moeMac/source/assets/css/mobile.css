@@ -326,8 +326,10 @@ html:not(.is-desktop) .dock-item-inner{
 html:not(.is-desktop) .dock-icon{
   font-size:17px;
 }
+/* 移动端隐藏 dock tooltip — 触摸设备不需要 hover 预览，
+   且 overflow-x:auto 会裁剪绝对定位的 tooltip */
 html:not(.is-desktop) .dock-text{
-  font-size:10px;padding:3px 7px;bottom:calc(100% + 4px);
+  display:none!important;
 }
 /* 禁用 hover 放大效果 */
 html:not(.is-desktop) .dock-item:hover .dock-item-inner,
@@ -636,7 +638,7 @@ html:not(.is-desktop) .wall-card{
 }
 html:not(.is-desktop) .wall-card .card-cover{
   width:90px;min-width:90px;max-width:90px;
-  height:auto;border-radius:0;margin:0;
+  height:90px;border-radius:0;margin:0;
 }
 html:not(.is-desktop) .wall-card .card-body{
   flex:1;min-width:0;overflow:hidden;

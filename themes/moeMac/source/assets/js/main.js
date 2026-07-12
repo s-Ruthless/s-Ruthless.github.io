@@ -611,9 +611,12 @@ window.__moeMacMainLoaded = true;
     }
     /* 销毁旧实例 */
     if (masonryInstance) { try { masonryInstance.destroy(); } catch(e){} }
+    /* 测量第一张卡片的宽度作为列宽（仅在初始化时测量一次，避免筛选后 display:none 导致列宽为 0） */
+    var firstCard = grid.querySelector('.wall-card');
+    var colWidth = firstCard ? firstCard.offsetWidth : 300;
     masonryInstance = new Masonry(grid, {
       itemSelector: '.wall-card',
-      columnWidth: '.wall-card',
+      columnWidth: colWidth,
       percentPosition: true,
       gutter: 16,
       transitionDuration: 0,
@@ -667,27 +670,44 @@ window.__moeMacMainLoaded = true;
     var currentCat = 'all';
 
     function applyFilter() {
-      var visibleItems = [];
-      var hiddenItems = [];
+      var visibleCards = [];
       cards.forEach(function (c) {
         var cat = c.getAttribute('data-cat');
         var catMatch = currentCat === 'all' || cat === currentCat;
         if (catMatch) {
-          visibleItems.push(c);
-          c.classList.remove('hidden');
+          c.style.display = '';
+          visibleCards.push(c);
         } else {
-          hiddenItems.push(c);
-          c.classList.add('hidden');
+          c.style.display = 'none';
         }
       });
-      /* 使用 Masonry 的 hide/reveal + layout */
+      /* 用 Masonry 重新布局：reloadItems 重新扫描子元素状态（display:none 的会被跳过） */
       if (masonryInstance) {
         try {
-          masonryInstance.hide(hiddenItems);
-          masonryInstance.reveal(visibleItems);
+          masonryInstance.reloadItems();
           masonryInstance.layout();
-        } catch(e) {}
+        } catch (e) {}
       }
+      /* 筛选后对可见卡片播放入场动画 */
+      var anims = ['anim-zoom-in', 'anim-scale-in'];
+      visibleCards.forEach(function (card, i) {
+        /* 先清除残留动画类和样式 */
+        card.classList.remove('anim-zoom-in', 'anim-scale-in');
+        card.style.opacity = '0';
+        card.style.transform = '';
+        card.style.animationDelay = '';
+        var delay = (i % 12) * 40;
+        var anim = anims[i % anims.length];
+        setTimeout(function () {
+          card.style.opacity = '';
+          card.classList.add(anim);
+          card.addEventListener('animationend', function () {
+            card.classList.remove(anim);
+            card.style.transform = '';
+            card.style.animationDelay = '';
+          }, { once: true });
+        }, delay);
+      });
     }
 
     btns.forEach(function (b) {
@@ -699,15 +719,18 @@ window.__moeMacMainLoaded = true;
       });
     });
 
-    /* 窗口 resize 时重新布局 Masonry（防抖） */
-    var masonryResizeTimer = null;
-    window.addEventListener('resize', function () {
-      if (!masonryInstance) return;
-      clearTimeout(masonryResizeTimer);
-      masonryResizeTimer = setTimeout(function () {
-        relayoutMasonry();
-      }, 200);
-    });
+    /* 窗口 resize 时重新布局 Masonry（防抖）— 仅绑定一次，避免 AJAX 导航重复添加监听器 */
+    if (!WallFilter._resizeBound) {
+      WallFilter._resizeBound = true;
+      var masonryResizeTimer = null;
+      window.addEventListener('resize', function () {
+        if (!masonryInstance) return;
+        clearTimeout(masonryResizeTimer);
+        masonryResizeTimer = setTimeout(function () {
+          relayoutMasonry();
+        }, 200);
+      });
+    }
   }
 
   /* ====== 文章目录 TOC ====== */
@@ -808,36 +831,25 @@ window.__moeMacMainLoaded = true;
           }
         }
       }
-      window.addEventListener('scroll', function () {
-        clearTimeout(self.spyTimer);
-        self.spyTimer = setTimeout(update, 60);
-      }, { passive: true });
+      self._update = update;
+      /* 仅绑定一次 scroll 监听器，避免 AJAX 导航重复添加 */
+      if (!TOC._scrollBound) {
+        TOC._scrollBound = true;
+        window.addEventListener('scroll', function () {
+          clearTimeout(self.spyTimer);
+          self.spyTimer = setTimeout(function () { if (self._update) self._update(); }, 60);
+        }, { passive: true });
+      }
       update();
     }
   };
 
-  /* ====== 代码块复制按钮 ====== */
+  /* ====== 代码块复制按钮（Prism.js 版） ====== */
   var CodeCopy = {
     init: function () {
-      var blocks = document.querySelectorAll('.article-content figure.highlight, .article-content pre');
+      var blocks = document.querySelectorAll('.article-content pre[class*="language-"]');
       blocks.forEach(function (pre) {
         if (pre.querySelector('.code-copy-btn')) return;
-        /* 只对代码块加，跳过已被 figure 包裹的 pre（避免重复） */
-        if (pre.tagName === 'PRE' && pre.closest('figure.highlight')) return;
-
-        /* 提取代码语言标签 */
-        var fig = pre.closest('figure.highlight') || (pre.tagName === 'FIGURE' ? pre : null);
-        if (fig && !fig.querySelector('.code-lang-label')) {
-          var langClass = fig.className.match(/highlight\s+(\w+)/);
-          var lang = langClass ? langClass[1] : '';
-          if (lang && lang !== 'plaintext') {
-            var label = document.createElement('span');
-            label.className = 'code-lang-label';
-            label.textContent = lang;
-            fig.appendChild(label);
-            fig.classList.add('has-lang');
-          }
-        }
 
         var btn = document.createElement('button');
         btn.className = 'code-copy-btn';
@@ -845,8 +857,8 @@ window.__moeMacMainLoaded = true;
         btn.innerHTML = '<i class="fas fa-copy"></i>';
         btn.title = '复制代码';
         btn.addEventListener('click', function () {
-          var codeEl = pre.querySelector('td.code pre') || pre.querySelector('pre') || pre;
-          var text = codeEl.innerText.replace(/\n$/,'');
+          var codeEl = pre.querySelector('code');
+          var text = codeEl ? codeEl.innerText.replace(/\n$/, '') : pre.innerText;
           var done = function () { btn.innerHTML = '<i class="fas fa-check"></i>'; btn.classList.add('copied'); setTimeout(function () { btn.innerHTML = '<i class="fas fa-copy"></i>'; btn.classList.remove('copied'); }, 1600); };
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(done).catch(function () { CodeCopy._legacy(text, done); });
@@ -1490,12 +1502,16 @@ window.__moeMacMainLoaded = true;
       if (mask) mask.addEventListener('click', function () { self.closeLightbox(); });
       if (prev) prev.addEventListener('click', function (e) { e.stopPropagation(); self.showLightbox(-1); });
       if (next) next.addEventListener('click', function (e) { e.stopPropagation(); self.showLightbox(1); });
-      document.addEventListener('keydown', function (e) {
-        if (!lb.classList.contains('open')) return;
-        if (e.key === 'Escape') self.closeLightbox();
-        if (e.key === 'ArrowLeft') self.showLightbox(-1);
-        if (e.key === 'ArrowRight') self.showLightbox(1);
-      });
+      /* keydown 仅绑定一次 — 使用 self.lightbox 引用而非闭包 lb，确保 AJAX 导航后引用正确元素 */
+      if (!Gallery._keyBound) {
+        Gallery._keyBound = true;
+        document.addEventListener('keydown', function (e) {
+          if (!self.lightbox || !self.lightbox.classList.contains('open')) return;
+          if (e.key === 'Escape') self.closeLightbox();
+          if (e.key === 'ArrowLeft') self.showLightbox(-1);
+          if (e.key === 'ArrowRight') self.showLightbox(1);
+        });
+      }
     },
     openLightbox: function (idx) {
       this.currentIdx = idx;

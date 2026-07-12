@@ -21,59 +21,6 @@ html:not(.is-desktop) body{
   overflow-y:scroll!important;
   overflow-x:hidden!important;
 }
-html:not(.is-desktop) #ajax-container{
-  padding:0 0 90px;
-  max-width:100%;
-  margin:0 auto;
-}
-html:not(.is-desktop) .drag-win:not([data-pos]){
-  opacity:1!important;
-}
-html:not(.is-desktop) .app-window:not([style*="display:none"]):not(.win-minimized){
-  display:flex!important;
-}
-html:not(.is-desktop) .app-window{
-  position:relative!important;
-  left:auto!important;top:auto!important;
-  width:auto!important;max-width:100%!important;
-  min-height:auto!important;height:auto!important;
-  margin:0 12px 14px!important;
-  border-radius:18px!important;
-  border:1px solid rgba(0,0,0,0.06)!important;
-  transform:none!important;
-  will-change:auto!important;
-  z-index:10!important;
-  overflow:hidden!important;
-  box-shadow:0 4px 24px rgba(0,0,0,0.08)!important;
-  display:flex!important;
-  flex-direction:column;
-  background:rgba(255,255,255,0.95)!important;
-  backdrop-filter:blur(20px) saturate(1.5);
-  -webkit-backdrop-filter:blur(20px) saturate(1.5);
-}
-html:not(.is-desktop)[data-theme="dark"] .app-window{
-  background:rgba(30,30,50,0.95)!important;
-  border-color:rgba(255,255,255,0.08)!important;
-  box-shadow:0 4px 24px rgba(0,0,0,0.3)!important;
-}
-html:not(.is-desktop) .win-traffic,
-html:not(.is-desktop) .win-resize-handle{
-  display:none!important;
-}
-html:not(.is-desktop) .app-window .win-head{
-  flex-shrink:0;cursor:default!important;
-  padding:14px 16px 6px;text-align:left;
-  border-bottom:none;background:transparent;
-}
-html:not(.is-desktop) .app-window .win-name{
-  font-size:15px;font-weight:700;color:#111;
-  display:flex;align-items:center;gap:8px;
-}
-html:not(.is-desktop)[data-theme="dark"] .app-window .win-name{ color:#fff; }
-html:not(.is-desktop) .app-window .win-body{
-  padding:4px 16px 16px;overflow:visible!important;
-}
-
 /* ====== 超小屏 / 横屏 媒体查询（仅做微调，不影响核心布局） ====== */
 
 /* ====== 首页：纵向滚动玻璃卡片流 ====== */
@@ -108,7 +55,7 @@ html:not(.is-desktop) .app-window{
   -webkit-backdrop-filter:blur(20px) saturate(1.5);
 }
 html:not(.is-desktop)[data-theme="dark"] .app-window{
-  background:var(--card-bg,rgba(30,30,50,0.88))!important;
+  background:rgba(30,30,50,0.95)!important;
   border-color:rgba(255,255,255,0.08)!important;
   box-shadow:0 4px 24px rgba(0,0,0,0.3)!important;
 }
@@ -440,13 +387,13 @@ html:not(.is-desktop) .article-content img{border-radius:10px;}
 html:not(.is-desktop) .article-content blockquote{
   padding:8px 12px;margin:10px 0;border-radius:0 10px 10px 0;
 }
-html:not(.is-desktop) .article-content pre{
-  padding:12px;border-radius:10px;font-size:12px;
+html:not(.is-desktop) .article-content pre:not([class*="language-"]){
+  padding:12px;border-radius:8px;font-size:12px;
 }
-html:not(.is-desktop) .article-content pre code{
+html:not(.is-desktop) .article-content pre:not([class*="language-"]) code{
   font-size:12px;
 }
-html:not(.is-desktop) .article-content code{
+html:not(.is-desktop) .article-content code:not(pre code){
   font-size:12px;padding:1px 5px;
 }
 html:not(.is-desktop) .article-content table{
@@ -460,23 +407,7 @@ html:not(.is-desktop) .article-content ul,
 html:not(.is-desktop) .article-content ol{
   padding-left:20px;
 }
-/* 代码高亮块 */
-html:not(.is-desktop) .article-content figure.highlight{
-  border-radius:10px;
-}
-html:not(.is-desktop) .article-content figure.highlight .gutter{
-  width:40px;
-}
-html:not(.is-desktop) .article-content figure.highlight .gutter pre{
-  padding:12px 8px 12px 4px;font-size:12px;line-height:1.65;white-space:pre;
-}
-html:not(.is-desktop) .article-content figure.highlight .code pre{
-  padding:12px 14px;font-size:12px;line-height:1.65;white-space:pre;
-}
-html:not(.is-desktop) .article-content figure.highlight .code pre code{
-  font-size:inherit;line-height:inherit;
-}
-/* 复制按钮 — 移动端常显 */
+/* 代码高亮块 — 移动端复制按钮常显 */
 html:not(.is-desktop) .code-copy-btn{
   opacity:0.5;
 }

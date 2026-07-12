@@ -72,21 +72,20 @@
 /* Masonry 初始化后显示（初始 opacity:0 由模板内联样式设置） */
 .wall-grid.masonry-ready{opacity:1!important;}
 /* 每张卡片宽度按百分比，Masonry 负责定位 */
-.wall-card{width:calc(33.333% - 11px);margin-bottom:16px;min-width:0;}
+.wall-card{
+  position:relative;width:calc(33.333% - 11px);margin-bottom:16px;min-width:0;
+  background:rgb(255,255,255);
+  border:1px solid rgba(0,0,0,0.06);border-radius:16px;
+  overflow:hidden;
+  padding:0;
+  cursor:pointer;
+  box-shadow:0 8px 32px rgba(0,0,0,0.08);
+  transition:box-shadow 0.3s ease,border-color 0.3s ease,transform 0.2s ease;
+  isolation:isolate;display:block;
+}
 /* 响应式 */
-@media(max-width:1200px){.wall-card{width:calc(33.333% - 11px);}}
 @media(max-width:768px){.wall-card{width:calc(50% - 8px);}}
 @media(max-width:480px){.wall-card{width:100%;}}
-.wall-card{position:relative;
-background:rgb(255,255,255);
-border:1px solid rgba(0,0,0,0.06);border-radius:16px;
-overflow:hidden;
-padding:0;
-cursor:pointer;
-box-shadow:0 8px 32px rgba(0,0,0,0.08);
-transition:box-shadow 0.3s ease,border-color 0.3s ease,transform 0.2s ease;
-isolation:isolate;display:block;
-}
 .wall-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   background:linear-gradient(90deg,var(--accent-color),#ec4899);
@@ -112,6 +111,7 @@ transform:translateY(-3px);
   font-size:10px;font-weight:600;color:#fff;
   background:linear-gradient(135deg,#f59e0b,#ef4444);
   padding:2px 8px;border-radius:6px;letter-spacing:0.3px;
+  flex-shrink:0;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 /* 搜索无结果提示 */
 .wall-search-empty{
@@ -120,7 +120,6 @@ transform:translateY(-3px);
 .wall-search-empty i{font-size:36px;color:color-mix(in srgb,var(--accent-color) 25%,transparent);margin-bottom:12px;display:block;}
 .wall-search-empty p{font-size:14px;color:#666;}
 .card-top{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow:hidden;margin-bottom:4px;position:relative;z-index:1;min-width:0;}
-.card-sticky-badge{flex-shrink:0;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .card-cat{font-size:11px;color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:2px 8px;border-radius:6px;flex-shrink:0;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .card-cat i{margin-right:3px;font-size:10px;}
 .card-date{font-size:12px;color:#444;flex-shrink:0;margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -276,8 +275,6 @@ will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hid
   font-size:72px;font-weight:800;line-height:1;color:var(--accent-color);
   display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:16px;
 }
-.not-found-code .nf-emoji{font-size:56px;animation:nf-bounce 2s ease-in-out infinite;}
-@keyframes nf-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
 .not-found-title{font-size:22px;font-weight:600;color:#111;margin-bottom:10px;}
 .not-found-desc{font-size:14px;color:#444;line-height:1.8;margin-bottom:24px;}
 .not-found-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}

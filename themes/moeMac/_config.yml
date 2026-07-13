@@ -228,10 +228,10 @@ wallpaper_path: "/assets/img/background.webp"
 #   自定义页面（page）：默认不显示，写 comment: true 可开启
 comments:
   enable: true
-  provider: "cwd"
+  provider: "waline"
   # Waline: https://waline.js.org/
   waline:
-    serverURL: "https://waline-demo.vercel.app"
+    serverURL: "https://waline.moeao.cn"
   # Twikoo: https://twikoo.js.org/
   twikoo:
     envId: ""               # 腾讯云环境ID 或自建地址

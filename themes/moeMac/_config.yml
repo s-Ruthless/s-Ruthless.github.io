@@ -267,7 +267,7 @@ comments:
   # siteId: 站点标识，用于多站点数据隔离（推荐配置）
   # lang: 评论组件语言，auto 自动检测浏览器语言
   cwd:
-    apiBaseUrl: "https://cwd.moeao.cn/"
+    apiBaseUrl: "https://cwd-comment.2502393029.workers.dev/"
     siteId: "blog"
     lang: "auto"
     customCssUrl: ''

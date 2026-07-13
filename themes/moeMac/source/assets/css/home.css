@@ -133,7 +133,6 @@ transition:all 0.25s ease;flex-shrink:0;text-decoration:none;
 .info-item span{color:#444;}
 .info-item em{font-style:normal;color:#111;font-weight:600;}
 .info-item a{color:var(--accent-color);text-decoration:none;font-weight:500;}
-.info-item a:hover{text-decoration:underline;}
 .window-info .win-body{
   display:block!important;padding:14px 16px!important;
 }

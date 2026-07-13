@@ -166,6 +166,8 @@ site_info:
   psbc: "网备11515"
   start_date: "2023-01-01"
   copyright: "@2026"
+  theme_name: "moeMac"                                    # 底部显示的主题名称
+  theme_url: "https://github.com/s-Ruthless/moeMac"       # 底部主题链接地址
 
 # ====== 友链 ======
 friends:

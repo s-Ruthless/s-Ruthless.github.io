@@ -967,16 +967,14 @@ window.__moeMacMainLoaded = true;
         var expandBtn = document.createElement('button');
         expandBtn.className = 'code-expand-btn';
         expandBtn.type = 'button';
-        expandBtn.title = '折叠/展开';
-        expandBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                expandBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
 
         /* 复制按钮 */
         var copyBtn = document.createElement('button');
         copyBtn.className = 'code-copy-btn';
         copyBtn.type = 'button';
         copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
-        copyBtn.title = '复制代码';
-        copyBtn.addEventListener('click', function () {
+                copyBtn.addEventListener('click', function () {
           var text = newCode.innerText.replace(/\n$/, '');
           var done = function () { copyBtn.innerHTML = '<i class="fas fa-check"></i>'; copyBtn.classList.add('copied'); setTimeout(function () { copyBtn.innerHTML = '<i class="fas fa-copy"></i>'; copyBtn.classList.remove('copied'); }, 1600); };
           if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -988,8 +986,7 @@ window.__moeMacMainLoaded = true;
         var fsBtn = document.createElement('button');
         fsBtn.className = 'code-fullscreen-btn';
         fsBtn.type = 'button';
-        fsBtn.title = '全屏查看';
-        fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
         fsBtn.addEventListener('click', function () { self.openFullscreen(wrap); });
 
         /* 折叠按钮插入到红绿灯左侧 */

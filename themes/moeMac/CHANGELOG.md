@@ -1,5 +1,24 @@
 # 更新日志
 
+## v2.3.1 (2026-07-13)
+
+### 代码块按钮优化
+
+- **按钮 hover 美化** — 图标 `scale(1.15)` 放大 + 背景渐显 + 主题色变色，点击 `scale(0.9)` 回弹
+- **所有按钮常驻显示** — 复制按钮不再 hover 标题栏才显示，消除明暗变化
+- **删除 title 提示** — 移除折叠/复制/全屏按钮的原生 tooltip
+- **复制成功动画** — `copyPop` 弹跳动画（scale 1→1.2→1）
+
+### 网站信息
+
+- **主题名称/链接可配置** — `_config.yml` 新增 `theme_name` / `theme_url` 配置项
+- **修复双下划线** — 删除 `.info-item a:hover{text-decoration:underline}`，只保留 `::after` 动画下划线
+
+### 归档页面
+
+- **折叠动画兼容** — `max-height` 改为 JS 精确 `height` 过渡，兼容 QQ/微信浏览器旧 WebKit
+- **行入场动画** — `transform:translateY` 改为纯 `opacity`，避免旧 WebKit 多行 transform 抖动
+
 ## v2.3.0 (2026-07-13)
 
 ### 代码块重构 — Butterfly 风格布局

@@ -278,19 +278,44 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
 /* --- 按钮统一样式 --- */
 .code-tools button,
 .code-tools-left button{
-  width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;
-  background:transparent;color:#666;font-size:13px;padding:0;
+  width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;
+  background:transparent;color:#888;font-size:13px;padding:0;
   display:flex;align-items:center;justify-content:center;
-  transition:opacity 0.2s ease,background 0.2s ease,color 0.2s ease;
+  transition:background 0.2s ease,color 0.2s ease;
+  position:relative;
+}
+/* 图标 hover 放大 — 只缩放 <i>，不影响按钮布局位置 */
+.code-tools button i,
+.code-tools-left button i{
+  transition:transform 0.2s cubic-bezier(0.34,1.4,0.64,1);
+  display:inline-block;
+  line-height:1;
 }
 .code-tools button:hover,
-.code-tools-left button:hover{background:rgba(0,0,0,0.08);color:var(--accent-color);}
-/* 折叠按钮 + 全屏按钮：常驻显示 */
-.code-expand-btn,.code-fullscreen-btn{opacity:1!important;}
-/* 复制按钮：hover 才完全显示 */
-.code-copy-btn{opacity:0.5;}
-.code-header:hover .code-copy-btn{opacity:1;}
-.code-copy-btn.copied{background:rgba(34,197,94,0.15);color:#16a34a;opacity:1;}
+.code-tools-left button:hover{
+  background:rgba(0,0,0,0.06);
+  color:var(--accent-color);
+}
+.code-tools button:hover i,
+.code-tools-left button:hover i{
+  transform:scale(1.15);
+}
+.code-tools button:active i,
+.code-tools-left button:active i{
+  transform:scale(0.9);
+}
+/* 所有按钮常驻显示 */
+.code-expand-btn,.code-fullscreen-btn,.code-copy-btn{opacity:1!important;}
+/* 复制成功状态 */
+.code-copy-btn.copied{
+  background:rgba(34,197,94,0.12);color:#16a34a;opacity:1;
+  animation:copyPop 0.4s ease;
+}
+@keyframes copyPop{
+  0%{transform:scale(1);}
+  40%{transform:scale(1.2);}
+  100%{transform:scale(1);}
+}
 .code-expand-btn i{transition:transform 0.25s ease;}
 
 /* --- 左侧工具栏（折叠按钮） --- */
@@ -738,9 +763,9 @@ min-height:120px;
 [data-theme="dark"] .code-lang-text{color:#7a7a8a;}
 [data-theme="dark"] .code-gutter{color:rgba(255,255,255,0.25);border-right-color:rgba(255,255,255,0.06);}
 [data-theme="dark"] .code-scroll code{color:#c0caf5;}
-[data-theme="dark"] .code-tools button{color:rgba(255,255,255,0.6);}
+[data-theme="dark"] .code-tools button{color:rgba(255,255,255,0.55);}
 [data-theme="dark"] .code-tools button:hover,
-[data-theme="dark"] .code-tools-left button:hover{color:var(--accent-color);background:rgba(255,255,255,0.1);}
+[data-theme="dark"] .code-tools-left button:hover{color:var(--accent-color);background:rgba(255,255,255,0.08);}
 [data-theme="dark"] .code-collapse-fade{background:linear-gradient(180deg,transparent,#1a1b26);}
 [data-theme="dark"] .code-block-wrap .code-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);}
 [data-theme="dark"] .code-block-wrap .code-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);}

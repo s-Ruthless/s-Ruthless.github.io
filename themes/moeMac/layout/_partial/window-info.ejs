@@ -13,7 +13,7 @@
     <span>建站 <em id="site-days">-</em> 天</span>
   </div>
   <div class="info-item">
-    <span>Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com" target="_blank" rel="noopener">moeMac</a></span>
+    <span>Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> &amp; <a href="<%= theme.site_info && theme.site_info.theme_url || 'https://github.com/s-Ruthless/moeMac' %>" target="_blank" rel="noopener"><%= theme.site_info && theme.site_info.theme_name || 'moeMac' %></a></span>
   </div>
   <% if (theme.site_info && theme.site_info.copyright) { %>
   <div class="info-item">

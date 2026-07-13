@@ -204,15 +204,25 @@
 
 <% } else if (p === 'waline' && c.waline && c.waline.serverURL) { %>
 <link rel="stylesheet" href="<%= A %>/css/waline.css">
-<script type="module">
-  import('<%= A %>/js/waline.js')
-    .then(function(mod){ mod.init({
-      el: '#comments-mount',
-      serverURL: '<%= c.waline.serverURL %>',
-      dark: 'html[data-theme="dark"]',
-      lang: 'zh-CN'
-    }); })
-    .catch(function(){ if(window.__commentsShowError) window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试'); });
+<script src="<%= A %>/js/waline.js" onerror="window.__commentsShowError&&window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试')"></script>
+<script>
+  (function(){
+    function init(){
+      Waline.init({
+        el: '#comments-mount',
+        serverURL: '<%= c.waline.serverURL %>',
+        dark: 'html[data-theme="dark"]',
+        lang: 'zh-CN'
+      });
+    }
+    if (window.Waline) init();
+    else {
+      var _wlWait = setInterval(function(){
+        if(window.Waline){ clearInterval(_wlWait); init(); }
+      }, 100);
+      setTimeout(function(){ clearInterval(_wlWait); }, 15000);
+    }
+  })();
 </script>
 
 <% } else if (p === 'twikoo' && c.twikoo && c.twikoo.envId) { %>

@@ -227,8 +227,8 @@ wallpaper_path: "/assets/img/background.webp"
 #   文章（post）：默认显示评论，写 comment: false 可关闭
 #   自定义页面（page）：默认不显示，写 comment: true 可开启
 comments:
-  enable: true
-  provider: "waline"
+  enable: false
+  provider: "giscus"
   # Waline: https://waline.js.org/
   waline:
     serverURL: "https://waline.moeao.cn"

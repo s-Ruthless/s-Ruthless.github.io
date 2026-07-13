@@ -238,94 +238,194 @@ padding:10px 14px;text-align:left;border-bottom:1px solid color-mix(in srgb,var(
 .nav-prev:hover,.nav-next:hover{color:var(--accent-color);}
 .nav-next{margin-left:auto;}
 
-/* ====== 代码高亮块（Prism.js + Mac 风格） ====== */
-/* HTML 结构: <pre class="line-numbers language-xxx" data-language="xxx"><code>...</code></pre>
-   行号由 Prism 的 .line-numbers-rows > span::before (CSS counter) 渲染，不可选中
-   桌面端/移动端使用相同 font-size 和 padding，通过 CSS 变量控制 */
-.article-content pre[class*="language-"]{
+/* ====== 代码高亮块 — 重构布局（参考 Butterfly） ====== */
+/* JS 将 <pre> 重构为：
+   .code-block-wrap > .code-header + .code-main > .code-gutter + .code-scroll > pre > code
+   未被 JS 处理的 pre（无 language- class）走原始样式 */
+
+/* --- 容器 --- */
+.code-block-wrap{
   position:relative;margin:16px 0;border-radius:8px;overflow:hidden;
   background:#fff;border:1px solid rgba(0,0,0,0.06);
   box-shadow:0 2px 8px rgba(0,0,0,0.06);
-  padding:36px 0 0 3.2em; /* top=mac bar, left=line numbers */
   font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
-  font-size:13px;line-height:1.65;counter-reset:linenumber;
+  font-size:13px;line-height:1.65;
 }
-/* Mac window traffic lights bar */
-.article-content pre[class*="language-"]::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:36px;z-index:2;
+
+/* --- 顶部栏：mac 灯 + 语言标签 + 按钮组 --- */
+.code-header{
+  display:flex;align-items:center;height:36px;flex-shrink:0;
   background:#fafafa;border-bottom:1px solid rgba(0,0,0,0.05);
+}
+/* 折叠时去掉 header 底部边框，避免多出一条线 */
+.code-block-wrap.code-collapsed .code-header{border-bottom:none;}
+.code-mac-dots{
+  width:68px;height:36px;flex-shrink:0;
   background-image:
     radial-gradient(circle at 14px 18px,#ff5f57 5px,transparent 6px),
     radial-gradient(circle at 34px 18px,#ffbd2e 5px,transparent 6px),
     radial-gradient(circle at 54px 18px,#28c840 5px,transparent 6px);
   background-repeat:no-repeat;
 }
-/* Language label next to traffic lights */
-.article-content pre[class*="language-"][data-language]::after{
-  content:attr(data-language);position:absolute;top:0;left:76px;z-index:3;
-  height:36px;line-height:36px;font-size:12px;font-weight:500;
-  font-family:"JetBrains Mono",Consolas,monospace;
-  color:#888;letter-spacing:0.5px;text-transform:uppercase;
+.code-lang-text{
+  font-size:12px;font-weight:500;color:#888;
+  letter-spacing:0.5px;text-transform:uppercase;
 }
-/* Code content */
-.article-content pre[class*="language-"] code{
-  display:block;background:none;color:#24292e;padding:14px 16px;
-  font-family:inherit;font-size:inherit;line-height:inherit;
-  white-space:pre;overflow-x:auto;
-}
-/* Line numbers — Prism .line-numbers-rows (pseudo-elements, unselectable) */
-.article-content .line-numbers .line-numbers-rows{
-  position:absolute;pointer-events:none;top:36px;left:0;
-  width:3.2em;padding:14px 8px 14px 0;text-align:right;
-  font-size:13px;line-height:1.65;
-  -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
-  border-right:1px solid rgba(0,0,0,0.04);
-}
-.article-content .line-numbers .line-numbers-rows > span{
-  display:block;counter-increment:linenumber;
-}
-.article-content .line-numbers .line-numbers-rows > span::before{
-  content:counter(linenumber);color:#bbb;display:block;text-align:right;
+.code-tools{
+  margin-left:auto;display:flex;gap:2px;padding-right:4px;
 }
 
-/* Prism token 颜色 — 浅色背景 GitHub Light 配色 */
-.article-content .token.comment,.article-content .token.prolog,.article-content .token.doctype,.article-content .token.cdata{color:#6a737d;font-style:italic;}
-.article-content .token.punctuation{color:#24292e;}
-.article-content .token.namespace{opacity:0.7;}
-.article-content .token.keyword,.article-content .token.selector{color:#d73a49;font-weight:600;}
-.article-content .token.string,.article-content .token.attr-value,.article-content .token.char,.article-content .token.regex{color:#032f62;}
-.article-content .token.number,.article-content .token.boolean,.article-content .token.literal{color:#005cc5;}
-.article-content .token.function,.article-content .token.class-name{color:#6f42c1;font-weight:600;}
-.article-content .token.property,.article-content .token.constant,.article-content .token.symbol{color:#005cc5;}
-.article-content .token.tag,.article-content .token.builtin{color:#22863a;}
-.article-content .token.attr-name{color:#005cc5;}
-.article-content .token.operator,.article-content .token.entity,.article-content .token.url{color:#d73a49;}
-.article-content .token.variable{color:#e36209;}
-.article-content .token.decorator,.article-content .token.annotation{color:#6f42c1;}
-.article-content .token.atrule,.article-content .token.rule{color:#d73a49;}
-.article-content .token.important{font-weight:700;}
-.article-content .token.bold{font-weight:700;}
-.article-content .token.italic{font-style:italic;}
-.article-content .token.inserted{color:#22863a;background-color:rgba(34,134,58,0.05);}
-.article-content .token.deleted{color:#b31d28;background-color:rgba(179,29,40,0.05);}
+/* --- 按钮统一样式 --- */
+.code-tools button,
+.code-tools-left button{
+  width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;
+  background:transparent;color:#666;font-size:13px;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity 0.2s ease,background 0.2s ease,color 0.2s ease;
+}
+.code-tools button:hover,
+.code-tools-left button:hover{background:rgba(0,0,0,0.08);color:var(--accent-color);}
+/* 折叠按钮 + 全屏按钮：常驻显示 */
+.code-expand-btn,.code-fullscreen-btn{opacity:1!important;}
+/* 复制按钮：hover 才完全显示 */
+.code-copy-btn{opacity:0.5;}
+.code-header:hover .code-copy-btn{opacity:1;}
+.code-copy-btn.copied{background:rgba(34,197,94,0.15);color:#16a34a;opacity:1;}
+.code-expand-btn i{transition:transform 0.25s ease;}
+
+/* --- 左侧工具栏（折叠按钮） --- */
+.code-tools-left{display:flex;align-items:center;padding-left:4px;}
+
+/* --- 主体：行号 + 滚动代码区 --- */
+.code-main{display:flex;}
+
+/* --- 行号栏（固定不滚动，统一宽度） --- */
+.code-gutter{
+  flex-shrink:0;min-width:3.2em;padding:14px 8px 14px 14px;text-align:right;
+  color:#bbb;border-right:1px solid rgba(0,0,0,0.04);
+  -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+  white-space:pre;box-sizing:border-box;
+}
+.code-gutter span{display:block;}
+
+/* --- 滚动代码区（只有这里横向滚动） --- */
+.code-scroll{
+  overflow-x:auto;overflow-y:hidden;flex:1;
+}
+/* 高优先级覆盖 .article-content pre[class*="language-"] 的边框/背景 */
+.code-block-wrap .code-scroll pre{
+  margin:0!important;padding:14px 16px!important;background:none!important;
+  border:none!important;border-radius:0!important;box-shadow:none!important;
+  font-family:inherit!important;font-size:inherit!important;line-height:inherit!important;
+  overflow:visible!important;
+}
+.code-block-wrap .code-scroll code{
+  display:block;background:none!important;color:#24292e;padding:0!important;
+  font-family:inherit!important;font-size:inherit!important;line-height:inherit!important;
+  white-space:pre;
+}
+
+/* --- 滚动条 — 覆盖 pages.css 全局 !important 隐藏 --- */
+.code-block-wrap .code-scroll::-webkit-scrollbar{height:8px!important;width:8px!important;display:block!important;}
+.code-block-wrap .code-scroll::-webkit-scrollbar-track{display:block!important;height:8px!important;width:8px!important;background:rgba(0,0,0,0.04);}
+.code-block-wrap .code-scroll::-webkit-scrollbar-thumb{display:block!important;height:8px!important;width:8px!important;background:rgba(0,0,0,0.25);border-radius:4px;}
+.code-block-wrap .code-scroll::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.4);}
+.code-block-wrap .code-scroll::-webkit-scrollbar-corner{display:block!important;background:transparent;}
+/* Firefox */
+.code-block-wrap .code-scroll{scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.25) rgba(0,0,0,0.04);}
+
+/* --- 折叠状态 --- */
+.code-block-wrap.code-collapsed .code-main{
+  max-height:0!important;
+  overflow:hidden;
+  opacity:0;
+  border:none;
+}
+.code-block-wrap .code-main{
+  overflow:hidden;
+  will-change:max-height,opacity;
+  transition:max-height 0.3s cubic-bezier(0.4,0,0.2,1),opacity 0.25s ease;
+}
+
+/* --- 全屏覆盖层 --- */
+.code-fullscreen-overlay{
+  position:fixed;inset:0;z-index:10002;display:none;
+  align-items:flex-start;justify-content:center;
+  padding:40px 20px;
+}
+.code-fullscreen-overlay.open{display:flex;}
+.code-fullscreen-mask{
+  position:absolute;inset:0;background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  animation:search-fade 0.25s ease;
+}
+.code-fullscreen-close{
+  position:fixed;top:20px;right:20px;z-index:10003;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,0.15);border:none;
+  color:#fff;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s ease;
+}
+.code-fullscreen-close:hover{background:rgba(255,255,255,0.3);}
+.code-fullscreen-content{
+  position:relative;z-index:1;
+  width:calc(100vw - 40px);max-width:1400px;
+  max-height:calc(100vh - 80px);
+}
+.code-fullscreen-content .code-block-wrap{
+  max-height:calc(100vh - 80px);margin:0;font-size:14px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+  display:flex;flex-direction:column;
+}
+.code-fullscreen-content .code-block-wrap.code-collapsed .code-main{
+  max-height:none!important;opacity:1;overflow:auto;
+}
+.code-fullscreen-content .code-main{
+  flex:1;overflow:auto;display:flex;min-height:0;align-items:flex-start;
+  scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.25) rgba(0,0,0,0.04);
+}
+.code-fullscreen-content .code-main::-webkit-scrollbar{height:8px!important;width:8px!important;display:block!important;}
+.code-fullscreen-content .code-main::-webkit-scrollbar-track{display:block!important;height:8px!important;width:8px!important;background:rgba(0,0,0,0.04);}
+.code-fullscreen-content .code-main::-webkit-scrollbar-thumb{display:block!important;height:8px!important;width:8px!important;background:rgba(0,0,0,0.25);border-radius:4px;}
+.code-fullscreen-content .code-main::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.4);}
+.code-fullscreen-content .code-main::-webkit-scrollbar-corner{display:block!important;background:transparent;}
+.code-fullscreen-content .code-gutter{
+  position:sticky;left:0;z-index:1;background:inherit;
+}
+.code-fullscreen-content .code-scroll{overflow:visible;}
+
+/* --- 未被 JS 处理的原始 pre（无 language- class） --- */
+.article-content pre:not([class*="language-"]){
+  margin:16px 0;padding:14px 16px;border-radius:8px;
+  background:#f6f8fa;border:1px solid rgba(0,0,0,0.06);
+  overflow-x:auto;font-size:13px;line-height:1.65;
+  font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,monospace;
+}
+.article-content pre:not([class*="language-"]) code{
+  font-family:inherit;font-size:inherit;color:#24292e;
+}
+
+/* --- 兼容：AJAX 加载时 pre 尚未被 JS 处理的中间状态 --- */
+.article-content pre[class*="language-"]{
+  margin:16px 0;border-radius:8px;overflow-x:auto;
+  background:#fff;border:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  padding:14px 16px;font-size:13px;line-height:1.65;
+  font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
+}
+.article-content pre[class*="language-"] code{
+  display:block;background:none;color:#24292e;padding:0;
+  font-family:inherit;font-size:inherit;line-height:inherit;white-space:pre;
+}
+
+/* Prism token 颜色由独立主题文件提供（code-theme-*.css） */
 
 /* 行内代码 code */
 .article-content code:not(pre code){
   background:color-mix(in srgb,var(--accent-color) 10%,transparent);padding:2px 6px;border-radius:4px;
   font-size:13px;color:var(--accent-color);font-family:"JetBrains Mono","Fira Code","SF Mono",Consolas,monospace;
 }
-
-/* 复制按钮 */
-.code-copy-btn{
-  position:absolute;top:4px;right:8px;z-index:3;
-  width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;
-  background:transparent;color:#999;font-size:13px;padding:0;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity 0.2s ease,background 0.2s ease,color 0.2s ease,transform 0.2s ease;
-}
-.article-content pre[class*="language-"]:hover .code-copy-btn{opacity:1;}
-.code-copy-btn:hover{background:rgba(0,0,0,0.06);color:var(--accent-color);}
-.code-copy-btn.copied{background:rgba(34,197,94,0.15);color:#16a34a;}
 
 /* ====== 文章目录 TOC ====== */
 .post-toc-wrap{
@@ -629,8 +729,25 @@ min-height:120px;
   border-bottom-style:solid;border-bottom-color:var(--accent-color);
 }
 
-/* 暗黑模式 — 代码块整体 */
-[data-theme="dark"] .post-copyright{
+/* 暗黑模式 — 代码块 */
+[data-theme="dark"] .code-block-wrap{
+  background:#1a1b26;border-color:rgba(255,255,255,0.08);
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .code-header{background:#16171f;border-bottom-color:rgba(255,255,255,0.06);}
+[data-theme="dark"] .code-lang-text{color:#7a7a8a;}
+[data-theme="dark"] .code-gutter{color:rgba(255,255,255,0.25);border-right-color:rgba(255,255,255,0.06);}
+[data-theme="dark"] .code-scroll code{color:#c0caf5;}
+[data-theme="dark"] .code-tools button{color:rgba(255,255,255,0.6);}
+[data-theme="dark"] .code-tools button:hover,
+[data-theme="dark"] .code-tools-left button:hover{color:var(--accent-color);background:rgba(255,255,255,0.1);}
+[data-theme="dark"] .code-collapse-fade{background:linear-gradient(180deg,transparent,#1a1b26);}
+[data-theme="dark"] .code-block-wrap .code-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);}
+[data-theme="dark"] .code-block-wrap .code-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);}
+[data-theme="dark"] .code-block-wrap .code-scroll::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.35);}
+[data-theme="dark"] .code-block-wrap .code-scroll{scrollbar-color:rgba(255,255,255,0.2) rgba(255,255,255,0.04);}
+[data-theme="dark"] .article-content pre[class*="language-"]{background:#1a1b26;border-color:rgba(255,255,255,0.08);}
+[data-theme="dark"] .article-content pre[class*="language-"] code{color:#c0caf5;}
   background:color-mix(in srgb,var(--accent-color) 8%,transparent);
   border-color:color-mix(in srgb,var(--accent-color) 20%,transparent);
 }
@@ -641,30 +758,11 @@ min-height:120px;
 [data-theme="dark"] .post-copyright-body{color:#d0d0d0;}
 [data-theme="dark"] .post-copyright-body strong{color:#fff;}
 
-/* ====== 暗黑模式 — 代码块（Prism.js + Tokyo Night 配色） ====== */
-[data-theme="dark"] .article-content pre[class*="language-"]{
-  background:#1a1b26;border-color:rgba(255,255,255,0.08);
-  box-shadow:0 2px 8px rgba(0,0,0,0.3);
-}
-[data-theme="dark"] .article-content pre[class*="language-"]::before{
-  background:#16171f;border-bottom-color:rgba(255,255,255,0.06);
-}
-[data-theme="dark"] .article-content pre[class*="language-"][data-language]::after{color:#7a7a8a;}
-[data-theme="dark"] .article-content pre[class*="language-"] code{color:#c0caf5;}
-[data-theme="dark"] .article-content .line-numbers .line-numbers-rows{
-  border-right-color:rgba(255,255,255,0.06);
-}
-[data-theme="dark"] .article-content .line-numbers .line-numbers-rows > span::before{color:rgba(255,255,255,0.25);}
 /* 暗黑模式 — 行内代码 */
 [data-theme="dark"] .article-content code:not(pre code){
   background:color-mix(in srgb,var(--accent-color) 18%,rgba(255,255,255,0.08));
   color:var(--accent-soft);
 }
-/* 暗黑模式 — 复制按钮 */
-[data-theme="dark"] .code-copy-btn{
-  background:transparent;color:rgba(255,255,255,0.5);
-}
-[data-theme="dark"] .code-copy-btn:hover{color:var(--accent-color);background:rgba(255,255,255,0.08);}
 
 /* ============================================================
    标签外挂样式 — 参考 Butterfly 主题设计，适配 moeMac 毛玻璃风格
@@ -1647,42 +1745,6 @@ color:#444;letter-spacing:2px;
   background:color-mix(in srgb,var(--card-color,var(--accent-color)) 12%,rgba(255,255,255,0.03));
   border-bottom-color:color-mix(in srgb,var(--card-color,var(--accent-color)) 15%,transparent);
 }
-/* Tokyo Night 暗黑模式 — Prism token 颜色 */
-[data-theme="dark"] .article-content .token.comment,
-[data-theme="dark"] .article-content .token.prolog,
-[data-theme="dark"] .article-content .token.doctype,
-[data-theme="dark"] .article-content .token.cdata{color:#565f89;}
-[data-theme="dark"] .article-content .token.punctuation{color:#89ddff;}
-[data-theme="dark"] .article-content .token.keyword,
-[data-theme="dark"] .article-content .token.selector{color:#bb9af7;}
-[data-theme="dark"] .article-content .token.string,
-[data-theme="dark"] .article-content .token.attr-value,
-[data-theme="dark"] .article-content .token.char,
-[data-theme="dark"] .article-content .token.regex{color:#9ece6a;}
-[data-theme="dark"] .article-content .token.number,
-[data-theme="dark"] .article-content .token.boolean,
-[data-theme="dark"] .article-content .token.literal{color:#ff9e64;}
-[data-theme="dark"] .article-content .token.function,
-[data-theme="dark"] .article-content .token.class-name{color:#7aa2f7;}
-[data-theme="dark"] .article-content .token.property,
-[data-theme="dark"] .article-content .token.constant,
-[data-theme="dark"] .article-content .token.symbol{color:#ff9e64;}
-[data-theme="dark"] .article-content .token.tag,
-[data-theme="dark"] .article-content .token.builtin{color:#73daca;}
-[data-theme="dark"] .article-content .token.attr-name{color:#ff9e64;}
-[data-theme="dark"] .article-content .token.operator,
-[data-theme="dark"] .article-content .token.entity,
-[data-theme="dark"] .article-content .token.url{color:#89ddff;}
-[data-theme="dark"] .article-content .token.variable{color:#f7768e;}
-[data-theme="dark"] .article-content .token.decorator,
-[data-theme="dark"] .article-content .token.annotation{color:#7aa2f7;}
-[data-theme="dark"] .article-content .token.atrule,
-[data-theme="dark"] .article-content .token.rule{color:#bb9af7;}
-[data-theme="dark"] .article-content .token.important{font-weight:700;}
-[data-theme="dark"] .article-content .token.bold{font-weight:700;}
-[data-theme="dark"] .article-content .token.italic{font-style:italic;}
-[data-theme="dark"] .article-content .token.inserted{color:#9ece6a;background-color:rgba(158,206,106,0.1);}
-[data-theme="dark"] .article-content .token.deleted{color:#f7768e;background-color:rgba(247,118,142,0.1);}
 
 /* ====== 标题分级入场动画 ======
    按等级划分动画强度：h1 最强 → h6 最弱

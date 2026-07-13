@@ -1,0 +1,32 @@
+/* ============================================
+   code-theme-dracula.css — Dracula 主题
+   浅色/暗黑统一使用 Dracula 配色
+   ============================================ */
+
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#6272a4;font-style:italic;}
+.token.punctuation{color:#f8f8f2;}
+.token.namespace{opacity:0.7;}
+.token.keyword,.token.selector{color:#ff79c6;font-weight:600;}
+.token.string,.token.attr-value,.token.char,.token.regex{color:#f1fa8c;}
+.token.number,.token.boolean,.token.literal{color:#bd93f9;}
+.token.function,.token.class-name{color:#50fa7b;font-weight:600;}
+.token.property,.token.constant,.token.symbol{color:#bd93f9;}
+.token.tag,.token.builtin{color:#ff79c6;}
+.token.attr-name{color:#50fa7b;}
+.token.operator,.token.entity,.token.url{color:#ff79c6;}
+.token.variable{color:#f8f8f2;}
+.token.decorator,.token.annotation{color:#50fa7b;}
+.token.atrule,.token.rule{color:#ff79c6;}
+.token.important{font-weight:700;color:#ffb86c;}
+.token.bold{font-weight:700;}
+.token.italic{font-style:italic;}
+.token.inserted{color:#50fa7b;background-color:rgba(80,250,123,0.1);}
+.token.deleted{color:#ff5555;background-color:rgba(255,85,85,0.1);}
+
+/* 代码块基础文字色 */
+.code-block-wrap .code-scroll code{color:#f8f8f2;}
+.article-content pre[class*="language-"] code{color:#f8f8f2;}
+
+/* 暗黑模式下不变（Dracula 本就是暗色系） */
+[data-theme="dark"] .code-block-wrap .code-scroll code{color:#f8f8f2;}
+[data-theme="dark"] .article-content pre[class*="language-"] code{color:#f8f8f2;}

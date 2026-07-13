@@ -604,13 +604,25 @@ window.__moeMacMainLoaded = true;
   function initMasonry() {
     var grid = document.getElementById('posts-wall-grid');
     if (!grid) return;
+    /* 销毁旧实例（可能在桌面端创建过） */
+    if (masonryInstance) { try { masonryInstance.destroy(); } catch(e){} masonryInstance = null; }
+    /* 移动端不使用 Masonry — 卡片为全宽单列布局，CSS 即可处理。
+       Masonry 的 position:absolute 会干扰移动端 flex 布局并阻止筛选功能正常工作 */
+    if (isMobile()) {
+      /* 清除可能残留的 Masonry 内联样式（桌面端 → 移动端切换时） */
+      grid.querySelectorAll('.wall-card').forEach(function(card){
+        card.style.position = '';
+        card.style.left = '';
+        card.style.top = '';
+      });
+      grid.classList.add('masonry-ready');
+      return;
+    }
     if (typeof Masonry === 'undefined') {
       /* Masonry 库未加载，直接显示网格（兜底） */
       grid.classList.add('masonry-ready');
       return;
     }
-    /* 销毁旧实例 */
-    if (masonryInstance) { try { masonryInstance.destroy(); } catch(e){} }
     /* 测量第一张卡片的宽度作为列宽（仅在初始化时测量一次，避免筛选后 display:none 导致列宽为 0） */
     var firstCard = grid.querySelector('.wall-card');
     var colWidth = firstCard ? firstCard.offsetWidth : 300;
@@ -675,14 +687,16 @@ window.__moeMacMainLoaded = true;
         var cat = c.getAttribute('data-cat');
         var catMatch = currentCat === 'all' || cat === currentCat;
         if (catMatch) {
+          /* 用 class 控制显隐，避免移动端 display:flex!important 覆盖 inline display:none */
+          c.classList.remove('wall-card-hidden');
           c.style.display = '';
           visibleCards.push(c);
         } else {
-          c.style.display = 'none';
+          c.classList.add('wall-card-hidden');
         }
       });
-      /* 用 Masonry 重新布局：reloadItems 重新扫描子元素状态（display:none 的会被跳过） */
-      if (masonryInstance) {
+      /* Masonry 重新布局（仅桌面端 — 移动端用 CSS 正常流，不需要 Masonry） */
+      if (masonryInstance && !isMobile()) {
         try {
           masonryInstance.reloadItems();
           masonryInstance.layout();
@@ -710,14 +724,36 @@ window.__moeMacMainLoaded = true;
       });
     }
 
-    btns.forEach(function (b) {
-      b.addEventListener('click', function () {
-        btns.forEach(function (x) { x.classList.remove('active'); });
-        b.classList.add('active');
-        currentCat = b.getAttribute('data-cat');
-        applyFilter();
+    /* 使用事件委托 — 在 .wall-filter 容器上监听 click，
+       避免移动端合成层（backface-visibility:hidden + will-change:transform）
+       导致直接绑定在 .filter-btn 上的 click 事件不触发。
+       与 .ajax-link 的全局委托处理方式一致，确保移动端/iPad 端正常响应。 */
+    var filterWrap = document.querySelector('.wall-filter');
+    if (filterWrap) {
+      if (!filterWrap._filterBound) {
+        filterWrap._filterBound = true;
+        filterWrap.addEventListener('click', function (e) {
+          var btn = e.target.closest('.filter-btn');
+          if (!btn) return;
+          filterWrap.querySelectorAll('.filter-btn').forEach(function (x) { x.classList.remove('active'); });
+          btn.classList.add('active');
+          currentCat = btn.getAttribute('data-cat');
+          applyFilter();
+        });
+      }
+    } else {
+      /* 回退：.wall-filter 不存在时直接绑定到按钮 */
+      btns.forEach(function (b) {
+        if (b._filterBound) return;
+        b._filterBound = true;
+        b.addEventListener('click', function () {
+          btns.forEach(function (x) { x.classList.remove('active'); });
+          b.classList.add('active');
+          currentCat = b.getAttribute('data-cat');
+          applyFilter();
+        });
       });
-    });
+    }
 
     /* 窗口 resize 时重新布局 Masonry（防抖）— 仅绑定一次，避免 AJAX 导航重复添加监听器 */
     if (!WallFilter._resizeBound) {
@@ -844,29 +880,208 @@ window.__moeMacMainLoaded = true;
     }
   };
 
-  /* ====== 代码块复制按钮（Prism.js 版） ====== */
+  /* ====== 代码块工具栏（复制/折叠/全屏） ======
+     参考 Butterfly 主题，重构 HTML 结构：
+     <div class="code-block-wrap">
+       <div class="code-header">  ← 固定顶部（mac灯+语言+按钮）
+       <div class="code-main">    ← 主体
+         <div class="code-gutter">← 固定左侧行号
+         <div class="code-scroll">← 只有这里横向滚动
+           <pre><code>...</code></pre>
+     优点：顶部和行号不随代码滚动，滚动条只在代码区底部 */
   var CodeCopy = {
+    _fsOverlay: null,
+    _escBound: false,
+    COLLAPSE_THRESHOLD: 300,
     init: function () {
+      var self = this;
       var blocks = document.querySelectorAll('.article-content pre[class*="language-"]');
       blocks.forEach(function (pre) {
-        if (pre.querySelector('.code-copy-btn')) return;
+        if (pre.closest('.code-block-wrap')) return; /* 已初始化 */
 
-        var btn = document.createElement('button');
-        btn.className = 'code-copy-btn';
-        btn.type = 'button';
-        btn.innerHTML = '<i class="fas fa-copy"></i>';
-        btn.title = '复制代码';
-        btn.addEventListener('click', function () {
-          var codeEl = pre.querySelector('code');
-          var text = codeEl ? codeEl.innerText.replace(/\n$/, '') : pre.innerText;
-          var done = function () { btn.innerHTML = '<i class="fas fa-check"></i>'; btn.classList.add('copied'); setTimeout(function () { btn.innerHTML = '<i class="fas fa-copy"></i>'; btn.classList.remove('copied'); }, 1600); };
+        var lang = pre.getAttribute('data-language') || '';
+        var codeEl = pre.querySelector('code');
+        /* 克隆 code 并移除 .line-numbers-rows（Prism 行号在 code 内部）
+           否则行号 span 会被当作代码内容，导致行数对不上 */
+        var codeClone = codeEl ? codeEl.cloneNode(true) : null;
+        if (codeClone) {
+          var lnr = codeClone.querySelector('.line-numbers-rows');
+          if (lnr) lnr.remove();
+        }
+        var codeHTML = codeClone ? codeClone.innerHTML : '';
+        var codeClass = codeEl ? codeEl.className.replace(/\s*line-numbers-rows.*/g, '').trim() : '';
+
+        /* 提取行号数量 */
+        var lineNumbers = pre.querySelector('.line-numbers-rows');
+        var lineCount = 0;
+        if (lineNumbers) {
+          lineCount = lineNumbers.querySelectorAll(':scope > span').length;
+        }
+
+        /* 构建 DOM */
+        var wrap = document.createElement('div');
+        wrap.className = 'code-block-wrap';
+
+        /* 顶部栏：折叠按钮 + mac 灯 + 语言 + 按钮组 */
+        var header = document.createElement('div');
+        header.className = 'code-header';
+        header.innerHTML =
+          '<div class="code-tools-left"></div>' +
+          '<div class="code-mac-dots"></div>' +
+          (lang ? '<span class="code-lang-text">' + lang + '</span>' : '') +
+          '<div class="code-tools"></div>';
+
+        /* 主体：行号 + 滚动代码区 */
+        var main = document.createElement('div');
+        main.className = 'code-main';
+
+        if (lineCount > 0) {
+          var gutter = document.createElement('div');
+          gutter.className = 'code-gutter';
+          var gh = '';
+          for (var i = 1; i <= lineCount; i++) gh += '<span>' + i + '</span>';
+          gutter.innerHTML = gh;
+          main.appendChild(gutter);
+        }
+
+        var scroll = document.createElement('div');
+        scroll.className = 'code-scroll';
+        var newPre = document.createElement('pre');
+        /* 不给 pre 加 language- class，避免匹配 .article-content pre[class*="language-"] 的边框/背景样式 */
+        var newCode = document.createElement('code');
+        newCode.className = codeClass;
+        newCode.innerHTML = codeHTML;
+        newPre.appendChild(newCode);
+        scroll.appendChild(newPre);
+        main.appendChild(scroll);
+
+        wrap.appendChild(header);
+        wrap.appendChild(main);
+        pre.parentNode.insertBefore(wrap, pre);
+        pre.remove();
+
+        /* === 按钮组 === */
+        var tools = header.querySelector('.code-tools');
+
+        /* 折叠按钮 — 默认展开(向下)，折叠后向右 */
+        var expandBtn = document.createElement('button');
+        expandBtn.className = 'code-expand-btn';
+        expandBtn.type = 'button';
+        expandBtn.title = '折叠/展开';
+        expandBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+
+        /* 复制按钮 */
+        var copyBtn = document.createElement('button');
+        copyBtn.className = 'code-copy-btn';
+        copyBtn.type = 'button';
+        copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+        copyBtn.title = '复制代码';
+        copyBtn.addEventListener('click', function () {
+          var text = newCode.innerText.replace(/\n$/, '');
+          var done = function () { copyBtn.innerHTML = '<i class="fas fa-check"></i>'; copyBtn.classList.add('copied'); setTimeout(function () { copyBtn.innerHTML = '<i class="fas fa-copy"></i>'; copyBtn.classList.remove('copied'); }, 1600); };
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(done).catch(function () { CodeCopy._legacy(text, done); });
           } else { CodeCopy._legacy(text, done); }
         });
-        pre.appendChild(btn);
+
+        /* 全屏按钮 — 放在复制按钮右侧 */
+        var fsBtn = document.createElement('button');
+        fsBtn.className = 'code-fullscreen-btn';
+        fsBtn.type = 'button';
+        fsBtn.title = '全屏查看';
+        fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        fsBtn.addEventListener('click', function () { self.openFullscreen(wrap); });
+
+        /* 折叠按钮插入到红绿灯左侧 */
+        header.querySelector('.code-tools-left').appendChild(expandBtn);
+        /* 复制 + 全屏 在右侧 */
+        tools.appendChild(copyBtn);
+        tools.appendChild(fsBtn);
+
+        /* 折叠/展开逻辑 — 精确 max-height + will-change 优化性能 */
+        expandBtn.addEventListener('click', function () {
+          var main = wrap.querySelector('.code-main');
+          if (wrap.classList.contains('code-collapsed')) {
+            /* 展开 */
+            wrap.classList.remove('code-collapsed');
+            main.style.maxHeight = main.scrollHeight + 'px';
+            main.addEventListener('transitionend', function onEnd (e) {
+              if (e.propertyName !== 'max-height') return;
+              main.style.maxHeight = '';
+              main.removeEventListener('transitionend', onEnd);
+            });
+            expandBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+          } else {
+            /* 折叠 */
+            main.style.maxHeight = main.scrollHeight + 'px';
+            requestAnimationFrame(function () {
+              main.style.maxHeight = '0';
+              wrap.classList.add('code-collapsed');
+            });
+            expandBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+          }
+        });
+
+        /* 所有代码块默认展开，不自动折叠 */
       });
     },
+
+    /* ====== 全屏查看 ====== */
+    openFullscreen: function (wrap) {
+      var self = this;
+      if (!this._fsOverlay) {
+        this._fsOverlay = document.createElement('div');
+        this._fsOverlay.className = 'code-fullscreen-overlay';
+        this._fsOverlay.innerHTML =
+          '<div class="code-fullscreen-mask"></div>' +
+          '<div class="code-fullscreen-close"><i class="fas fa-xmark"></i></div>' +
+          '<div class="code-fullscreen-content"></div>';
+        document.body.appendChild(this._fsOverlay);
+        this._fsOverlay.querySelector('.code-fullscreen-mask').addEventListener('click', function () { self.closeFullscreen(); });
+        this._fsOverlay.querySelector('.code-fullscreen-close').addEventListener('click', function () { self.closeFullscreen(); });
+        if (!this._escBound) {
+          this._escBound = true;
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && self._fsOverlay && self._fsOverlay.classList.contains('open')) {
+              self.closeFullscreen();
+            }
+          });
+        }
+      }
+      /* 克隆整个 wrap（含顶部栏+行号+代码），解除折叠 */
+      var clone = wrap.cloneNode(true);
+      clone.classList.remove('code-collapsed');
+      /* 全屏内隐藏折叠和全屏按钮，保留复制 */
+      var cExp = clone.querySelector('.code-expand-btn');
+      var cFs = clone.querySelector('.code-fullscreen-btn');
+      if (cExp) cExp.style.display = 'none';
+      if (cFs) cFs.style.display = 'none';
+      /* 重新绑定复制按钮（克隆的节点丢失事件监听） */
+      var cCopy = clone.querySelector('.code-copy-btn');
+      if (cCopy) {
+        cCopy.addEventListener('click', function () {
+          var code = clone.querySelector('code');
+          var text = code ? code.innerText.replace(/\n$/, '') : '';
+          var done = function () { cCopy.innerHTML = '<i class="fas fa-check"></i>'; cCopy.classList.add('copied'); setTimeout(function () { cCopy.innerHTML = '<i class="fas fa-copy"></i>'; cCopy.classList.remove('copied'); }, 1600); };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(function () { CodeCopy._legacy(text, done); });
+          } else { CodeCopy._legacy(text, done); }
+        });
+      }
+      var contentEl = this._fsOverlay.querySelector('.code-fullscreen-content');
+      contentEl.innerHTML = '';
+      contentEl.appendChild(clone);
+      this._fsOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    },
+
+    closeFullscreen: function () {
+      if (this._fsOverlay) {
+        this._fsOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    },
+
     _legacy: function (text, cb) {
       var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta); ta.select();
@@ -1040,6 +1255,8 @@ window.__moeMacMainLoaded = true;
 
   /* AJAX 导航前清理：销毁旧评论实例、重置全局状态 */
   function cleanupBeforeNav() {
+    /* 关闭代码块全屏覆盖层 */
+    if (typeof CodeCopy !== 'undefined' && CodeCopy.closeFullscreen) CodeCopy.closeFullscreen();
     /* 销毁 CWD 实例及其观察器 */
     if (window.__cwdInstance) {
       try {
@@ -1198,7 +1415,6 @@ window.__moeMacMainLoaded = true;
               LazyImg.init();
               BackTop.refresh();
               CountUp.init();
-              ArchiveFold.init();
               Gallery.init();
               /* 重新触发卜算子访客统计（脚本在 head 中，AJAX 不会自动重新加载） */
               refreshBusuanzi();
@@ -1213,6 +1429,10 @@ window.__moeMacMainLoaded = true;
                 console.warn('Animation error:', eAnim);
                 document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; });
               }
+              /* ArchiveFold 必须在动画注册之后执行：
+                 动画先给所有 header 设置 opacity:0 + IntersectionObserver（在原始位置注册），
+                 然后再折叠，避免折叠导致位置变化使第5组 header 在视口外延迟触发 */
+              try { ArchiveFold.init(); } catch(e) { console.warn('ArchiveFold error:', e); }
               // UI 增强效果重新初始化
               if (typeof UIEnhance !== "undefined") { try { UIEnhance.init(); } catch(e) { console.warn('UIEnhance error:', e); } }
               // 标签外挂重新初始化（Tabs/Folding/KaTeX/Mermaid/Gallery 等）
@@ -1382,6 +1602,7 @@ window.__moeMacMainLoaded = true;
           if (!isExpanded) {
             header.classList.add('expanded');
             if (icon) icon.style.transform = 'rotate(0deg)';
+            /* 行入场动画由 CSS @keyframes 自动触发，无需 JS */
           } else {
             header.classList.remove('expanded');
             if (icon) icon.style.transform = 'rotate(-90deg)';
@@ -1542,7 +1763,6 @@ window.__moeMacMainLoaded = true;
       TOC.init(); CodeCopy.init(); LazyImg.init(); BackTop.init(); Search.init();
       CountUp.init();
       ThemeToggle.init();
-      ArchiveFold.init();
       Gallery.init();
       DesktopMode.check();
       syncDockGlass();
@@ -1553,6 +1773,10 @@ window.__moeMacMainLoaded = true;
       if (typeof GSAPAnimations !== "undefined") GSAPAnimations.run();
       else { document.querySelectorAll('.app-window').forEach(function(el){ el.style.opacity=''; }); }
       if (typeof UIEnhance !== "undefined") { UIEnhance.initOnce(); UIEnhance.init(); }
+      /* ArchiveFold 必须在动画注册之后执行：
+         动画先给 header 注册 IntersectionObserver（在原始位置），
+         然后再折叠，避免折叠导致位置变化使后面的 header 延迟触发 */
+      try { ArchiveFold.init(); } catch(e) { console.warn('ArchiveFold error:', e); }
     }
     /* 检查同步 CSS link 是否已加载完成（忽略 media="print" 异步 CSS）
        异步 CSS 不影响布局和动画，不应阻塞入场动画 */

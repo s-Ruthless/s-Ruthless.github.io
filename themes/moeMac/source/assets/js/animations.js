@@ -68,6 +68,8 @@
       }
       var els = document.querySelectorAll(winSels + sels);
       els.forEach(function (el) {
+        /* 跳过折叠组内的归档行 — 由 toggleYear 接管动画 */
+        if (el.classList.contains('archive-row') && el.closest('.archive-year-content')) return;
         ALL_ANIM_CLASSES.forEach(function (cls) { el.classList.remove(cls); });
         el.style.animationDelay = '';
         el.style.animation = '';
@@ -187,9 +189,11 @@
       });
 
       /* 文章列表 / 归档行：IntersectionObserver，统一使用 fade-up（opacity+translateY）
-         避免水平位移动画导致卡片重叠、间距不均匀 */
+         避免水平位移动画导致卡片重叠、间距不均匀
+         归档行在折叠组内的不注册 IO — 由 toggleYear 展开时手动动画，避免两套动画冲突 */
       var listCards = document.querySelectorAll('.post-list-item, .archive-row');
       listCards.forEach(function (card, i) {
+        if (card.closest('.archive-year-content')) return;
         observe(card, 'anim-fade-up', (i % 10) * 60);
       });
     },
@@ -347,11 +351,14 @@
         UIEnhance.clipReveal();
         UIEnhance.heroEffects();
       }
-      /* 安全超时：1.5s 后强制清理所有残留动画类和内联样式（防止 animationend 未触发） */
+      /* 安全超时：1.5s 后强制清理所有残留动画类和内联样式（防止 animationend 未触发）
+         跳过折叠组内的归档行 — 它们由 toggleYear 管理，不参与 IO 动画 */
       setTimeout(function () {
         document.body.classList.remove('animating');
         var sels = '.post-list-item,.wall-card,.archive-row,.archive-year-header,.article-header,.article-content,.article-nav,.page-header,.dock-bar,.app-window,#galleryMasonry .gallery-item,.douban-card,.flink-card,.link-card,.stat-hero-card,.cat-item,.tag,.search-item,.article-content h1,.article-content h2,.article-content h3,.article-content h4,.article-content h5,.article-content h6';
         document.querySelectorAll(sels).forEach(function (el) {
+          /* 跳过折叠组内的归档行 — 由 toggleYear 接管动画 */
+          if (el.classList.contains('archive-row') && el.closest('.archive-year-content')) return;
           ALL_ANIM_CLASSES.forEach(function (cls) { el.classList.remove(cls); });
           el.style.opacity = '';
           el.style.transform = '';

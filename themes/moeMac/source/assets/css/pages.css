@@ -71,6 +71,8 @@
 .wall-grid{position:relative;width:100%;margin-bottom:20px;}
 /* Masonry 初始化后显示（初始 opacity:0 由模板内联样式设置） */
 .wall-grid.masonry-ready{opacity:1!important;}
+/* 筛选隐藏 — display:none!important 确保覆盖移动端 .wall-card{display:flex!important} */
+.wall-card.wall-card-hidden{display:none!important;}
 /* 每张卡片宽度按百分比，Masonry 负责定位 */
 .wall-card{
   position:relative;width:calc(33.333% - 11px);margin-bottom:16px;min-width:0;
@@ -341,15 +343,16 @@ html.is-desktop body.is-desktop::-webkit-scrollbar-corner,
 html.is-desktop body.is-desktop::-webkit-scrollbar-button {
   display: none; width: 0; height: 0; background: transparent;
 }
-::-webkit-scrollbar {
+/* 全局隐藏滚动条 — 但排除代码块滚动区 */
+:not(.code-scroll)::-webkit-scrollbar {
   width: 0 !important;
   height: 0 !important;
-  display: none !important;                       /* Chrome/Safari/Edge */
+  display: none !important;
 }
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-thumb,
-::-webkit-scrollbar-corner,
-::-webkit-scrollbar-button {
+:not(.code-scroll)::-webkit-scrollbar-track,
+:not(.code-scroll)::-webkit-scrollbar-thumb,
+:not(.code-scroll)::-webkit-scrollbar-corner,
+:not(.code-scroll)::-webkit-scrollbar-button {
   display: none !important;
   width: 0 !important;
   height: 0 !important;

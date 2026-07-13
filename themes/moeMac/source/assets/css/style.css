@@ -1108,10 +1108,6 @@ border-color:color-mix(in srgb,var(--accent-color) 35%,transparent);
 .article-content img{transition:transform 0.3s ease,box-shadow 0.3s ease;}
 .article-content img:hover{transform:scale(1.02);box-shadow:0 4px 20px rgba(0,0,0,0.12);}
 
-/* --- 代码块复制按钮：hover 时弹跳 --- */
-.code-copy-btn{transition:transform 0.2s ease,background 0.2s ease,color 0.2s ease,opacity 0.2s ease;}
-.code-copy-btn:hover{animation:icon-bounce 0.3s ease;}
-
 /* --- 一言文字：加载完成时淡入 --- */
 .hero-hitokoto-text{animation:anim-fade-in 0.6s ease both;}
 

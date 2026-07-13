@@ -38,6 +38,14 @@ twitter: ""
 # ====== 主题色 ======
 accent_color: "#cf0226"
 
+# ====== 代码高亮主题 ======
+# 可选值：github / dracula / one-dark / vs
+#   github   — 浅色 GitHub Light / 暗黑 Tokyo Night（默认）
+#   dracula  — Dracula 配色（浅色暗黑统一）
+#   one-dark — 浅色 Atom One Light / 暗黑 Atom One Dark
+#   vs       — 浅色 VS Code Light+ / 暗黑 VS Code Dark+
+code_theme: "github"
+
 # ====== 静态资源 CDN ======
 # 所有静态资源按类型统一放在 source/assets/ 下：
 #   assets/css/   — 所有 CSS（主题 + 第三方）

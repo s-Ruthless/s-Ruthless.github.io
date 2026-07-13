@@ -135,24 +135,45 @@
   background:color-mix(in srgb,var(--accent-color) 12%,transparent);
 }
 .year-toggle-icon{transition:transform 0.3s ease;color:var(--accent-color);font-size:14px;font-weight:bold;}
-/* 使用 grid-template-rows 实现折叠动画 — 纯合成层动画，不触发布局重排
-   避免 max-height + padding 时序不同步导致的手机端抖动 */
+/* 使用 max-height 实现折叠动画 — 兼容旧版 WebKit（QQ/微信浏览器）
+   grid-template-rows 过渡在 Chrome <107 / 旧 WebView 不支持，会跳变抖动 */
 .archive-year-content{
-  display:grid;
-  grid-template-rows:1fr;
-  transition:grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height:5000px;
   overflow:hidden;
+  transition:max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),opacity 0.3s ease;
+  opacity:1;
 }
-/* 折叠状态：grid 行高归零，内容自然消失，无需操作 padding */
+/* 折叠状态 */
 .archive-year-header:not(.expanded) + .archive-year-content{
-  grid-template-rows:0fr;
+  max-height:0;
+  opacity:0;
   pointer-events:none;
 }
-/* 内层 wrapper 承载 padding，overflow:hidden 配合 grid 行高过渡 */
+/* 内层 wrapper 承载 padding */
 .archive-year-content > .archive-year-inner{
-  overflow:hidden;
   padding:4px 8px 8px 8px;
 }
+
+/* 展开时行入场动画 — 纯 CSS，只要 .expanded 加上就自动触发 */
+@keyframes archiveRowIn{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.archive-year-header.expanded + .archive-year-content .archive-row{
+  animation:archiveRowIn 0.4s ease both;
+}
+/* 逐行延迟（前10行，之后统一 500ms） */
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(1){animation-delay:0ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(2){animation-delay:50ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(3){animation-delay:100ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(4){animation-delay:150ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(5){animation-delay:200ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(6){animation-delay:250ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(7){animation-delay:300ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(8){animation-delay:350ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(9){animation-delay:400ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(10){animation-delay:450ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(n+11){animation-delay:500ms;}
 
 .archive-row{
   display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;

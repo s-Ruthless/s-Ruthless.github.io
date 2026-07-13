@@ -101,7 +101,7 @@
   <link rel="alternate" type="application/rss+xml" title="<%= config.title %>" href="<%= config.url %>/<%= theme.rss.path || 'atom.xml' %>">
   <% } %>
 
-  <% var V = '?v=20260712r23'; %>
+  <% var V = '?v=20260713r24'; %>
 
   <!-- ====== 内联关键 CSS（~1.5KB，零额外请求，防止首屏空白） ====== -->
   <style>
@@ -162,6 +162,12 @@
   <link rel="stylesheet" href="<%= A %>/css/mobile.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/pages.css<%= V %>">
   <link rel="stylesheet" href="<%= A %>/css/icons.css<%= V %>">
+
+  <!-- ====== 代码高亮主题 ====== -->
+  <% var _ct = theme.code_theme || 'github';
+     var _ctMap = { 'github':'github', 'dracula':'dracula', 'one-dark':'one-dark', 'vs':'vs' };
+     var _ctFile = _ctMap[_ct] || 'github'; %>
+  <link rel="stylesheet" href="<%= A %>/css/code-theme-<%= _ctFile %>.css<%= V %>">
 
   <!-- ====== 页面级 CSS — 当前页面同步，其他页面异步 ====== -->
   <% if (_isPost) { %>

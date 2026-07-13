@@ -1597,15 +1597,34 @@ window.__moeMacMainLoaded = true;
         window.toggleYear = function (year) {
           var header = document.querySelector('#year-' + year + ' .archive-year-header');
           var icon = document.querySelector('#year-' + year + ' .year-toggle-icon');
+          var content = document.querySelector('#year-' + year + ' .archive-year-content');
           if (!header) return;
           var isExpanded = header.classList.contains('expanded');
           if (!isExpanded) {
+            /* 展开：先设 height:0，下一帧设为 scrollHeight 触发过渡 */
             header.classList.add('expanded');
             if (icon) icon.style.transform = 'rotate(0deg)';
-            /* 行入场动画由 CSS @keyframes 自动触发，无需 JS */
+            if (content) {
+              content.style.height = '0px';
+              requestAnimationFrame(function () {
+                content.style.height = content.scrollHeight + 'px';
+                content.addEventListener('transitionend', function onEnd (e) {
+                  if (e.propertyName !== 'height') return;
+                  content.style.height = '';
+                  content.removeEventListener('transitionend', onEnd);
+                });
+              });
+            }
           } else {
+            /* 折叠：先设精确高度，下一帧设 0 触发过渡 */
             header.classList.remove('expanded');
             if (icon) icon.style.transform = 'rotate(-90deg)';
+            if (content) {
+              content.style.height = content.scrollHeight + 'px';
+              requestAnimationFrame(function () {
+                content.style.height = '0px';
+              });
+            }
           }
         };
       }

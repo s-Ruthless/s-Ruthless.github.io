@@ -135,45 +135,45 @@
   background:color-mix(in srgb,var(--accent-color) 12%,transparent);
 }
 .year-toggle-icon{transition:transform 0.3s ease;color:var(--accent-color);font-size:14px;font-weight:bold;}
-/* 使用 max-height 实现折叠动画 — 兼容旧版 WebKit（QQ/微信浏览器）
-   grid-template-rows 过渡在 Chrome <107 / 旧 WebView 不支持，会跳变抖动 */
+/* 折叠容器 — 不用 max-height 过渡（旧 WebKit 大数值性能差），
+   JS 设置精确高度过渡，CSS 只负责 overflow */
 .archive-year-content{
-  max-height:5000px;
   overflow:hidden;
-  transition:max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),opacity 0.3s ease;
-  opacity:1;
 }
 /* 折叠状态 */
 .archive-year-header:not(.expanded) + .archive-year-content{
-  max-height:0;
-  opacity:0;
+  height:0;
   pointer-events:none;
+}
+/* 展开状态 — JS 设置精确 height */
+.archive-year-header.expanded + .archive-year-content{
+  transition:height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* 内层 wrapper 承载 padding */
 .archive-year-content > .archive-year-inner{
   padding:4px 8px 8px 8px;
 }
 
-/* 展开时行入场动画 — 纯 CSS，只要 .expanded 加上就自动触发 */
+/* 展开时行入场动画 — 纯 opacity，不用 transform（旧 WebKit 多行 transform 抖动） */
 @keyframes archiveRowIn{
-  from{opacity:0;transform:translateY(16px);}
-  to{opacity:1;transform:translateY(0);}
+  from{opacity:0;}
+  to{opacity:1;}
 }
 .archive-year-header.expanded + .archive-year-content .archive-row{
-  animation:archiveRowIn 0.4s ease both;
+  animation:archiveRowIn 0.3s ease both;
 }
-/* 逐行延迟（前10行，之后统一 500ms） */
+/* 逐行延迟 */
 .archive-year-header.expanded + .archive-year-content .archive-row:nth-child(1){animation-delay:0ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(2){animation-delay:50ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(3){animation-delay:100ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(4){animation-delay:150ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(5){animation-delay:200ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(6){animation-delay:250ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(7){animation-delay:300ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(8){animation-delay:350ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(9){animation-delay:400ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(10){animation-delay:450ms;}
-.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(n+11){animation-delay:500ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(2){animation-delay:40ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(3){animation-delay:80ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(4){animation-delay:120ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(5){animation-delay:160ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(6){animation-delay:200ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(7){animation-delay:240ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(8){animation-delay:280ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(9){animation-delay:320ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(10){animation-delay:360ms;}
+.archive-year-header.expanded + .archive-year-content .archive-row:nth-child(n+11){animation-delay:400ms;}
 
 .archive-row{
   display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;

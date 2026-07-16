@@ -26,14 +26,17 @@
   } else if (p === 'cwd') {
     providerOk = c.cwd && c.cwd.apiBaseUrl;
     if (!providerOk) hintMsg = 'CWD 缺少 apiBaseUrl 配置，请在 _config.yml 的 comments.cwd.apiBaseUrl 填写 API 地址';
+  } else if (p === 'vwd') {
+    providerOk = c.vwd && c.vwd.apiBaseUrl;
+    if (!providerOk) hintMsg = 'VWD 缺少 apiBaseUrl 配置，请在 _config.yml 的 comments.vwd.apiBaseUrl 填写 API 地址';
   } else {
     hintMsg = '未知的评论系统 provider：' + p + '，支持 giscus / waline / twikoo / gitalk / cwd';
   }
   var giscusOk = p === 'giscus' && providerOk;
 %>
-<div class="comments-wrap" id="comments-wrap"<% if (p === 'cwd') { %> style="border:none;box-shadow:none;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0;"<% } %>>
+<div class="comments-wrap" id="comments-wrap"<% if (p === 'cwd' || p === 'vwd') { %> style="border:none;box-shadow:none;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0;"<% } %>>
   <% if (providerOk) { %>
-  <div class="comments-loading" id="comments-loading"<% if (p === 'cwd') { %> style="background:transparent;border-radius:0;"<% } %>><div class="comments-spinner"></div><span>评论加载中…</span></div>
+  <div class="comments-loading" id="comments-loading"<% if (p === 'cwd' || p === 'vwd') { %> style="background:transparent;border-radius:0;"<% } %>><div class="comments-spinner"></div><span>评论加载中…</span></div>
   <% } %>
   <div id="comments-mount"<% if (giscusOk) { %> class="comments-mount-giscus"<% } %>>
     <% if (giscusOk) { %>
@@ -145,8 +148,8 @@
       });
     }
 
-    /* ---- CWD：初始隐藏，加载检测由 CWD init 函数接管 ---- */
-    if(p === 'cwd'){
+    /* ---- CWD / VWD：初始隐藏，加载检测由 init 函数接管 ---- */
+    if(p === 'cwd' || p === 'vwd'){
       mount.style.opacity = '0';
       mount.style.transform = 'translateY(8px)';
       mount.style.height = '0';
@@ -374,6 +377,120 @@
         if(window.CWDComments){ clearInterval(_cwdWait); init(); }
       }, 100);
       setTimeout(function(){ clearInterval(_cwdWait); }, 15000);
+    }
+  })();
+</script>
+<% } else if (p === 'vwd' && c.vwd && c.vwd.apiBaseUrl) {
+  var _vwdJsUrl = c.vwd.jsUrl || (c.vwd.apiBaseUrl.replace(/\/+$/, '') + '/vwd.js');
+%>
+<script src="<%= _vwdJsUrl %>" onerror="window.__commentsShowError&&window.__commentsShowError('评论脚本加载失败（404），请检查网络或稍后重试')"></script>
+<script>
+  (function(){
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    function init(){
+      var comments = new VWDComments({
+        el: '#comments-mount',
+        apiBaseUrl: '<%= c.vwd.apiBaseUrl %>',
+        siteId: '<%= c.vwd.siteId || "" %>',
+        lang: '<%= c.vwd.lang || "auto" %>',
+        theme: dark ? 'dark' : 'light',
+        primaryColor: '<%= c.vwd.primaryColor || "" %>'<% if (c.vwd.customCssUrl) { %>,
+        customCssUrl: '<%= c.vwd.customCssUrl %>'<% } %>
+      });
+      comments.mount();
+      window.__vwdInstance = comments;
+      /* 静默更新 store 状态，修复回复表单输入时焦点丢失 */
+      var _patchApplied = false;
+      function applyStorePatch(){
+        if(_patchApplied) return;
+        var _vwdStore = comments.store;
+        if(!_vwdStore || !_vwdStore.updateFormField || !_vwdStore.store) return;
+        _patchApplied = true;
+        _vwdStore.updateFormField = function(field, value){
+          _vwdStore.store.state.form[field] = value;
+          try {
+            var f = _vwdStore.store.state.form;
+            localStorage.setItem('vwd_user_info', JSON.stringify({
+              name: f.name || '', email: f.email || '', url: f.url || ''
+            }));
+          } catch(e) {}
+        };
+      }
+      var _storeTimer = setInterval(function(){
+        if(comments.store){ clearInterval(_storeTimer); applyStorePatch(); }
+      }, 200);
+      setTimeout(function(){ clearInterval(_storeTimer); }, 15000);
+      /* 渲染完成后标记加载状态 */
+      var mountObserver = new MutationObserver(function(){
+        var mountEl = document.getElementById('comments-mount');
+        if(!mountEl) { mountObserver.disconnect(); return; }
+        var firstChild = mountEl.firstElementChild;
+        if(firstChild){
+          firstChild.setAttribute('data-loaded', 'true');
+          mountObserver.disconnect();
+        }
+      });
+      var _mountEl = document.getElementById('comments-mount');
+      if(_mountEl) mountObserver.observe(_mountEl, { childList: true });
+      /* 等待 Shadow DOM 创建后检测评论加载完成 */
+      var styleTimer = setInterval(function(){
+        var host = document.getElementById('comments-mount');
+        if(host && host.shadowRoot){
+          clearInterval(styleTimer);
+          var vwdLoaded = false;
+          function checkVwdLoaded(){
+            if(vwdLoaded) return true;
+            var container = host.shadowRoot.querySelector('.vwd-comments-container');
+            if(!container || !container.children.length){
+              return false;
+            }
+            var loadingEl = host.shadowRoot.querySelector('.vwd-loading');
+            if(!loadingEl){
+              vwdLoaded = true;
+              if(window.__commentsHideLoading) window.__commentsHideLoading();
+              var firstChild = host.firstElementChild;
+              if(firstChild) firstChild.setAttribute('data-loaded', 'true');
+              return true;
+            }
+            return false;
+          }
+          if(!checkVwdLoaded()){
+            var vwdLoadObserver = new MutationObserver(function(){
+              if(checkVwdLoaded()) vwdLoadObserver.disconnect();
+            });
+            vwdLoadObserver.observe(host.shadowRoot, { childList: true, subtree: true });
+            setTimeout(function(){
+              if(!vwdLoaded){
+                vwdLoaded = true;
+                vwdLoadObserver.disconnect();
+                if(window.__commentsHideLoading) window.__commentsHideLoading();
+                var firstChild = host.firstElementChild;
+                if(firstChild) firstChild.setAttribute('data-loaded', 'true');
+              }
+            }, 15000);
+          }
+        }
+      }, 200);
+      setTimeout(function(){
+        if(styleTimer){ clearInterval(styleTimer); }
+        var _host = document.getElementById('comments-mount');
+        if(!_host || !_host.shadowRoot){
+          if(window.__commentsHideLoading) window.__commentsHideLoading();
+        }
+      }, 20000);
+      /* 暗黑模式切换同步：通知 VWD 切换主题 */
+      var observer = new MutationObserver(function(){
+        var d = document.documentElement.getAttribute('data-theme') === 'dark';
+        comments.updateConfig({ theme: d ? 'dark' : 'light' });
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+    if (window.VWDComments) init();
+    else {
+      var _vwdWait = setInterval(function(){
+        if(window.VWDComments){ clearInterval(_vwdWait); init(); }
+      }, 100);
+      setTimeout(function(){ clearInterval(_vwdWait); }, 15000);
     }
   })();
 </script>

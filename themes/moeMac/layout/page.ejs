@@ -1,15 +1,14 @@
 <%
-  var iconMap = {
-    '关于': 'fas fa-circle-info',
-    '友链': 'fas fa-link',
-    '豆瓣': 'fas fa-book'
-  };
-  var pageIcon = iconMap[page.title] || 'fas fa-file-lines';
+  var _icon = 'fas fa-file-lines';
+  var _path = (page.path || '').replace(/\/index\.html$/, '').replace(/^\/|\/$/g, '');
+  (theme.dock || []).forEach(function(item){
+    if ((item.page || '').replace(/^\/|\/$/g, '') === _path) _icon = item.icon;
+  });
 %>
 <div class="page-container">
   <div class="page-body">
     <div class="page-header">
-      <h2><i class="<%= pageIcon %>"></i> <%= page.title || '页面' %></h2>
+      <h2><i class="<%- _icon %>"></i> <%= page.title || '页面' %></h2>
     </div>
     <div class="page-content">
     <div class="article-content"><%- page.content %></div>

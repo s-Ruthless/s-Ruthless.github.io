@@ -5,14 +5,15 @@
  * 例如：title: 夏天的正确打开方式 → /posts/b8e72f3a.html
  *
  * 特点：
+ *   - 始终启用，无需配置
  *   - 同一 title 永远生成相同的哈希，URL 稳定不变
+ *   - 始终根据 title 生成，忽略手写值，确保一致性
  *   - 8 位十六进制，简短美观
  *   - 纯 JS 实现，零外部依赖
  *   - 新文章无需任何手动操作
  *
- * 启用方式：
- *   1. 主题 _config.yml 中设置 abbrlink: true
- *   2. 站点 _config.yml 中设置 permalink: posts/:abbrlink.html
+ * 使用方式：
+ *   站点 _config.yml 中设置 permalink: posts/:abbrlink.html
  */
 
 "use strict";
@@ -78,16 +79,22 @@ function getTitle(fm) {
   return title;
 }
 
-/* 添加 abbrlink 到 front-matter（加引号防止 YAML 科学计数法误解析） */
-function addAbbrlink(fm, abbrlink) {
-  return fm.replace(/\s+$/, '') + '\nabbrlink: ' + '"' + abbrlink + '"';
+/* 设置 abbrlink 到 front-matter（已有则替换，没有则追加） */
+function setAbbrlink(fm, abbrlink) {
+  var newLine = 'abbrlink: "' + abbrlink + '"';
+  /* 已有 abbrlink 行则替换 */
+  if (/^abbrlink:\s*.+$/m.test(fm)) {
+    return fm.replace(/^abbrlink:\s*["']?[^"'\s]+["']?\s*$/m, newLine);
+  }
+  /* 没有则追加 */
+  return fm.replace(/\s+$/, '') + '\n' + newLine;
 }
 
-/* before_generate 过滤器：根据 title 自动生成 abbrlink */
+/* before_generate 过滤器：
+   - abbrlink: true  → 始终根据 title 算 CRC32，覆盖手写值
+   - abbrlink: false → 尊重 front-matter 中已有的值，没有才生成 */
 hexo.extend.filter.register('before_generate', function () {
   var enabled = hexo.theme.config.abbrlink;
-  if (!enabled) return;
-
   var postsDir = path.join(hexo.source_dir, '_posts');
   if (!fs.existsSync(postsDir)) return;
 
@@ -96,6 +103,7 @@ hexo.extend.filter.register('before_generate', function () {
   });
 
   var updated = 0;
+  var updates = {}; /* baseName → new abbrlink */
 
   files.forEach(function (filename) {
     var filePath = path.join(postsDir, filename);
@@ -103,24 +111,39 @@ hexo.extend.filter.register('before_generate', function () {
     var parsed = parseFrontMatter(content);
     if (!parsed) return;
 
-    /* 已有 abbrlink 则跳过（title 不变就不会重新生成） */
-    if (getAbbrlink(parsed.frontMatter)) return;
-
-    /* 从 title 生成 abbrlink */
     var title = getTitle(parsed.frontMatter);
     if (!title) return;
 
     var abbrlink = generateAbbrlink(title);
+    var existing = getAbbrlink(parsed.frontMatter);
 
-    /* 回写到文件 */
-    var newFm = addAbbrlink(parsed.frontMatter, abbrlink);
+    /* 值相同则跳过写入 */
+    if (existing === abbrlink) return;
+
+    /* abbrlink: false 时，已有值则跳过（尊重手写） */
+    if (!enabled && existing) return;
+
+    /* abbrlink: true 时，始终覆盖；false 时仅补生成 */
+    var newFm = setAbbrlink(parsed.frontMatter, abbrlink);
     var newContent = '---\n' + newFm + '\n---\n' + parsed.body;
     fs.writeFileSync(filePath, newContent, 'utf8');
+
+    var baseName = filename.replace(/\.(md|markdown)$/, '');
+    updates[baseName] = abbrlink;
     updated++;
   });
 
+  /* 同步更新 Hexo 内部 post 数据，确保 permalink 用新值 */
+  if (Object.keys(updates).length > 0) {
+    hexo.locals.get('posts').forEach(function (post) {
+      if (updates[post.slug]) {
+        post.abbrlink = updates[post.slug];
+      }
+    });
+  }
+
   if (updated > 0) {
-    hexo.log.info('abbrlink: 为 ' + updated + ' 篇文章生成了短链接');
+    hexo.log.info('abbrlink: 为 ' + updated + ' 篇文章更新了短链接');
   }
 });
 

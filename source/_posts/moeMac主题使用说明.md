@@ -4,8 +4,9 @@ date: 2026-07-11 10:00:00
 cover: https://picsum.photos/seed/moemac-guide/600/400
 sticky: 2
 tags:
-  - 前端
-  - 工具
+  - Hexo
+  - 教程
+  - moeMac
 categories:
   - 技术
 abbrlink: "91ca8701"
@@ -157,6 +158,7 @@ dock:
   - { icon: "fas fa-folder-open", label: "归档", page: "/archives/", type: "page" }
   - { icon: "fas fa-images", label: "相册", page: "/gallery/", type: "page" }
   - { icon: "fas fa-book", label: "豆瓣", page: "/douban/", type: "page" }
+  - { icon: "fas fa-comments", label: "动态", page: "/dynamic/", type: "page" }
   - { icon: "fas fa-link", label: "友链", page: "/links/", type: "page" }
   - { icon: "fas fa-heart", label: "关于", page: "/about/", type: "page" }
 ```
@@ -210,12 +212,12 @@ show_desktop_lyrics: true  # 桌面歌词
 
 ## 评论系统
 
-支持 Waline / Twikoo / Giscus / Gitalk / CWD 五种评论系统：
+支持 Waline / Twikoo / Giscus / Gitalk / CWD / VWD 六种评论系统：
 
 ```yaml
 comments:
   enable: true
-  provider: "waline"  # waline / twikoo / giscus / gitalk / cwd
+  provider: "waline"  # waline / twikoo / giscus / gitalk / cwd / vwd
 ```
 
 ### Waline
@@ -277,6 +279,31 @@ cwd:
   lang: "auto"
 ```
 
+### VWD（基于 Vercel Serverless）
+
+VWD 是基于 Vercel Serverless 的评论系统，部署简单，适合个人博客使用。
+
+> 官方文档：[https://github.com/s-Ruthless/Vercel-Workers-Discuss](https://github.com/s-Ruthless/Vercel-Workers-Discuss)
+
+```yaml
+vwd:
+  apiBaseUrl: "https://your-vwd-api.vercel.app"  # VWD API 地址（Vercel 部署后的地址）
+  jsUrl: ""               # vwd.js 脚本地址，留空则默认使用 apiBaseUrl + /vwd.js
+  siteId: "blog"           # 站点标识，用于多站点数据隔离（推荐配置）
+  lang: "auto"            # 评论组件语言，auto 自动检测浏览器语言
+  customCssUrl: ''         # 自定义 CSS 地址，留空则使用默认样式
+  primaryColor: '#cf0226'  # 主题色，影响按钮/链接等强调色
+```
+
+> **`jsUrl` 说明**：留空时默认从 API 服务器远程加载 `vwd.js`。也可填写自定义地址：
+> - 远程地址（可加版本号刷新缓存）：`jsUrl: "https://vwd.moeao.cn/vwd.js?v=2"`
+> - 本地路径（下载到本地后使用）：`jsUrl: "/assets/js/vwd.js"`
+
+VWD 支持暗黑模式自动切换、Shadow DOM 隔离样式、评论数据本地存储等特性。
+
+> VWD 还支持说说（动态/短博文）功能，详见下方[动态说说](#动态说说)章节。
+
+
 ### 页面级控制
 
 在文章/页面的 front-matter 中：
@@ -285,6 +312,39 @@ cwd:
 title: 不需要评论的文章
 comment: false  # 关闭评论
 ```
+
+
+## 动态说说
+
+VWD 评论系统内置说说功能，博主可以在后台 `/admin/says` 发布说说，然后创建独立页面展示说说列表。
+
+### 创建动态页面
+
+```bash
+hexo new page dynamic
+```
+
+在 `source/dynamic/index.md` 中设置布局：
+
+```yaml
+---
+title: 动态
+date: 2026-07-15 10:00:00
+layout: page-dynamic
+comment: false
+---
+```
+
+### 工作原理
+
+`page-dynamic` 布局会从主题配置的 `comments.vwd` 中读取 VWD 配置，自动初始化 `VWDComments` 组件并设置 `mode: 'says'`，渲染说说列表。
+
+- 说说管理：在 VWD 后台 `/admin/says` 发布和管理说说
+- 暗黑模式：自动同步切换
+- 主题色：跟随 `comments.vwd.primaryColor` 配置
+- 站点隔离：跟随 `comments.vwd.siteId` 配置
+
+> 说说功能依赖 VWD 评论系统，需先在 `comments` 中配置 `provider: "vwd"` 并填写 `vwd.apiBaseUrl`。
 
 
 ## 豆瓣书影音
@@ -401,18 +461,18 @@ post:
 主题内置 abbrlink 生成器，根据文章标题自动生成 CRC32 哈希短链接，URL 稳定且对 SEO 友好。
 
 ```yaml
-abbrlink: true
+abbrlink: true  # true: 始终根据 title 算 CRC32，覆盖手写值；false: 尊重手写值，没有才生成
 ```
 
-启用后，文章 URL 格式为 `posts/b8e72f3a.html`（8 位十六进制哈希）。同一标题永远生成相同哈希，URL 稳定不变。
+文章 URL 格式为 `posts/b8e72f3a.html`（8 位十六进制哈希）。同一标题永远生成相同哈希，URL 稳定不变。
 
-需同时在站点 `_config.yml` 中设置：
+需在站点 `_config.yml` 中设置：
 
 ```yaml
 permalink: posts/:abbrlink.html
 ```
 
-首次运行 `hexo generate` 时会自动为所有文章生成 abbrlink 并写入 front-matter，后续无需手动操作。
+运行 `hexo generate` 时会自动为所有文章生成 abbrlink 并写入 front-matter，始终根据 title 计算，确保链接一致性。
 
 
 ## RSS 订阅

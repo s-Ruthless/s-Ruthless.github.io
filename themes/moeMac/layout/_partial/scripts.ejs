@@ -18,3 +18,8 @@
 <% if (theme.comments && theme.comments.enable && theme.comments.provider === 'cwd' && theme.comments.cwd && theme.comments.cwd.apiBaseUrl) { %>
 <script defer src="<%= A %>/js/cwd.js"></script>
 <% } %>
+<% if (theme.comments && theme.comments.enable && theme.comments.provider === 'vwd' && theme.comments.vwd && theme.comments.vwd.apiBaseUrl) {
+  var _vwdJsPreload = theme.comments.vwd.jsUrl || (theme.comments.vwd.apiBaseUrl.replace(/\/+$/, '') + '/vwd.js');
+%>
+<script defer src="<%= _vwdJsPreload %>"></script>
+<% } %>

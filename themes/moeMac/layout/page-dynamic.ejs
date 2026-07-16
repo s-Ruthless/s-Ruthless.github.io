@@ -1,0 +1,63 @@
+<%
+  var _icon = 'fas fa-stream';
+  var _path = (page.path || '').replace(/\/index\.html$/, '').replace(/^\/|\/$/g, '');
+  (theme.dock || []).forEach(function(item){
+    if ((item.page || '').replace(/^\/|\/$/g, '') === _path) _icon = item.icon;
+  });
+  var vwdCfg = (theme.comments && theme.comments.vwd) ? theme.comments.vwd : {};
+  var vwdApi = vwdCfg.apiBaseUrl || '';
+  var vwdJs = vwdCfg.jsUrl || (vwdApi.replace(/\/+$/, '') + '/vwd.js');
+%>
+<div class="page-container">
+  <div class="page-body">
+    <div class="page-header">
+      <h2><i class="<%- _icon %>"></i> <%= page.title || '动态' %></h2>
+    </div>
+    <div class="page-content">
+    <%- page.content %>
+    <% if (vwdApi) { %>
+    <div id="vwd-says-mount" style="border:none;box-shadow:none;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0;"></div>
+    <script src="<%= vwdJs %>" onerror="console.error('VWD says script load failed')"></script>
+    <script>
+      (function(){
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        function init(){
+          var says = new VWDComments({
+            el: '#vwd-says-mount',
+            apiBaseUrl: '<%= vwdApi %>',
+            mode: 'says',
+            siteId: '<%= vwdCfg.siteId || "" %>',
+            lang: '<%= vwdCfg.lang || "auto" %>',
+            theme: dark ? 'dark' : 'light',
+            primaryColor: '<%= vwdCfg.primaryColor || "" %>'
+            <% if (vwdCfg.customCssUrl) { %>
+            , customCssUrl: '<%= vwdCfg.customCssUrl %>'
+            <% } %>
+          });
+          says.mount();
+          window.__vwdSaysInstance = says;
+          /* 暗黑模式切换同步 */
+          var observer = new MutationObserver(function(){
+            var d = document.documentElement.getAttribute('data-theme') === 'dark';
+            says.updateConfig({ theme: d ? 'dark' : 'light' });
+          });
+          observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        }
+        if (window.VWDComments) init();
+        else {
+          var _wait = setInterval(function(){
+            if (window.VWDComments) { clearInterval(_wait); init(); }
+          }, 100);
+          setTimeout(function(){ clearInterval(_wait); }, 15000);
+        }
+      })();
+    </script>
+    <% } else { %>
+    <div style="text-align:center;color:#999;padding:2rem 0;">
+      <i class="fas fa-exclamation-circle" style="font-size:20px;margin-bottom:8px;display:block;"></i>
+      请先在 _config.yml 中配置 comments.vwd.apiBaseUrl
+    </div>
+    <% } %>
+    </div>
+  </div>
+</div>

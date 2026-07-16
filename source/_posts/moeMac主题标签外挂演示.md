@@ -4,8 +4,9 @@ date: 2026-06-30 12:00:00
 cover: https://picsum.photos/seed/moemac-tags/600/400
 sticky: 1
 tags:
-  - 前端
-  - 工具
+  - Hexo
+  - 教程
+  - moeMac
 categories:
   - 技术
 abbrlink: "75bba892"

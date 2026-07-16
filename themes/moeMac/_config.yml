@@ -102,17 +102,16 @@ dock:
   - { icon: "fas fa-folder-open", label: "归档", page: "/archives/", type: "page" }
   - { icon: "fas fa-images", label: "相册", page: "/gallery/", type: "page" }
   - { icon: "fas fa-book", label: "豆瓣", page: "/douban/", type: "page" }
+  - { icon: "fas fa-comments", label: "动态", page: "/dynamic/", type: "page" }
   - { icon: "fas fa-link", label: "友链", page: "/links/", type: "page" }
   - { icon: "fas fa-heart", label: "关于", page: "/about/", type: "page" }
 
 # ====== SEO 短链接（abbrlink） ======
-# 根据 title 自动生成 CRC32 哈希短链接
+# true: 始终根据 title 算 CRC32 哈希，覆盖手写值
+# false: 尊重 front-matter 中已有的 abbrlink，没有才生成
 # 例如：title: 夏天的正确打开方式 → /posts/b8e72f3a.html
 # 同一 title 永远生成相同哈希，URL 稳定不变
-# 启用步骤：
-#   1. 此处设为 true
-#   2. 站点 _config.yml 中 permalink 设为 posts/:abbrlink.html
-# 关闭：设为 false，并将 permalink 改回 :year/:month/:day/:title/
+# 需在站点 _config.yml 中设置 permalink: posts/:abbrlink.html
 abbrlink: true
 
 # ====== RSS 订阅 ======
@@ -220,15 +219,15 @@ wallpaper_path: "/assets/img/background.webp"
 
 # ====== 评论系统 ======
 # enable: false 关闭；true 开启
-# provider: waline / twikoo / giscus / gitalk
+# provider: waline / twikoo / giscus / gitalk / cwd / vwd
 # 各 provider 的配置见下方对应字段，按需填写其一
 #
 # 页面级开关：在文章/页面的 front-matter 中添加 comment: true/false
 #   文章（post）：默认显示评论，写 comment: false 可关闭
 #   自定义页面（page）：默认不显示，写 comment: true 可开启
 comments:
-  enable: false
-  provider: "giscus"
+  enable: true
+  provider: "vwd"
   # Waline: https://waline.js.org/
   waline:
     serverURL: "https://waline.moeao.cn"
@@ -268,6 +267,21 @@ comments:
   # lang: 评论组件语言，auto 自动检测浏览器语言
   cwd:
     apiBaseUrl: "https://cwd-comment.2502393029.workers.dev/"
+    siteId: "blog"
+    lang: "auto"
+    customCssUrl: ''
+    primaryColor: '#cf0226'
+  # VWD: https://github.com/s-Ruthless/Vercel-Workers-Discuss 基于 Vercel Serverless 的评论系统
+  # apiBaseUrl: 你的 VWD API 地址（Vercel 部署后的地址）
+  # jsUrl: vwd.js 脚本地址，留空则默认使用 apiBaseUrl + /vwd.js
+  #   也可填写自定义地址，支持远程 URL 或本地相对路径：
+  #   jsUrl: "https://xxxx.xxx.xxx/vwd.js?v=2"   # 远程地址（可加版本号刷新缓存）
+  #   jsUrl: "/assets/js/vwd.js"                  # 下载到本地后使用相对路径
+  # siteId: 站点标识，用于多站点数据隔离（推荐配置）
+  # lang: 评论组件语言，auto 自动检测浏览器语言
+  vwd:
+    apiBaseUrl: "https://vwd.moeao.cn"
+    jsUrl: ""
     siteId: "blog"
     lang: "auto"
     customCssUrl: ''

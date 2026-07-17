@@ -1,5 +1,36 @@
 # 更新日志
 
+## v2.4.0 (2026-07-16)
+
+### VWD 评论系统
+
+- **新增 VWD 评论系统** — 基于 Vercel Serverless 的评论系统，支持暗黑模式自动切换、Shadow DOM 隔离、评论数据本地存储
+- **评论系统支持** — `comments.provider` 新增 `vwd` 选项，配置方式与 CWD 一致（apiBaseUrl / jsUrl / siteId / lang / primaryColor / customCssUrl）
+- **scripts.ejs 预加载** — VWD provider 时自动预加载 vwd.js
+- **comments.ejs 集成** — 完整的 VWD 评论加载、暗黑模式同步、加载状态检测
+
+### 动态说说
+
+- **新增动态页面** — `page-dynamic.ejs` 布局，集成 VWD 说说功能（`mode: 'says'`）
+- **Dock 导航** — 新增动态页面入口，图标 `fas fa-comments`
+- **说说配置** — `vwd.saysEnable` / `vwd.saysPageSize` 直接写在 vwd 配置下，与评论共用一套配置
+- **评论支持** — 动态页面底部包含评论区，由 front-matter `comment: true/false` 控制
+
+### abbrlink 改进
+
+- **行为变更** — `abbrlink: true` 时始终根据 title 算 CRC32 并覆盖手写值；`false` 时尊重已有值，没有才生成
+- **Hexo 内部模型同步** — 生成 abbrlink 后同步更新 Hexo 内存中的 post 数据，确保 permalink 立即生效
+- **setAbbrlink 函数** — 支持已有 abbrlink 行的替换（原来只能追加）
+
+### 通用页面布局
+
+- **page.ejs 图标修复** — 去掉硬编码 `iconMap`，改为从 Dock 配置动态读取图标，任意自定义页面都能正确显示 Dock 中配置的图标
+
+### 文档更新
+
+- **README.md** — 特性列表新增动态说说、创建页面新增 dynamic、abbrlink FAQ 补充 true/false 行为说明、VWD 静态资源说明、致谢新增 VWD
+- **使用说明** — 评论系统新增 VWD 章节、新增动态说说章节（配置/创建页面/工作原理）、abbrlink 章节补充 true/false 行为、Dock 导航示例新增动态条目
+
 ## v2.3.1 (2026-07-13)
 
 ### 代码块按钮优化

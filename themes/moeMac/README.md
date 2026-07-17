@@ -106,7 +106,7 @@ hexo clean && hexo server
 
 ### 无需任何插件（主题内置）
 
-SEO 短链接、RSS、Sitemap、豆瓣书影音、标签外挂、TOC 目录、KaTeX 公式、Mermaid 图表、音乐播放器、评论系统、暗黑模式、AJAX 导航 — 全部由主题 `scripts/` 内置实现，零外部 npm 依赖。
+SEO 短链接、RSS、Sitemap、豆瓣书影音、标签外挂、TOC 目录、KaTeX 公式、Mermaid 图表、音乐播放器、评论系统、动态说说、暗黑模式、AJAX 导航 — 全部由主题 `scripts/` 内置实现，零外部 npm 依赖。
 
 ## 静态资源
 
@@ -151,7 +151,7 @@ Hexo + EJS · 原生 CSS + CSS 变量 · CSS @keyframes + Web Animations API · 
 
 ## 完整文档
 
-详细的配置说明（基本信息、社交链接、Dock 导航、首页窗口、音乐播放器、评论系统、豆瓣书影音、相册、壁纸、一言、SEO 短链接、RSS、Sitemap、KaTeX、Mermaid、搜索、CDN 加速等）请参阅：
+详细的配置说明（基本信息、社交链接、Dock 导航、首页窗口、音乐播放器、评论系统、动态说说、豆瓣书影音、相册、壁纸、一言、SEO 短链接、RSS、Sitemap、KaTeX、Mermaid、搜索、CDN 加速等）请参阅：
 
 **[moeMac 主题使用说明](https://moeao.cn/posts/91ca8701.html)**
 

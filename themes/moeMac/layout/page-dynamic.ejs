@@ -1,12 +1,19 @@
 <%
-  var _icon = 'fas fa-stream';
+  var _icon = 'fas fa-comments';
   var _path = (page.path || '').replace(/\/index\.html$/, '').replace(/^\/|\/$/g, '');
   (theme.dock || []).forEach(function(item){
     if ((item.page || '').replace(/^\/|\/$/g, '') === _path) _icon = item.icon;
   });
-  var vwdCfg = (theme.comments && theme.comments.vwd) ? theme.comments.vwd : {};
-  var vwdApi = vwdCfg.apiBaseUrl || '';
-  var vwdJs = vwdCfg.jsUrl || (vwdApi.replace(/\/+$/, '') + '/vwd.js');
+
+  var vwd = (theme.comments && theme.comments.vwd) ? theme.comments.vwd : {};
+  var _api   = vwd.apiBaseUrl  || '';
+  var _js    = vwd.jsUrl       || (_api.replace(/\/+$/, '') + '/vwd.js');
+  var _site  = vwd.siteId      || '';
+  var _lang  = vwd.lang        || 'auto';
+  var _color = vwd.primaryColor || '';
+  var _css   = vwd.customCssUrl || '';
+  var _enable = vwd.saysEnable !== false;
+  var _size  = vwd.saysPageSize || 10;
 %>
 <div class="page-container">
   <div class="page-body">
@@ -15,24 +22,25 @@
     </div>
     <div class="page-content">
     <%- page.content %>
-    <% if (vwdApi) { %>
+    <% if (_enable && _api) { %>
     <div id="vwd-says-mount" style="border:none;box-shadow:none;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0;"></div>
-    <script src="<%= vwdJs %>" onerror="console.error('VWD says script load failed')"></script>
+    <script src="<%= _js %>" onerror="console.error('VWD says script load failed')"></script>
     <script>
       (function(){
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         function init(){
           var says = new VWDComments({
             el: '#vwd-says-mount',
-            apiBaseUrl: '<%= vwdApi %>',
+            apiBaseUrl: '<%= _api %>',
             mode: 'says',
-            siteId: '<%= vwdCfg.siteId || "" %>',
-            lang: '<%= vwdCfg.lang || "auto" %>',
+            siteId: '<%= _site %>',
+            lang: '<%= _lang %>',
             theme: dark ? 'dark' : 'light',
-            primaryColor: '<%= vwdCfg.primaryColor || "" %>'
-            <% if (vwdCfg.customCssUrl) { %>
-            , customCssUrl: '<%= vwdCfg.customCssUrl %>'
+            primaryColor: '<%= _color %>'
+            <% if (_css) { %>
+            , customCssUrl: '<%= _css %>'
             <% } %>
+            , pageSize: <%= _size %>
           });
           says.mount();
           window.__vwdSaysInstance = says;
@@ -52,12 +60,13 @@
         }
       })();
     </script>
-    <% } else { %>
+    <% } else if (_enable && !_api) { %>
     <div style="text-align:center;color:#999;padding:2rem 0;">
       <i class="fas fa-exclamation-circle" style="font-size:20px;margin-bottom:8px;display:block;"></i>
       请先在 _config.yml 中配置 comments.vwd.apiBaseUrl
     </div>
     <% } %>
+    <%- partial('_partial/comments') %>
     </div>
   </div>
 </div>

@@ -286,6 +286,9 @@ comments:
     lang: "auto"
     customCssUrl: ''
     primaryColor: '#cf0226'
+    # 说说配置（动态页面 source/dynamic，layout: page-dynamic）
+    saysEnable: true       # true 开启说说渲染，false 关闭
+    saysPageSize: 10       # 每页显示说说数（也可在 VWD 后台 /admin/settings 中配置）
 
 # ====== 搜索 ======
 # 需安装 hexo-generator-searchdb 插件：npm i hexo-generator-searchdb

@@ -293,6 +293,8 @@ vwd:
   lang: "auto"            # 评论组件语言，auto 自动检测浏览器语言
   customCssUrl: ''         # 自定义 CSS 地址，留空则使用默认样式
   primaryColor: '#cf0226'  # 主题色，影响按钮/链接等强调色
+  saysEnable: true       # true 开启说说渲染（动态页面），false 关闭
+  saysPageSize: 10       # 每页显示说说数（也可在 VWD 后台设置）
 ```
 
 > **`jsUrl` 说明**：留空时默认从 API 服务器远程加载 `vwd.js`。也可填写自定义地址：
@@ -318,6 +320,23 @@ comment: false  # 关闭评论
 
 VWD 评论系统内置说说功能，博主可以在后台 `/admin/says` 发布说说，然后创建独立页面展示说说列表。
 
+### 配置
+
+说说功能直接在 `comments.vwd` 下配置，无需额外字段：
+
+```yaml
+comments:
+  enable: true
+  provider: "vwd"
+  vwd:
+    apiBaseUrl: "https://your-vwd-api.vercel.app"
+    # ... 其他 VWD 配置 ...
+    saysEnable: true       # true 开启说说渲染，false 关闭
+    saysPageSize: 10       # 每页显示说说数（也可在 VWD 后台设置）
+```
+
+> 说说和评论共用同一套 VWD 配置（apiBaseUrl、siteId、lang 等），`saysEnable` 控制说说渲染开关，`saysPageSize` 控制每页条数。
+
 ### 创建动态页面
 
 ```bash
@@ -331,18 +350,20 @@ hexo new page dynamic
 title: 动态
 date: 2026-07-15 10:00:00
 layout: page-dynamic
-comment: false
+comment: true
 ---
 ```
 
+> `comment: true` 会在说说列表下方显示评论区，设为 `false` 则只显示说说。
+
 ### 工作原理
 
-`page-dynamic` 布局会从主题配置的 `comments.vwd` 中读取 VWD 配置，自动初始化 `VWDComments` 组件并设置 `mode: 'says'`，渲染说说列表。
+`page-dynamic` 布局直接从 `comments.vwd` 读取 VWD 配置，自动初始化 `VWDComments` 组件并设置 `mode: 'says'`，渲染说说列表。页面底部同时包含评论区（由 `comment` 开关控制）。
 
 - 说说管理：在 VWD 后台 `/admin/says` 发布和管理说说
 - 暗黑模式：自动同步切换
-- 主题色：跟随 `comments.vwd.primaryColor` 配置
-- 站点隔离：跟随 `comments.vwd.siteId` 配置
+- 主题色：跟随 `comments.vwd.primaryColor`
+- 站点隔离：跟随 `comments.vwd.siteId`
 
 > 说说功能依赖 VWD 评论系统，需先在 `comments` 中配置 `provider: "vwd"` 并填写 `vwd.apiBaseUrl`。
 

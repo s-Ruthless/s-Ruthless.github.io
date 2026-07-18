@@ -599,85 +599,32 @@ window.__moeMacMainLoaded = true;
     }
   };
 
-  /* ====== Wall Filter + Search + Masonry ====== */
-  var masonryInstance = null;
-  function initMasonry() {
+  /* ====== Wall Filter + Search (CSS Grid 布局) ====== */
+  function initWallGrid() {
     var grid = document.getElementById('posts-wall-grid');
     if (!grid) return;
-    /* 销毁旧实例（可能在桌面端创建过） */
-    if (masonryInstance) { try { masonryInstance.destroy(); } catch(e){} masonryInstance = null; }
-    /* 移动端不使用 Masonry — 卡片为全宽单列布局，CSS 即可处理。
-       Masonry 的 position:absolute 会干扰移动端 flex 布局并阻止筛选功能正常工作 */
-    if (isMobile()) {
-      /* 清除可能残留的 Masonry 内联样式（桌面端 → 移动端切换时） */
-      grid.querySelectorAll('.wall-card').forEach(function(card){
-        card.style.position = '';
-        card.style.left = '';
-        card.style.top = '';
-      });
-      grid.classList.add('masonry-ready');
-      return;
-    }
-    if (typeof Masonry === 'undefined') {
-      /* Masonry 库未加载，直接显示网格（兜底） */
-      grid.classList.add('masonry-ready');
-      return;
-    }
-    /* 测量第一张卡片的宽度作为列宽（仅在初始化时测量一次，避免筛选后 display:none 导致列宽为 0） */
-    var firstCard = grid.querySelector('.wall-card');
-    var colWidth = firstCard ? firstCard.offsetWidth : 300;
-    masonryInstance = new Masonry(grid, {
-      itemSelector: '.wall-card',
-      columnWidth: colWidth,
-      percentPosition: true,
-      gutter: 16,
-      transitionDuration: 0,
-      originLeft: true,
-      originTop: true
-    });
-    /* 双 rAF 确保 Masonry 布局完成后再显示，避免淡入时卡片仍在位移 */
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        grid.classList.add('masonry-ready');
-      });
-    });
-  }
-  function relayoutMasonry() {
-    if (masonryInstance) {
-      try { masonryInstance.reloadItems(); masonryInstance.layout(); } catch(e){}
-    }
+    grid.classList.add('masonry-ready');
   }
   function WallFilter() {
     var btns = document.querySelectorAll('.filter-btn');
     var grid = document.getElementById('posts-wall-grid');
-    var cards = grid ? grid.querySelectorAll('.wall-card') : [];
+    /* 兼容所有布局的卡片选择器 */
+    var cards = grid ? grid.querySelectorAll('.wall-card, .list-row-card, .simple-row-card, .magazine-hero, .magazine-card, .bigcard, .compact-card, .timeline-item, .overlay-card, .feature-hero, .feature-card, .zigzag-item') : [];
     if (!grid) return;
-    /* 兜底：3 秒后无论如何都显示网格，防止 Masonry 异常导致永久隐藏 */
+    /* 兜底：3 秒后无论如何都显示网格 */
     setTimeout(function() {
       if (grid && !grid.classList.contains('masonry-ready')) {
         grid.classList.add('masonry-ready');
       }
     }, 3000);
-    /* 即使没有筛选按钮，也要初始化 Masonry 并显示网格 */
+    /* 即使没有筛选按钮，也要初始化并显示网格 */
     if (!btns.length) {
-      initMasonry();
+      initWallGrid();
       return;
     }
 
-    /* 初始化 Masonry */
-    initMasonry();
-    /* 图片加载后重新布局 */
-    grid.querySelectorAll('img').forEach(function(img){
-      if (!img.complete) {
-        img.addEventListener('load', function(){ relayoutMasonry(); }, { once: true });
-      }
-    });
-    /* 安全网：异步 CSS 加载完成后重新布局（防止卡片宽度不对导致 Masonry 列宽计算错误） */
-    document.querySelectorAll('link[rel="stylesheet"][media="print"]').forEach(function(link) {
-      link.addEventListener('load', function() { relayoutMasonry(); }, { once: true });
-    });
-    /* window load 后再重排一次（确保所有资源就绪） */
-    window.addEventListener('load', function() { relayoutMasonry(); }, { once: true });
+    /* 初始化网格显示 */
+    initWallGrid();
 
     var currentCat = 'all';
 
@@ -695,13 +642,7 @@ window.__moeMacMainLoaded = true;
           c.classList.add('wall-card-hidden');
         }
       });
-      /* Masonry 重新布局（仅桌面端 — 移动端用 CSS 正常流，不需要 Masonry） */
-      if (masonryInstance && !isMobile()) {
-        try {
-          masonryInstance.reloadItems();
-          masonryInstance.layout();
-        } catch (e) {}
-      }
+      /* CSS Grid 自动重排 */
       /* 筛选后对可见卡片播放入场动画 */
       var anims = ['anim-zoom-in', 'anim-scale-in'];
       visibleCards.forEach(function (card, i) {
@@ -755,18 +696,7 @@ window.__moeMacMainLoaded = true;
       });
     }
 
-    /* 窗口 resize 时重新布局 Masonry（防抖）— 仅绑定一次，避免 AJAX 导航重复添加监听器 */
-    if (!WallFilter._resizeBound) {
-      WallFilter._resizeBound = true;
-      var masonryResizeTimer = null;
-      window.addEventListener('resize', function () {
-        if (!masonryInstance) return;
-        clearTimeout(masonryResizeTimer);
-        masonryResizeTimer = setTimeout(function () {
-          relayoutMasonry();
-        }, 200);
-      });
-    }
+    /* CSS Grid 自动响应 resize */
   }
 
   /* ====== 文章目录 TOC ====== */

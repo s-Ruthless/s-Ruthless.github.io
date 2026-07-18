@@ -1,5 +1,5 @@
----
-title: moeMac 主题使用说明
+﻿---
+title: moeMac主题使用说明
 date: 2026-07-11 10:00:00
 cover: https://picsum.photos/seed/moemac-guide/600/400
 sticky: 2
@@ -9,7 +9,7 @@ tags:
   - moeMac
 categories:
   - 技术
-abbrlink: "91ca8701"
+abbrlink: "ada921dd"
 ---
 
 moeMac 是一款 **macOS 桌面风格** 的 Hexo 主题，采用毛玻璃（Glassmorphism）设计语言，支持可拖拽窗口、Dock 导航栏、AJAX 无刷新切换、暗黑模式等特性。本文是主题的完整使用指南。
@@ -445,6 +445,58 @@ hitokoto_api: "https://v1.hitokoto.cn/"
 sentences:                        # false 或 API 失败时的回退句子
   - "生活明朗，万物可爱。"
   - "愿你眼中有光，心中有爱。"
+```
+
+
+## 文章列表布局
+
+「全部文章」页面（`/posts/`）支持 **10 种** 文章列表布局，在主题配置文件 `_config.yml` 中通过 `posts_layout` 切换：
+
+```yaml
+posts_layout: grid   # 可选值见下表
+```
+
+| 布局值 | 名称 | 说明 | 适用场景 |
+|--------|------|------|---------|
+| `grid` | 网格卡片 | 封面图+摘要+标签，3列网格（默认） | 通用博客 |
+| `list` | 列表布局 | 封面图在左，标题摘要在右，单列 | 文字为主的博客 |
+| `simple` | 极简列表 | 无封面图，仅标题+日期，单列 | 日记型/极简博客 |
+| `magazine` | 杂志布局 | 置顶文章大卡片占满宽 + 后续2列网格 | 内容丰富的资讯站 |
+| `card` | 大卡片布局 | 全宽封面图+内容，单列，视觉冲击强 | 摄影作品集 |
+| `compact` | 紧凑网格 | 4列小卡片，仅封面+标题，信息密度高 | 文章数量多的站点 |
+| `timeline` | 时间线布局 | 按年份分组，竖向时间轴排列 | 日记型/归档展示 |
+| `overlay` | 封面叠加布局 | 大图背景+底部渐变遮罩+文字叠加 | Medium/Substack 风格 |
+| `feature` | 特色卡片布局 | 首个横向大卡片 + 后续3列网格 | Apple News 风格 |
+| `zigzag` | Z字形布局 | 左右交替排列的横向卡片 | 设计博客/产品展示 |
+
+### 布局特性
+
+所有布局均支持以下功能：
+
+- **封面图懒加载**：使用 `loading="lazy"` + 可爱小猫加载动画
+- **置顶文章**：通过 front-matter `sticky` 配置，所有布局均显示置顶徽章
+- **分类筛选**：顶部工具栏支持按分类筛选文章
+- **响应式适配**：自动适配桌面/平板/手机三种视口
+- **AJAX 无刷新跳转**：点击卡片平滑过渡到文章页
+
+### 布局选择建议
+
+- **文章数量少**（<20篇）：推荐 `magazine`、`feature`、`zigzag`，突出内容
+- **文章数量多**（>50篇）：推荐 `grid`、`compact`、`timeline`，信息密度高
+- **摄影/设计类博客**：推荐 `overlay`、`card`、`zigzag`，视觉冲击强
+- **日记型博客**：推荐 `simple`、`timeline`，简洁清爽
+
+### 切换布局示例
+
+```yaml
+# 杂志风格
+posts_layout: magazine
+
+# 时间线风格
+posts_layout: timeline
+
+# Z字形风格
+posts_layout: zigzag
 ```
 
 

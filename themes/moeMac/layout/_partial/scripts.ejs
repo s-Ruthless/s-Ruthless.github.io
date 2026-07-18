@@ -2,11 +2,9 @@
   /* cdn 配置与 head.ejs 一致，所有 JS 资源统一加 cdn 前缀 */
   var A = theme.cdn || '/assets';
   /* 版本号用于强制浏览器刷新缓存，修改 JS 后递增此数字 */
-  var V = '?v=20260713r30';
+  var V = '?v=20260718r6';
 %>
 <script>window.__ASSETS__="<%= A %>";</script>
-<!-- Masonry 瀑布流布局库 — defer 按顺序执行 -->
-<script defer src="<%= A %>/js/masonry.pkgd.min.js"></script>
 <!-- animations.js 必须在 main.js 之前 -->
 <script defer src="<%= A %>/js/animations.js<%= V %>"></script>
 <!-- ui-enhance.js 在 main.js 之前 -->

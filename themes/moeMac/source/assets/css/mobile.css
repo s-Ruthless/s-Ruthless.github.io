@@ -567,12 +567,25 @@ html:not(.is-desktop) .filter-btn{
   touch-action:manipulation;
 }
 html:not(.is-desktop) .wall-grid{
-/* 移动端不使用 Masonry，卡片用 CSS 正常流布局 */
+/* 移动端不使用 CSS Grid，卡片用 flex 横向布局，单列排列 */
+display:block!important;
 }
 /* 筛选隐藏 — 必须用 html:not(.is-desktop) 前缀提升优先级（0,3,1），
    否则 display:flex!important（0,2,1）会覆盖 display:none!important（0,2,0）*/
-html:not(.is-desktop) .wall-card.wall-card-hidden{
-  display:none!important;
+html:not(.is-desktop) .wall-card.wall-card-hidden,
+html:not(.is-desktop) .list-row-card.wall-card-hidden,
+html:not(.is-desktop) .simple-row-card.wall-card-hidden,
+html:not(.is-desktop) .magazine-hero.wall-card-hidden,
+html:not(.is-desktop) .magazine-card.wall-card-hidden,
+html:not(.is-desktop) .bigcard.wall-card-hidden,
+html:not(.is-desktop) .compact-card.wall-card-hidden,
+html:not(.is-desktop) .timeline-item.wall-card-hidden,
+html:not(.is-desktop) .timeline-group.wall-card-hidden,
+html:not(.is-desktop) .overlay-card.wall-card-hidden,
+html:not(.is-desktop) .feature-hero.wall-card-hidden,
+html:not(.is-desktop) .feature-card.wall-card-hidden,
+html:not(.is-desktop) .zigzag-item.wall-card-hidden{
+display:none!important;
 }
 /* ====== 文章墙卡片 — 移动端横向布局（封面在左） ====== */
 html:not(.is-desktop) .wall-card{

@@ -12,6 +12,17 @@
   });
   /* 分类图标统一使用文件夹样式 */
   var catIcon = 'fas fa-folder';
+  /* 布局方式：grid(默认) / list / simple / magazine / card / compact / timeline / overlay / feature / zigzag */
+  var layout = (theme.posts_layout || 'grid').toLowerCase();
+  /* 时间线布局：按年份分组 */
+  var timelineGroups = {};
+  if (layout === 'timeline') {
+    posts.forEach(function(p) {
+      var y = date(p.date, 'YYYY');
+      if (!timelineGroups[y]) timelineGroups[y] = [];
+      timelineGroups[y].push(p);
+    });
+  }
 %>
 
 <div class="page-container">
@@ -28,7 +39,445 @@
         <% }); %>
       </div>
     </div>
-    <div class="wall-grid" id="posts-wall-grid" style="opacity:0">
+
+    <% if (layout === 'list') { %>
+    <!-- ====== 列表布局 ====== -->
+    <div class="wall-grid wall-layout-list" id="posts-wall-grid" style="opacity:0">
+    <% posts.forEach(function(post) { %>
+        <%
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+          var fullText = "";
+          try { fullText = strip_html(post.excerpt || post.content || ""); } catch(e) { fullText = (post.excerpt || post.content || "").replace(/<[^>]*>/g, ""); }
+          var summary = fullText.substring(0, 120);
+          var coverImg = post.cover || post.thumbnail || "";
+        %>
+        <div class="list-row-card ajax-link<% if (post.sticky) { %> list-row-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+          <% if (coverImg) { %>
+            <div class="list-row-cover">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.parentElement.style.display='none'">
+            </div>
+          <% } else { %>
+            <div class="list-row-cover list-row-cover-placeholder"></div>
+          <% } %>
+          <div class="list-row-body">
+            <div class="list-row-top">
+              <% if (post.sticky) { %>
+                <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+              <% } %>
+              <% if (catName) { %>
+                <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= catName %></span>
+              <% } %>
+              <span class="list-row-date"><%= date(post.date, "YYYY-MM-DD") %></span>
+            </div>
+            <h3 class="list-row-title"><%= post.title %></h3>
+            <p class="list-row-summary"><%= summary %><%= fullText.length > 120 ? "..." : "" %></p>
+            <% if (post.tags && post.tags.length > 0) { %>
+              <div class="list-row-tags">
+                <% post.tags.forEach(function(tag) { %>
+                  <span class="badge badge-ghost badge-xs">#<%= tag.name %></span>
+                <% }); %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else if (layout === 'simple') { %>
+    <!-- ====== 极简列表布局 ====== -->
+    <div class="wall-grid wall-layout-simple" id="posts-wall-grid" style="opacity:0">
+    <% posts.forEach(function(post) { %>
+        <%
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+        %>
+        <div class="simple-row-card ajax-link<% if (post.sticky) { %> simple-row-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+          <div class="simple-row-left">
+            <% if (post.sticky) { %>
+              <i class="fas fa-thumbtack simple-sticky-icon"></i>
+            <% } %>
+            <span class="simple-row-date"><%= date(post.date, "MM-DD") %></span>
+          </div>
+          <h3 class="simple-row-title"><%= post.title %></h3>
+          <% if (catName) { %>
+            <span class="simple-row-cat"><i class="<%= catIcon %>"></i> <%= catName %></span>
+          <% } %>
+        </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else if (layout === 'magazine') { %>
+    <!-- ====== 杂志布局：置顶文章大卡片 + 后续2列网格 ====== -->
+    <%
+      /* 所有 sticky 文章作为 hero 大卡片，非 sticky 文章作为普通小卡片 */
+      var heroPosts = posts.filter(function(p){ return p.sticky; });
+      var normalPosts = posts.filter(function(p){ return !p.sticky; });
+      /* 如果没有 sticky 文章，取第一篇作为 hero */
+      if (heroPosts.length === 0 && posts.length > 0) {
+        heroPosts = [posts[0]];
+        normalPosts = posts.slice(1);
+      }
+    %>
+    <div class="wall-grid wall-layout-magazine" id="posts-wall-grid" style="opacity:0">
+    <% heroPosts.forEach(function(heroPost) { %>
+      <%
+        var heroCat = (heroPost.categories && heroPost.categories.length > 0) ? heroPost.categories.data[0].name : "";
+        var heroFull = "";
+        try { heroFull = strip_html(heroPost.excerpt || heroPost.content || ""); } catch(e) { heroFull = (heroPost.excerpt || heroPost.content || "").replace(/<[^>]*>/g, ""); }
+        var heroSummary = heroFull.substring(0, 200);
+        var heroCover = heroPost.cover || heroPost.thumbnail || "";
+      %>
+      <div class="magazine-hero ajax-link<% if (heroPost.sticky) { %> magazine-hero-sticky<% } %>" data-href="<%- url_for(heroPost.path) %>" data-cat="<%= heroCat %>" data-title="<%= heroPost.title.toLowerCase() %>">
+        <% if (heroCover) { %>
+          <div class="magazine-hero-cover">
+            <img src="<%= heroCover %>" alt="<%= heroPost.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
+            <div class="magazine-hero-overlay"></div>
+          </div>
+        <% } %>
+        <div class="magazine-hero-body">
+          <div class="magazine-hero-top">
+            <% if (heroPost.sticky) { %>
+              <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+            <% } %>
+            <% if (heroCat) { %>
+              <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= heroCat %></span>
+            <% } %>
+            <span class="magazine-hero-date"><%= date(heroPost.date, "YYYY-MM-DD") %></span>
+          </div>
+          <h3 class="magazine-hero-title"><%= heroPost.title %></h3>
+          <p class="magazine-hero-summary"><%= heroSummary %><%= heroFull.length > 200 ? "..." : "" %></p>
+        </div>
+      </div>
+    <% }); %>
+    <% normalPosts.forEach(function(post) { %>
+        <%
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+          var fullText = "";
+          try { fullText = strip_html(post.excerpt || post.content || ""); } catch(e) { fullText = (post.excerpt || post.content || "").replace(/<[^>]*>/g, ""); }
+          var summary = fullText.substring(0, 100);
+          var coverImg = post.cover || post.thumbnail || "";
+        %>
+        <div class="magazine-card ajax-link" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+          <% if (coverImg) { %>
+            <div class="magazine-card-cover">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
+            </div>
+          <% } else { %>
+            <div class="magazine-card-cover magazine-card-cover-placeholder"></div>
+          <% } %>
+          <div class="magazine-card-body">
+            <div class="magazine-card-top">
+              <% if (catName) { %>
+                <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= catName %></span>
+              <% } %>
+              <span class="magazine-card-date"><%= date(post.date, "YYYY-MM-DD") %></span>
+            </div>
+            <h4 class="magazine-card-title"><%= post.title %></h4>
+            <p class="magazine-card-summary"><%= summary %><%= fullText.length > 100 ? "..." : "" %></p>
+          </div>
+        </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else if (layout === 'card') { %>
+    <!-- ====== 大卡片布局：全宽封面图 + 内容 ====== -->
+    <div class="wall-grid wall-layout-card" id="posts-wall-grid" style="opacity:0">
+    <% posts.forEach(function(post) { %>
+        <%
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+          var fullText = "";
+          try { fullText = strip_html(post.excerpt || post.content || ""); } catch(e) { fullText = (post.excerpt || post.content || "").replace(/<[^>]*>/g, ""); }
+          var summary = fullText.substring(0, 180);
+          var coverImg = post.cover || post.thumbnail || "";
+        %>
+        <div class="bigcard ajax-link<% if (post.sticky) { %> bigcard-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+          <% if (coverImg) { %>
+            <div class="bigcard-cover">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
+            </div>
+          <% } else { %>
+            <div class="bigcard-cover bigcard-cover-placeholder"></div>
+          <% } %>
+          <div class="bigcard-body">
+            <div class="bigcard-top">
+              <% if (post.sticky) { %>
+                <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+              <% } %>
+              <% if (catName) { %>
+                <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= catName %></span>
+              <% } %>
+              <span class="bigcard-date"><%= date(post.date, "YYYY-MM-DD") %></span>
+            </div>
+            <h3 class="bigcard-title"><%= post.title %></h3>
+            <p class="bigcard-summary"><%= summary %><%= fullText.length > 180 ? "..." : "" %></p>
+            <% if (post.tags && post.tags.length > 0) { %>
+              <div class="bigcard-tags">
+                <% post.tags.forEach(function(tag) { %>
+                  <span class="badge badge-ghost badge-xs">#<%= tag.name %></span>
+                <% }); %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else if (layout === 'compact') { %>
+    <!-- ====== 紧凑网格：4列小卡片，仅封面+标题 ====== -->
+    <div class="wall-grid wall-layout-compact" id="posts-wall-grid" style="opacity:0">
+    <% posts.forEach(function(post) { %>
+        <%
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+          var coverImg = post.cover || post.thumbnail || "";
+        %>
+        <div class="compact-card ajax-link<% if (post.sticky) { %> compact-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+          <div class="compact-cover">
+            <% if (coverImg) { %>
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
+            <% } %>
+            <div class="compact-cover-overlay">
+              <% if (post.sticky) { %>
+                <span class="compact-sticky"><i class="fas fa-thumbtack"></i></span>
+              <% } %>
+              <span class="compact-date"><%= date(post.date, "MM/DD") %></span>
+            </div>
+          </div>
+          <div class="compact-body">
+            <% if (catName) { %>
+              <span class="compact-cat"><i class="<%= catIcon %>"></i> <%= catName %></span>
+            <% } %>
+            <h4 class="compact-title"><%= post.title %></h4>
+          </div>
+        </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else if (layout === 'timeline') { %>
+    <!-- ====== 时间线布局：按年份分组，竖向时间轴 ====== -->
+    <div class="wall-grid wall-layout-timeline" id="posts-wall-grid" style="opacity:0">
+    <% Object.keys(timelineGroups).reverse().forEach(function(year) { %>
+      <div class="timeline-group" data-year="<%= year %>">
+        <div class="timeline-year-header">
+          <span class="timeline-year-dot"></span>
+          <h3 class="timeline-year-text"><%= year %></h3>
+          <span class="timeline-year-count"><%= timelineGroups[year].length %> 篇</span>
+        </div>
+        <div class="timeline-items">
+        <% timelineGroups[year].forEach(function(post) { %>
+          <%
+            var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+            var coverImg = post.cover || post.thumbnail || "";
+          %>
+          <div class="timeline-item ajax-link<% if (post.sticky) { %> timeline-item-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+            <div class="timeline-item-dot"></div>
+            <div class="timeline-item-card">
+              <% if (coverImg) { %>
+                <div class="timeline-item-cover">
+                  <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.parentElement.style.display='none'">
+                </div>
+              <% } %>
+              <div class="timeline-item-body">
+                <div class="timeline-item-top">
+                  <% if (post.sticky) { %>
+                    <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+                  <% } %>
+                  <% if (catName) { %>
+                    <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= catName %></span>
+                  <% } %>
+                  <span class="timeline-item-date"><%= date(post.date, "MM-DD") %></span>
+                </div>
+                <h4 class="timeline-item-title"><%= post.title %></h4>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+        </div>
+      </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else if (layout === 'overlay') { %>
+    <!-- ====== 封面叠加布局：大图+文字叠加（Medium/Substack 风格） ====== -->
+    <div class="wall-grid wall-layout-overlay" id="posts-wall-grid" style="opacity:0">
+    <% posts.forEach(function(post, idx) { %>
+        <%
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+          var fullText = "";
+          try { fullText = strip_html(post.excerpt || post.content || ""); } catch(e) { fullText = (post.excerpt || post.content || "").replace(/<[^>]*>/g, ""); }
+          var summary = fullText.substring(0, 150);
+          var coverImg = post.cover || post.thumbnail || "";
+          var isHero = idx === 0;
+        %>
+        <div class="overlay-card ajax-link<% if (isHero) { %> overlay-hero<% } %><% if (post.sticky) { %> overlay-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+          <% if (coverImg) { %>
+            <div class="overlay-card-cover">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
+              <div class="overlay-card-shade"></div>
+            </div>
+          <% } else { %>
+            <div class="overlay-card-cover overlay-card-cover-ph"></div>
+            <div class="overlay-card-shade"></div>
+          <% } %>
+          <div class="overlay-card-body">
+            <div class="overlay-card-top">
+              <% if (post.sticky) { %>
+                <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+              <% } %>
+              <% if (catName) { %>
+                <span class="overlay-card-cat"><i class="<%= catIcon %>"></i> <%= catName %></span>
+              <% } %>
+            </div>
+            <h3 class="overlay-card-title"><%= post.title %></h3>
+            <% if (summary) { %>
+              <p class="overlay-card-summary"><%= summary %><%= fullText.length > 150 ? "..." : "" %></p>
+            <% } %>
+            <span class="overlay-card-meta"><%= date(post.date, "YYYY-MM-DD") %></span>
+          </div>
+        </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else if (layout === 'feature') { %>
+    <!-- ====== 特色卡片布局：首个大横向卡片 + 后续网格 ====== -->
+    <%
+      var featurePost = posts.length > 0 ? posts[0] : null;
+      var restPosts = posts.length > 0 ? posts.slice(1) : [];
+    %>
+    <div class="wall-grid wall-layout-feature" id="posts-wall-grid" style="opacity:0">
+    <% if (featurePost) { %>
+      <%
+        var fCat = (featurePost.categories && featurePost.categories.length > 0) ? featurePost.categories.data[0].name : "";
+        var fFull = "";
+        try { fFull = strip_html(featurePost.excerpt || featurePost.content || ""); } catch(e) { fFull = (featurePost.excerpt || featurePost.content || "").replace(/<[^>]*>/g, ""); }
+        var fSummary = fFull.substring(0, 200);
+        var fCover = featurePost.cover || featurePost.thumbnail || "";
+      %>
+      <div class="feature-hero ajax-link" data-href="<%- url_for(featurePost.path) %>" data-cat="<%= fCat %>" data-title="<%= featurePost.title.toLowerCase() %>">
+        <% if (fCover) { %>
+          <div class="feature-hero-cover">
+            <img src="<%= fCover %>" alt="<%= featurePost.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
+          </div>
+        <% } else { %>
+          <div class="feature-hero-cover feature-hero-cover-ph"></div>
+        <% } %>
+        <div class="feature-hero-body">
+          <div class="feature-hero-top">
+            <% if (featurePost.sticky) { %>
+              <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+            <% } %>
+            <% if (fCat) { %>
+              <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= fCat %></span>
+            <% } %>
+            <span class="feature-hero-date"><%= date(featurePost.date, "YYYY-MM-DD") %></span>
+          </div>
+          <h3 class="feature-hero-title"><%= featurePost.title %></h3>
+          <p class="feature-hero-summary"><%= fSummary %><%= fFull.length > 200 ? "..." : "" %></p>
+        </div>
+      </div>
+    <% } %>
+    <% restPosts.forEach(function(post) { %>
+        <%
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+          var fullText = "";
+          try { fullText = strip_html(post.excerpt || post.content || ""); } catch(e) { fullText = (post.excerpt || post.content || "").replace(/<[^>]*>/g, ""); }
+          var summary = fullText.substring(0, 100);
+          var coverImg = post.cover || post.thumbnail || "";
+        %>
+        <div class="feature-card ajax-link" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+          <% if (coverImg) { %>
+            <div class="feature-card-cover">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
+            </div>
+          <% } else { %>
+            <div class="feature-card-cover feature-card-cover-ph"></div>
+          <% } %>
+          <div class="feature-card-body">
+            <div class="feature-card-top">
+              <% if (catName) { %>
+                <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= catName %></span>
+              <% } %>
+              <span class="feature-card-date"><%= date(post.date, "YYYY-MM-DD") %></span>
+            </div>
+            <h4 class="feature-card-title"><%= post.title %></h4>
+            <p class="feature-card-summary"><%= summary %><%= fullText.length > 100 ? "..." : "" %></p>
+          </div>
+        </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else if (layout === 'zigzag') { %>
+    <!-- ====== Z字形布局：左右交替排列 ====== -->
+    <div class="wall-grid wall-layout-zigzag" id="posts-wall-grid" style="opacity:0">
+    <% posts.forEach(function(post, idx) { %>
+        <%
+          var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
+          var fullText = "";
+          try { fullText = strip_html(post.excerpt || post.content || ""); } catch(e) { fullText = (post.excerpt || post.content || "").replace(/<[^>]*>/g, ""); }
+          var summary = fullText.substring(0, 180);
+          var coverImg = post.cover || post.thumbnail || "";
+          var reverse = idx % 2 === 1;
+        %>
+        <div class="zigzag-item ajax-link<% if (reverse) { %> zigzag-reverse<% } %><% if (post.sticky) { %> zigzag-item-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
+          <% if (coverImg) { %>
+            <div class="zigzag-cover">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
+            </div>
+          <% } else { %>
+            <div class="zigzag-cover zigzag-cover-ph"></div>
+          <% } %>
+          <div class="zigzag-body">
+            <div class="zigzag-top">
+              <% if (post.sticky) { %>
+                <span class="card-sticky-badge"><i class="fas fa-thumbtack"></i> 置顶</span>
+              <% } %>
+              <% if (catName) { %>
+                <span class="card-cat badge badge-xs"><i class="<%= catIcon %>"></i> <%= catName %></span>
+              <% } %>
+              <span class="zigzag-date"><%= date(post.date, "YYYY-MM-DD") %></span>
+            </div>
+            <h3 class="zigzag-title"><%= post.title %></h3>
+            <p class="zigzag-summary"><%= summary %><%= fullText.length > 180 ? "..." : "" %></p>
+            <% if (post.tags && post.tags.length > 0) { %>
+              <div class="zigzag-tags">
+                <% post.tags.forEach(function(tag) { %>
+                  <span class="badge badge-ghost badge-xs">#<%= tag.name %></span>
+                <% }); %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+    <% }); %>
+    <% if (posts.length === 0) { %>
+      <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
+    <% } %>
+    </div>
+
+    <% } else { %>
+    <!-- ====== 网格卡片布局（默认） ====== -->
+    <div class="wall-grid wall-layout-grid" id="posts-wall-grid" style="opacity:0">
     <% posts.forEach(function(post) { %>
         <%
           var catName = (post.categories && post.categories.length > 0) ? post.categories.data[0].name : "";
@@ -40,8 +489,10 @@
         <div class="wall-card ajax-link<% if (post.sticky) { %> wall-card-sticky<% } %>" data-href="<%- url_for(post.path) %>" data-cat="<%= catName %>" data-title="<%= post.title.toLowerCase() %>">
           <% if (coverImg) { %>
             <div class="card-cover">
-              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.parentElement.style.display='none'">
+              <img src="<%= coverImg %>" alt="<%= post.title %>" loading="lazy" referrerpolicy="no-referrer" crossorigin="anonymous" onload="this.classList.add('loaded');this.parentElement.classList.add('loaded');" onerror="this.style.display='none'">
             </div>
+          <% } else { %>
+            <div class="card-cover card-cover-placeholder"></div>
           <% } %>
           <div class="card-body">
             <div class="card-top">
@@ -69,7 +520,7 @@
       <div class="list-empty">还没有文章哦，快去写一篇吧～</div>
     <% } %>
     </div>
-    </div>
+    <% } %>
     </div>
   </div>
 </div>

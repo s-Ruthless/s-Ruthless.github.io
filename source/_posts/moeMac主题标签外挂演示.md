@@ -1,4 +1,4 @@
----
+﻿---
 title: moeMac标签外挂演示
 date: 2026-06-30 12:00:00
 cover: https://picsum.photos/seed/moemac-tags/600/400
@@ -684,11 +684,11 @@ gantt
 
 **单卡片：**
 
-{% postcard /posts/91ca8701.html/ %}
+{% postcard /posts/ada921dd.html/ %}
 
 **多卡片横排：**
 
-{% postcard /posts/91ca8701.html/ | /posts/91ca8701.html/ | /posts/91ca8701.html/ %}
+{% postcard /posts/ada921dd.html/ | /posts/ada921dd.html/ | /posts/ada921dd.html/ %}
 
 
 ## Poem 诗词排版
